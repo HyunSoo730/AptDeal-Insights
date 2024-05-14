@@ -1,10 +1,10 @@
 package com.ssafy.finalproject.like.entity;
 
 import com.ssafy.finalproject.member.entity.Member;
+import com.ssafy.finalproject.model.Area;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.awt.geom.Area;
 
 @Entity
 @Table(name = "like_area")
@@ -20,12 +20,11 @@ public class LikeArea {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "id")
     private Member member;
 
     @ManyToOne
     @JoinColumn(name = "dongCode")
     private Area area;
 
-    // Getters and Setters
 }

@@ -66,4 +66,7 @@ public class AptSale {
     @Column(name = "apt_code")
     private String aptCode;
 
+    private Double latitude;
+    private Double longitude;
+
 }

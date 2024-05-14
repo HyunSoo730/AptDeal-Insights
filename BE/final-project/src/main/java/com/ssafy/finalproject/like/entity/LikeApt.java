@@ -3,6 +3,7 @@ package com.ssafy.finalproject.like.entity;
 import com.ssafy.finalproject.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
 
 @Entity
 @Table(name = "like_apt")
