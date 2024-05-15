@@ -1,5 +1,6 @@
 package com.ssafy.finalproject.config.batch;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.ssafy.finalproject.aptsale.dto.request.AptSaleDTO;
 import com.ssafy.finalproject.aptsale.repository.AptSaleRepository;
@@ -56,28 +57,38 @@ public class AptTradeDetailBatchJob {
 
     @Bean
     public ItemReader<AptSaleDTO> aptTradeDetailReader() {
-        return () -> {
-            String response = webClient.mutate()
-                    .baseUrl(SEOUL_BASE_URL)
-                    .build()
-                    .get().uri(uriBuilder ->
-                            uriBuilder.queryParam("serviceKey", SEOUL_API_KEY)
-                                    .queryParam("pageNo", "1")
-                                    .queryParam("numOfRows", "10")
-                                    .queryParam("LAWD_CD", "11110")
-                                    .queryParam("DEAL_YMD", "201510")
-                                    .build())
-                    .accept(MediaType.APPLICATION_XML)
-                    .retrieve()
-                    .bodyToMono(String.class)
-                    .blockOptional().orElse("");
+        return new ItemReader<AptSaleDTO>() {
+            private boolean executed = false;
 
-            System.out.println("response = " + response);
-            // XML 파싱 라이브러리를 사용하여 response를 AptSaleDTO로 변환
-            XmlMapper xmlMapper=new XmlMapper();
-            AptSaleDTO aptSaleDTO = xmlMapper.readValue(response, AptSaleDTO.class);
-            System.out.println("aptSaleDTO = " + aptSaleDTO);
-            return aptSaleDTO;
+            @Override
+            public AptSaleDTO read() throws JsonProcessingException {
+                if (!executed) {
+                    executed = true;
+                    String response = webClient.mutate()
+                            .baseUrl(SEOUL_BASE_URL)
+                            .build()
+                            .get().uri(uriBuilder ->
+                                    uriBuilder.queryParam("serviceKey", SEOUL_API_KEY)
+                                            .queryParam("pageNo", "1")
+                                            .queryParam("numOfRows", "10")
+                                            .queryParam("LAWD_CD", "11110")
+                                            .queryParam("DEAL_YMD", "201510")
+                                            .build())
+                            .accept(MediaType.APPLICATION_XML)
+                            .retrieve()
+                            .bodyToMono(String.class)
+                            .blockOptional().orElse("");
+
+                    System.out.println("response = " + response);
+                    // XML 파싱 라이브러리를 사용하여 response를 AptSaleDTO로 변환
+                    XmlMapper xmlMapper = new XmlMapper();
+                    AptSaleDTO aptSaleDTO = xmlMapper.readValue(response, AptSaleDTO.class);
+                    System.out.println("aptSaleDTO = " + aptSaleDTO);
+                    return aptSaleDTO;
+                } else {
+                    return null;
+                }
+            }
         };
     }
 
@@ -99,9 +110,12 @@ public class AptTradeDetailBatchJob {
 
     @Bean
     public ItemWriter<AptSaleDTO> aptTradeDetailWriter() {
+        System.out.println("AptTradeDetailBatchJob.aptTradeDetailWriter");
         return items -> {
             for (AptSaleDTO item : items) {
-                System.out.println(item);
+                for(AptSaleDTO.Item myItem: item.getBody().getItemList()){
+                    System.out.println(myItem);
+                }
             }
         };
     }

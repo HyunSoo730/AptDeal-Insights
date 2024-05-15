@@ -21,6 +21,7 @@ public class AptSaleDTO {
 
     // Getter, Setter
 
+    @Data
     public static class Header {
         private String resultCode;
         private String resultMsg;
@@ -28,6 +29,7 @@ public class AptSaleDTO {
         // Getter, Setter
     }
 
+    @Data
     public static class Body {
         @JacksonXmlElementWrapper(localName = "items")
         @JacksonXmlProperty(localName = "item")
@@ -44,53 +46,86 @@ public class AptSaleDTO {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    private static class Item {
-        @XmlElement(name = "거래금액")
-        private Integer dealAmount;
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class Item {
+        @JacksonXmlProperty(localName = "거래금액")
+        private String dealAmount;
 
-        @XmlElement(name = "건축년도")
+        @JacksonXmlProperty(localName = "거래유형")
+        private String dealType;
+
+        @JacksonXmlProperty(localName = "건축년도")
         private Integer constructionYear;
 
-        @XmlElement(name = "도로명")
+        @JacksonXmlProperty(localName = "년")
+        private Integer year;
+
+        @JacksonXmlProperty(localName = "도로명")
         private String roadName;
 
-        @XmlElement(name = "도로명건물본번호코드")
-        private String roadNameBonbun;
+        @JacksonXmlProperty(localName = "도로명건물본번호코드")
+        private String roadNameBuildingMainCode;
 
-        @XmlElement(name = "도로명건물부번호코드")
-        private String roadNameBubun;
+        @JacksonXmlProperty(localName = "도로명건물부번호코드")
+        private String roadNameBuildingSubCode;
 
-        @XmlElement(name = "도로명시군구코드")
+        @JacksonXmlProperty(localName = "도로명시군구코드")
         private String roadNameSigunguCode;
 
-        @XmlElement(name = "동")
+        @JacksonXmlProperty(localName = "도로명일련번호코드")
+        private String roadNameSerialCode;
+
+        @JacksonXmlProperty(localName = "도로명지상지하코드")
+        private String roadNameGroundCode;
+
+        @JacksonXmlProperty(localName = "도로명코드")
+        private String roadNameCode;
+
+        @JacksonXmlProperty(localName = "동")
         private String dong;
 
-        @XmlElement(name = "법정동")
+        @JacksonXmlProperty(localName = "법정동")
         private String legalDong;
 
-        @XmlElement(name = "법정동시군구코드")
+        @JacksonXmlProperty(localName = "법정동본번코드")
+        private String legalDongMainCode;
+
+        @JacksonXmlProperty(localName = "법정동부번코드")
+        private String legalDongSubCode;
+
+        @JacksonXmlProperty(localName = "법정동시군구코드")
         private String legalDongSigunguCode;
 
-        @XmlElement(name = "법정동읍면동코드")
-        private String legalDongEubmyeondongCode;
+        @JacksonXmlProperty(localName = "법정동읍면동코드")
+        private String legalDongEupmyeondongCode;
 
-        @XmlElement(name = "아파트")
-        private String aptName;
+        @JacksonXmlProperty(localName = "법정동지번코드")
+        private String legalDongJibunCode;
 
-        @XmlElement(name = "년")
-        private Integer dealYear;
+        @JacksonXmlProperty(localName = "아파트")
+        private String apartment;
 
-        @XmlElement(name = "월")
-        private Integer dealMonth;
+        @JacksonXmlProperty(localName = "월")
+        private Integer month;
 
-        @XmlElement(name = "일")
-        private Integer dealDay;
+        @JacksonXmlProperty(localName = "일")
+        private Integer day;
 
-        @XmlElement(name = "전용면적")
+        @JacksonXmlProperty(localName = "일련번호")
+        private String serialNumber;
+
+        @JacksonXmlProperty(localName = "전용면적")
         private Double exclusiveArea;
 
-        @XmlElement(name = "층")
+        @JacksonXmlProperty(localName = "지번")
+        private String jibun;
+
+        @JacksonXmlProperty(localName = "지역코드")
+        private String regionCode;
+
+        @JacksonXmlProperty(localName = "층")
         private Integer floor;
+
+        // Getter, Setter
     }
 }
