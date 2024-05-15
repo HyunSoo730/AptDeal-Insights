@@ -9,7 +9,7 @@ const coordinate = {
 
 <template>
     <div>
-        카카오 지도 입니당
+        카카오 지도 변경오옹오옹
         <KakaoMap :lat="coordinate.lat" :lng="coordinate.lng" :draggable="true">
             <KakaoMapMarker :lat="coordinate.lat" :lng="coordinate.lng"></KakaoMapMarker>
         </KakaoMap>

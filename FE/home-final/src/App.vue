@@ -6,7 +6,7 @@ import HelloWorld from '@/components/HelloWorld.vue';
 
 <template>
   <div>
-    추가하기fff
+    추가7777
     <HelloWorld></HelloWorld>
     <Kakao></Kakao>
   </div>

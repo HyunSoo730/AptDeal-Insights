@@ -10,6 +10,9 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  build: {
+    outDir: '../../BE/final-project/src/main/resources/static',
+  },
   server: {
     proxy: {
       '/api': {
