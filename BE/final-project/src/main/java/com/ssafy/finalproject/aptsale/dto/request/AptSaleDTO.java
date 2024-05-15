@@ -1,5 +1,9 @@
 package com.ssafy.finalproject.aptsale.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
@@ -8,44 +12,31 @@ import lombok.*;
 
 import java.util.List;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-@XmlRootElement(name = "response")
-@XmlAccessorType(XmlAccessType.FIELD)
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JacksonXmlRootElement(localName = "response")
+@Data
 public class AptSaleDTO {
-
-    @XmlElement(name = "body")
+    private Header header;
     private Body body;
 
-    private String aptCode; // ! processor에서 가공한 코드
+    // Getter, Setter
 
-    public void setAptCode() {
-        Item item = body.getItems().getItemList().get(0);
-        this.aptCode = item.getLegalDongSigunguCode() + item.getLegalDongEubmyeondongCode()
-                + item.getRoadNameBonbun() + item.getRoadNameBubun();
+    public static class Header {
+        private String resultCode;
+        private String resultMsg;
+
+        // Getter, Setter
     }
 
-    @XmlRootElement(name = "body")
-    @XmlAccessorType(XmlAccessType.FIELD)
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    private static class Body {
-        @XmlElement(name = "items")
-        private Items items;
-    }
-
-    @XmlRootElement(name = "items")
-    @XmlAccessorType(XmlAccessType.FIELD)
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    private static class Items {
-        @XmlElement(name = "item")
+    public static class Body {
+        @JacksonXmlElementWrapper(localName = "items")
+        @JacksonXmlProperty(localName = "item")
         private List<Item> itemList;
+        private int numOfRows;
+        private int pageNo;
+        private int totalCount;
+
+        // Getter, Setter
     }
 
     @XmlRootElement(name = "item")
