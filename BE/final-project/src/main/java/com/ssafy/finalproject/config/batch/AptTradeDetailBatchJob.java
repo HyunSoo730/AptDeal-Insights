@@ -28,7 +28,7 @@ public class AptTradeDetailBatchJob {
     private final WebClient webClient;
     private final PlatformTransactionManager transactionManager;
     private static final String SEOUL_BASE_URL = "http://openapi.molit.go.kr/OpenAPI_ToolInstallPackage/service/rest/RTMSOBJSvc/getRTMSDataSvcAptTradeDev";
-    private static final String ENCODED_API_KEY = "6hQ6uOLRUTGDB5xRbXb9ELHp1xs%2FBzRVXfyaMvHOySW1fS4OYabUvqUXaiuFdsXV2Yj000Ja53eGvkZGYVnDqw%3D%3D";
+    private static final String ENCODED_API_KEY = "TrO0IrUJ2%2BJmNRTuGJTi5ISs47gv0GzG6nJz6XRd3HEJKsa3hG53qPID1s5heH18CF4YFgbx68rljd2v56IS3g%3D%3D";
     private static final String SEOUL_API_KEY = URLDecoder.decode(ENCODED_API_KEY, StandardCharsets.UTF_8);
     //    private static final String API_KEY = URLDecoder.decode(ENCODED_API_KEY, StandardCharsets.UTF_8);
 
@@ -102,7 +102,7 @@ public class AptTradeDetailBatchJob {
 
     @Bean
     public ItemReader<String> aptTradeDetailReader() {
-        return () -> {
+       /* return () -> {
 //            AptSaleDTO response = webClient.mutate()
 //                    .baseUrl(SEOUL_BASE_URL)
 //                    .build()
@@ -133,6 +133,37 @@ public class AptTradeDetailBatchJob {
                     .bodyToMono(String.class) // ! String 매핑
                     .blockOptional().orElse(""); // block 대신 blockOptional 사용하여 빈 문자열 처리
             return response;
+        };*/
+        // 한번만 리턴하도록 변경
+        return new ItemReader<String>() {
+            private boolean executed = false;
+
+            @Override
+            public String read() {
+                if (!executed) {
+                    executed = true;
+                    String decodedApiKey = URLDecoder.decode(ENCODED_API_KEY, StandardCharsets.UTF_8);
+                    System.out.println("decodedApiKey = " + decodedApiKey);
+
+                    String response = webClient.mutate()
+                            .baseUrl(SEOUL_BASE_URL)
+                            .build()
+                            .get().uri(uriBuilder ->
+                                    uriBuilder.queryParam("serviceKey", decodedApiKey)
+                                            .queryParam("pageNo", "1")
+                                            .queryParam("numOfRows", "10")
+                                            .queryParam("LAWD_CD", "11110")
+                                            .queryParam("DEAL_YMD", "201512")
+                                            .build())
+                            .retrieve()
+                            .bodyToMono(String.class)
+                            .blockOptional().orElse("");
+                    System.out.println("response = " + response);
+                    return response;
+                } else {
+                    return null;
+                }
+            }
         };
     }
 
