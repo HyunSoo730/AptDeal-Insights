@@ -63,10 +63,15 @@ public class AptSale {
 
     private Integer floor;
 
+    // 20자리로 조합하기
     @Column(name = "apt_code")
     private String aptCode;
-
+ 
+    // (x,y) 좌표
     private Double latitude;
     private Double longitude;
+
+    @Column(name="sido_name") // 넣어주기
+    private String sidoName;
 
 }
