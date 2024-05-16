@@ -10,19 +10,20 @@ import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JacksonXmlRootElement(localName = "response")
 @Data
-public class AptSaleDTO {
+public class AptSaleDTO implements Serializable {
     private Header header;
     private Body body;
 
     // Getter, Setter
 
     @Data
-    public static class Header {
+    public static class Header implements Serializable{
         private String resultCode;
         private String resultMsg;
 
@@ -30,7 +31,7 @@ public class AptSaleDTO {
     }
 
     @Data
-    public static class Body {
+    public static class Body implements Serializable{
         @JacksonXmlElementWrapper(localName = "items")
         @JacksonXmlProperty(localName = "item")
         private List<Item> itemList;
@@ -47,7 +48,7 @@ public class AptSaleDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class Item {
+    public static class Item implements Serializable{
         @JacksonXmlProperty(localName = "거래금액")
         private String dealAmount;
 
