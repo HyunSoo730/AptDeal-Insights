@@ -30,10 +30,10 @@ public class AptTradeDetailBatchJob {
     private final WebClient webClient;
     private final PlatformTransactionManager transactionManager;
     private static final String SEOUL_BASE_URL = "http://openapi.molit.go.kr/OpenAPI_ToolInstallPackage/service/rest/RTMSOBJSvc/getRTMSDataSvcAptTradeDev";
-    private static final String ENCODED_API_KEY = "jMJCTIZSOT9a34dKu0QVnzV4psUhzFnra60JbkjydQelnAYlftbQs1tTrEMN3AmKxjhChrcKi9eaBUGwirsXGw%3D%3D";
+    private static final String ENCODED_API_KEY = "HbE%2BqmyQQ9CAxmxvAqQqGkYVo%2F%2BEAlua0qS3StqpF8%2F1q168ae6AUOs03l9eMzCcuXkFVmpYhxxOVZcfB812tw%3D%3D";
     private static final String SEOUL_API_KEY = URLDecoder.decode(ENCODED_API_KEY, StandardCharsets.UTF_8);
     //    private static final String API_KEY = URLDecoder.decode(ENCODED_API_KEY, StandardCharsets.UTF_8);
-
+//    private static final String TEST_API_KEY = String.format("http://openapi.molit.go.kr/OpenAPI_ToolInstallPackage/service/rest/RTMSOBJSvc/getRTMSDataSvcAptTradeDev?serviceKey=%s", SEOUL_API_KEY);
 
     @Bean
     public Job aptTradeDetailJob(JobRepository jobRepository) {
@@ -47,7 +47,7 @@ public class AptTradeDetailBatchJob {
     @Bean
     public Step aptTradeDetailXmlParseingStep(JobRepository jobRepository){
         return new StepBuilder("aptTradeDetailXmlParsingStep", jobRepository)
-                .<AptSaleDTO, AptSaleDTO>chunk(1000, transactionManager)
+                .<AptSaleDTO, AptSaleDTO>chunk(10, transactionManager)
                 .reader(aptTradeDetailReader())
                 .processor(aptTradeDetailProcessor()) // ! 현재 읽어오기만 한거라 processor 필요없음
                 .writer(aptTradeDetailWriter())
@@ -63,7 +63,8 @@ public class AptTradeDetailBatchJob {
                     .baseUrl(SEOUL_BASE_URL)
                     .build()
                     .get().uri(uriBuilder ->
-                            uriBuilder.queryParam("serviceKey", SEOUL_API_KEY)
+                            uriBuilder
+                                    .queryParam("serviceKey", SEOUL_API_KEY)
                                     .queryParam("pageNo", "1")
                                     .queryParam("numOfRows", "1")
                                     .queryParam("LAWD_CD", "11110")
@@ -75,7 +76,7 @@ public class AptTradeDetailBatchJob {
                     .bodyToMono(AptSaleDTO.class)
                     .block();
 //                    .blockOptional().orElse(null); // block 대신 blockOptional 사용하여 null 처리
-
+            log.info("response = {}", response);
             return response;
         };
     }

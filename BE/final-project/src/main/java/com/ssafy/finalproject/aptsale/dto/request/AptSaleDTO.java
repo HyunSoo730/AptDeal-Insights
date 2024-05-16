@@ -1,7 +1,10 @@
 package com.ssafy.finalproject.aptsale.dto.request;
 
 import jakarta.xml.bind.annotation.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
