@@ -95,5 +95,9 @@ public class AptSaleDTO {
 
         @XmlTransient
         private String aptCode;
+
+        @XmlTransient
+        private String sidoName;
+
     }
 }
