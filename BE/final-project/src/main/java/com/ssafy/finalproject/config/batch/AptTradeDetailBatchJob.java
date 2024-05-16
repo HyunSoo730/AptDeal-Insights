@@ -143,17 +143,17 @@ public class AptTradeDetailBatchJob {
                     // aptSaleDTOList의 각 항목에 대해 좌표 정보를 받아오는 로직 추가
                     for (AptSaleDTO item : aptSaleDTOList) {
                         for (AptSaleDTO.Item myItem : item.getBody().getItemList()) {
-                            String legalSiCode=myItem.getLegalDongSigunguCode().substring(0,2);
+                            String legalSiCode=myItem.getLegalDongSigunguCode().substring(0,2); // 시군구 코드에서 시 부분만 뽑아오기 (11021 -> 11 (서울))
                             String roadName = myItem.getRoadName();
                             String mainCode = removeLeadingZeros(myItem.getRoadNameBuildingMainCode());
                             String subCode = removeLeadingZeros(myItem.getRoadNameBuildingSubCode());
 
                             String address="";
 
-                            System.out.println("legalSiCode = " + legalSiCode);
+                            log.info("legalsicode: {}",legalSiCode);
                             Region region = Region.fromCode(legalSiCode);
                             String regionName = region.getName();
-                            System.out.println("regionName = " + regionName);
+                            log.info("regionName: {}",regionName);
 
 
                             address+=regionName+" ";
@@ -220,11 +220,11 @@ public class AptTradeDetailBatchJob {
     @Bean
     public ItemWriter<AptSaleDTO> aptCoordinateWriter() {
         return items -> {
-            for (AptSaleDTO item : items) {
+            /*for (AptSaleDTO item : items) {
                 for (AptSaleDTO.Item myItem : item.getBody().getItemList()) {
                     System.out.println(myItem);
                 }
-            }
+            }*/
         };
     }
 }
