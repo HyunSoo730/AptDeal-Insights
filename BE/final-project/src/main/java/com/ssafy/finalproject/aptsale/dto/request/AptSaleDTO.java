@@ -61,7 +61,7 @@ public class AptSaleDTO {
     @AllArgsConstructor
     public static class Item {
         @XmlElement(name = "거래금액")
-        private Integer dealAmount;
+        private String dealAmount;
         @XmlElement(name = "건축년도")
         private Integer constructionYear;
         @XmlElement(name = "도로명")

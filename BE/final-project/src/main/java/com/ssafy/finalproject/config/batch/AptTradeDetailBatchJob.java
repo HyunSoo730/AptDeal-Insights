@@ -18,6 +18,8 @@ import org.springframework.http.MediaType;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -30,10 +32,10 @@ public class AptTradeDetailBatchJob {
     private final WebClient webClient;
     private final PlatformTransactionManager transactionManager;
     private static final String SEOUL_BASE_URL = "http://openapi.molit.go.kr/OpenAPI_ToolInstallPackage/service/rest/RTMSOBJSvc/getRTMSDataSvcAptTradeDev";
-    private static final String ENCODED_API_KEY = "HbE%2BqmyQQ9CAxmxvAqQqGkYVo%2F%2BEAlua0qS3StqpF8%2F1q168ae6AUOs03l9eMzCcuXkFVmpYhxxOVZcfB812tw%3D%3D";
-    private static final String SEOUL_API_KEY = URLDecoder.decode(ENCODED_API_KEY, StandardCharsets.UTF_8);
+    private static final String ENCODED_API_KEY = "vk%2FAjAkbf0K4e9bDC7RWG%2B2uj9hSsRVSVOe4WtENZY1dLBUec1AyEgn9AnEPksMUKQ%2FvDw%2BlLuRgusRy5OOLfA%3D%3D";
+//    private static final String SEOUL_API_KEY = URLDecoder.decode(ENCODED_API_KEY, StandardCharsets.UTF_8);
     //    private static final String API_KEY = URLDecoder.decode(ENCODED_API_KEY, StandardCharsets.UTF_8);
-//    private static final String TEST_API_KEY = String.format("http://openapi.molit.go.kr/OpenAPI_ToolInstallPackage/service/rest/RTMSOBJSvc/getRTMSDataSvcAptTradeDev?serviceKey=%s", SEOUL_API_KEY);
+
 
     @Bean
     public Job aptTradeDetailJob(JobRepository jobRepository) {
@@ -59,25 +61,23 @@ public class AptTradeDetailBatchJob {
     @Bean
     public ItemReader<AptSaleDTO> aptTradeDetailReader() {
         return () -> {
-            AptSaleDTO response = webClient.mutate()
-                    .baseUrl(SEOUL_BASE_URL)
-                    .build()
-                    .get().uri(uriBuilder ->
-                            uriBuilder
-                                    .queryParam("serviceKey", SEOUL_API_KEY)
-                                    .queryParam("pageNo", "1")
-                                    .queryParam("numOfRows", "1")
-                                    .queryParam("LAWD_CD", "11110")
-                                    .queryParam("DEAL_YMD", "201512")
-                                    .build())
-//                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_XML_VALUE)
-                    .accept(MediaType.valueOf(MediaType.APPLICATION_XML_VALUE))
-                    .retrieve()
-                    .bodyToMono(AptSaleDTO.class)
-                    .block();
-//                    .blockOptional().orElse(null); // block 대신 blockOptional 사용하여 null 처리
-            log.info("response = {}", response);
-            return response;
+            try {
+                final String uri = String.format("http://openapi.molit.go.kr/OpenAPI_ToolInstallPackage/service/rest/RTMSOBJSvc/getRTMSDataSvcAptTradeDev?serviceKey=%s&pageNo=1&numOfRows=1&LAWD_CD=11110&DEAL_YMD=201512", ENCODED_API_KEY);
+
+                AptSaleDTO response = webClient.get()
+                        .uri(new URI(uri))
+                        .accept(MediaType.APPLICATION_XML)
+                        .retrieve()
+                        .bodyToMono(AptSaleDTO.class)
+                        .blockOptional()
+                        .orElse(null);
+
+                log.info("response = {}", response);
+                return response;
+            } catch (URISyntaxException e) {
+                log.error("URI 구문 오류", e);
+                return null;
+            }
         };
     }
 
