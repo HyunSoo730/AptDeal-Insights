@@ -1,6 +1,7 @@
 import { createApp } from "vue";
 import { createPinia } from "pinia";
 import { useKakao } from "vue3-kakao-maps/@utils";
+import "./index.css"
 
 import App from "./App.vue";
 import router from "./router";
