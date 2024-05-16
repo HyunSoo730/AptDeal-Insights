@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.ssafy.finalproject.aptsale.dto.request.AptSaleDTO;
+import com.ssafy.finalproject.data.Region;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -134,10 +135,64 @@ public class AptTradeDetailBatchJob {
             private Iterator<AptSaleDTO> iterator;
 
             @Override
-            public AptSaleDTO read() {
+            public AptSaleDTO read() throws JsonProcessingException {
                 if (iterator == null) {
                     List<AptSaleDTO> aptSaleDTOList = (List<AptSaleDTO>) StepSynchronizationManager.getContext()
                             .getStepExecution().getJobExecution().getExecutionContext().get("aptSaleDTOList");
+
+                    // aptSaleDTOList의 각 항목에 대해 좌표 정보를 받아오는 로직 추가
+                    for (AptSaleDTO item : aptSaleDTOList) {
+                        for (AptSaleDTO.Item myItem : item.getBody().getItemList()) {
+                            String legalSiCode=myItem.getLegalDongSigunguCode().substring(0,2);
+                            String roadName = myItem.getRoadName();
+                            String mainCode = removeLeadingZeros(myItem.getRoadNameBuildingMainCode());
+                            String subCode = removeLeadingZeros(myItem.getRoadNameBuildingSubCode());
+
+                            String address="";
+
+                            System.out.println("legalSiCode = " + legalSiCode);
+                            Region region = Region.fromCode(legalSiCode);
+                            String regionName = region.getName();
+                            System.out.println("regionName = " + regionName);
+
+
+                            address+=regionName+" ";
+                            if (!subCode.equals("0")) {
+                                address += roadName + " " + mainCode + "-" + subCode;
+                            } else {
+                                address += roadName + " " + mainCode;
+                            }
+                            System.out.println(address);
+
+                            String url = "https://api.vworld.kr/req/address?service=address&request=getcoord&version=2.0&crs=epsg:4326&address=" + address + "&refine=true&simple=false&format=xml&type=road&key=92B84E44-5710-3F5A-9AE1-6F3CF087E8EC";
+
+                            // WebClient를 사용하여 데이터 받아오기
+                            String response = webClient.get()
+                                    .uri(url)
+                                    .accept(MediaType.APPLICATION_XML)
+                                    .retrieve()
+                                    .bodyToMono(String.class)
+                                    .block();
+
+                            // XML 파싱
+                            XmlMapper xmlMapper = new XmlMapper();
+                            JsonNode rootNode = xmlMapper.readTree(response);
+
+                            // 필요한 값 추출
+                            String text = rootNode.path("refined").path("text").asText();
+                            String x = rootNode.path("result").path("point").path("x").asText();
+                            String y = rootNode.path("result").path("point").path("y").asText();
+                            String detail = rootNode.path("refined").path("structure").path("detail").asText();
+
+                        /*// 추출한 값을 myItem에 설정
+                        myItem.setText(text);
+                        myItem.setX(x);
+                        myItem.setY(y);
+                        myItem.setDetail(detail);*/
+                            System.out.println(text+" "+x+" "+" "+y+" "+detail);
+                        }
+                    }
+
                     iterator = aptSaleDTOList.iterator();
                 }
 
@@ -157,45 +212,7 @@ public class AptTradeDetailBatchJob {
     @Bean
     public ItemProcessor<AptSaleDTO, AptSaleDTO> aptCoordinateProcessor() {
         return item -> {
-            for (AptSaleDTO.Item myItem : item.getBody().getItemList()) {
-                String roadName = myItem.getRoadName();
-                String mainCode = removeLeadingZeros(myItem.getRoadNameBuildingMainCode());
-                String subCode = removeLeadingZeros(myItem.getRoadNameBuildingSubCode());
-
-                String address;
-                if (!subCode.equals("0")) {
-                    address = roadName + " " + mainCode + "-" + subCode;
-                } else {
-                    address = roadName + " " + mainCode;
-                }
-
-                String url = "https://api.vworld.kr/req/address?service=address&request=getcoord&version=2.0&crs=epsg:4326&address=" + address + "&refine=true&simple=false&format=xml&type=road&key=92B84E44-5710-3F5A-9AE1-6F3CF087E8EC";
-
-                // WebClient를 사용하여 데이터 받아오기
-                String response = webClient.get()
-                        .uri(url)
-                        .accept(MediaType.APPLICATION_XML)
-                        .retrieve()
-                        .bodyToMono(String.class)
-                        .block();
-
-                // XML 파싱
-                XmlMapper xmlMapper = new XmlMapper();
-                JsonNode rootNode = xmlMapper.readTree(response);
-
-                // 필요한 값 추출
-                String text = rootNode.path("refined").path("text").asText();
-                String x = rootNode.path("result").path("point").path("x").asText();
-                String y = rootNode.path("result").path("point").path("y").asText();
-                String detail = rootNode.path("refined").path("structure").path("detail").asText();
-
-                /*// 추출한 값을 myItem에 설정
-                myItem.setText(text);
-                myItem.setX(x);
-                myItem.setY(y);
-                myItem.setDetail(detail);*/
-                System.out.println(text+" "+x+" "+" "+y+" "+detail);
-            }
+            // 좌표 정보를 받아오는 로직을 ItemReader로 이동했으므로 여기서는 별도의 처리를 하지 않습니다.
             return item;
         };
     }
