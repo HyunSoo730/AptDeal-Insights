@@ -127,6 +127,8 @@ public class AptSaleDTO implements Serializable {
         @JacksonXmlProperty(localName = "층")
         private Integer floor;
 
+
+
         // Getter, Setter
     }
 }

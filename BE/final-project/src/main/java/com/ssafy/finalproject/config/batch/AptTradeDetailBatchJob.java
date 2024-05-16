@@ -4,7 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.ssafy.finalproject.aptsale.dto.request.AptSaleDTO;
+import com.ssafy.finalproject.aptsale.entity.AptSale;
 import com.ssafy.finalproject.data.Region;
+import com.ssafy.finalproject.sample.AptSaleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -40,6 +42,9 @@ import java.util.stream.Stream;
 @Slf4j
 public class AptTradeDetailBatchJob {
 
+    // 지도 뿌리기 테스트용 MemoryRepository임 ㅇㅇ. 프로젝트 진행과 무관
+    private final AptSaleRepository aptSaleRepository;
+
     private final WebClient webClient;
     private final PlatformTransactionManager transactionManager;
     private static final String SEOUL_BASE_URL = "http://openapi.molit.go.kr/OpenAPI_ToolInstallPackage/service/rest/RTMSOBJSvc/getRTMSDataSvcAptTradeDev";
@@ -54,6 +59,7 @@ public class AptTradeDetailBatchJob {
                 .start(aptTradeDetailStep(jobRepository))
                 .next(aptCoordinateStep(jobRepository))
                 .build();
+
     }
 
     @Bean
@@ -69,9 +75,9 @@ public class AptTradeDetailBatchJob {
     @Bean
     public Step aptCoordinateStep(JobRepository jobRepository) {
         return new StepBuilder("aptCoordinateStep", jobRepository)
-                .<AptSaleDTO, AptSaleDTO>chunk(10, transactionManager)
+                .<AptSale, AptSale>chunk(10, transactionManager)
                 .reader(aptCoordinateReader())
-                .processor(aptCoordinateProcessor())
+//                .processor(aptCoordinateProcessor())
                 .writer(aptCoordinateWriter())
                 .allowStartIfComplete(true)
                 .build();
@@ -130,15 +136,18 @@ public class AptTradeDetailBatchJob {
     }
 
     @Bean
-    public ItemReader<AptSaleDTO> aptCoordinateReader() {
-        return new ItemReader<AptSaleDTO>() {
-            private Iterator<AptSaleDTO> iterator;
+    public ItemReader<AptSale> aptCoordinateReader() {
+        return new ItemReader<AptSale>() {
+            private Iterator<AptSale> iterator;
 
             @Override
-            public AptSaleDTO read() throws JsonProcessingException {
+            public AptSale read() throws JsonProcessingException {
                 if (iterator == null) {
                     List<AptSaleDTO> aptSaleDTOList = (List<AptSaleDTO>) StepSynchronizationManager.getContext()
                             .getStepExecution().getJobExecution().getExecutionContext().get("aptSaleDTOList");
+
+
+                    List<AptSale> aptSaleList = new ArrayList<>();
 
                     // aptSaleDTOList의 각 항목에 대해 좌표 정보를 받아오는 로직 추가
                     for (AptSaleDTO item : aptSaleDTOList) {
@@ -184,16 +193,38 @@ public class AptTradeDetailBatchJob {
                             String y = rootNode.path("result").path("point").path("y").asText();
                             String detail = rootNode.path("refined").path("structure").path("detail").asText();
 
-                        /*// 추출한 값을 myItem에 설정
-                        myItem.setText(text);
-                        myItem.setX(x);
-                        myItem.setY(y);
-                        myItem.setDetail(detail);*/
-                            System.out.println(text+" "+x+" "+" "+y+" "+detail);
+//                            System.out.println(text+" "+x+" "+" "+y+" "+detail);
+//                            System.out.println("myItem = " + myItem);
+
+                            AptSale aptSale = AptSale.builder()
+                                    .aptName(myItem.getApartment())
+                                    .dealAmount(Integer.parseInt(myItem.getDealAmount().trim().replace(",", "")))
+                                    .constructionYear(myItem.getConstructionYear())
+                                    .roadName(myItem.getRoadName())
+                                    .roadNameBonbun(myItem.getRoadNameBuildingMainCode())
+                                    .roadNameBubun(myItem.getRoadNameBuildingSubCode())
+                                    .roadNameAddress(address)
+                                    .dong(myItem.getDong())
+                                    .legalDong(myItem.getLegalDong())
+                                    .dongcode(myItem.getLegalDongSigunguCode() + myItem.getLegalDongEupmyeondongCode())
+                                    .dealYear(myItem.getYear())
+                                    .dealMonth(myItem.getMonth())
+                                    .dealDay(myItem.getDay())
+                                    .exclusiveArea(myItem.getExclusiveArea())
+                                    .floor(myItem.getFloor())
+                                    .latitude(Double.parseDouble(y))
+                                    .longitude(Double.parseDouble(x))
+                                    .sidoName(address)
+                                    .aptCode(myItem.getLegalDongSigunguCode() + myItem.getLegalDongEupmyeondongCode() +
+                                            myItem.getRoadNameBuildingMainCode() + myItem.getRoadNameBuildingSubCode())
+                                    .build();
+
+                            aptSaleList.add(aptSale);
+
                         }
                     }
 
-                    iterator = aptSaleDTOList.iterator();
+                    iterator = aptSaleList.iterator();
                 }
 
                 if (iterator.hasNext()) {
@@ -212,19 +243,18 @@ public class AptTradeDetailBatchJob {
     @Bean
     public ItemProcessor<AptSaleDTO, AptSaleDTO> aptCoordinateProcessor() {
         return item -> {
-            // 좌표 정보를 받아오는 로직을 ItemReader로 이동했으므로 여기서는 별도의 처리를 하지 않습니다.
+            // 좌표 정보를 받아오는 로직을 ItemReader로 이동했으므로 여기서는 별도의 처리 X.
             return item;
         };
     }
 
     @Bean
-    public ItemWriter<AptSaleDTO> aptCoordinateWriter() {
+    public ItemWriter<AptSale> aptCoordinateWriter() {
         return items -> {
-            /*for (AptSaleDTO item : items) {
-                for (AptSaleDTO.Item myItem : item.getBody().getItemList()) {
-                    System.out.println(myItem);
-                }
-            }*/
+            for (AptSale item : items) {
+                aptSaleRepository.save(item);
+                System.out.println(item);
+            }
         };
     }
 }

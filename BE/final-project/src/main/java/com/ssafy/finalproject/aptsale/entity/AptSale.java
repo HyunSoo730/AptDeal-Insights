@@ -11,6 +11,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Data
 public class AptSale {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
