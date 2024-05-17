@@ -1,6 +1,7 @@
 package com.ssafy.finalproject.aptsale.Service;
 
 
+import com.ssafy.finalproject.aptsale.dto.request.AptSaleByDongDTO;
 import com.ssafy.finalproject.aptsale.entity.AptSale;
 import com.ssafy.finalproject.aptsale.repository.AptSaleRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,8 +17,8 @@ public class AptSaleService {
     private final AptSaleRepository aptSaleRepository;
 
 
-    public List<AptSale> getApartmentsByDongCode(String dongcode) {
+    public List<AptSaleByDongDTO> getApartmentsByDongCode(String dongcode) {
 
-        return aptSaleRepository.findByDongCodeGroupByAptCode(dongcode);
+        return aptSaleRepository.findByDongcodeGroupByAptCode(dongcode);
     }
 }
