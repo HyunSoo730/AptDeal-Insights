@@ -128,7 +128,6 @@ public class AptSaleDTO implements Serializable {
         private Integer floor;
 
 
-
         // Getter, Setter
     }
 }

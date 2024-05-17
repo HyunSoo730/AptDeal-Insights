@@ -5,8 +5,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.ssafy.finalproject.aptsale.dto.request.AptSaleDTO;
 import com.ssafy.finalproject.aptsale.entity.AptSale;
+import com.ssafy.finalproject.aptsale.repository.AptSaleRepository;
 import com.ssafy.finalproject.data.Region;
-import com.ssafy.finalproject.sample.AptSaleRepository;
+import com.ssafy.finalproject.sample.MemoryAptSaleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -43,6 +44,8 @@ import java.util.stream.Stream;
 public class AptTradeDetailBatchJob {
 
     // 지도 뿌리기 테스트용 MemoryRepository임 ㅇㅇ. 프로젝트 진행과 무관
+    private final MemoryAptSaleRepository memoryAptSaleRepository;
+
     private final AptSaleRepository aptSaleRepository;
 
     private final WebClient webClient;
@@ -64,8 +67,9 @@ public class AptTradeDetailBatchJob {
 
     @Bean
     public Step aptTradeDetailStep(JobRepository jobRepository) {
+        log.info("aptTradeDetailStep 호출");
         return new StepBuilder("aptTradeDetailStep", jobRepository)
-                .<AptSaleDTO, AptSaleDTO>chunk(10, transactionManager)
+                .<AptSaleDTO, AptSaleDTO>chunk(100, transactionManager)
                 .reader(aptTradeDetailReader())
                 .writer(aptTradeDetailWriter())
                 .allowStartIfComplete(true)
@@ -75,7 +79,7 @@ public class AptTradeDetailBatchJob {
     @Bean
     public Step aptCoordinateStep(JobRepository jobRepository) {
         return new StepBuilder("aptCoordinateStep", jobRepository)
-                .<AptSale, AptSale>chunk(10, transactionManager)
+                .<AptSale, AptSale>chunk(100, transactionManager)
                 .reader(aptCoordinateReader())
 //                .processor(aptCoordinateProcessor())
                 .writer(aptCoordinateWriter())
@@ -97,13 +101,21 @@ public class AptTradeDetailBatchJob {
 
     @Bean
     public ItemReader<AptSaleDTO> aptTradeDetailReader() {
+
         Iterator<String> ymdIterator = generateYMDParameters().iterator();
+        String[] lawdCodes = {"11680", "11740", "11305", "11500", "11620", "11215", "11530", "11545", "11350", "11320",
+                "11230", "11590", "11440", "11410", "11650", "11200", "11290", "11710", "11470", "11560",
+                "11170", "11380", "11110", "11140", "11260"};
         return new ItemReader<AptSaleDTO>() {
+            private int lawdIndex = 0;
+
             @Override
             public AptSaleDTO read() throws JsonProcessingException, URISyntaxException {
+                log.info("aptTradeDetailReader 호출");
                 if (ymdIterator.hasNext()) {
                     String ymd = ymdIterator.next();
-                    final String uri = String.format("http://openapi.molit.go.kr/OpenAPI_ToolInstallPackage/service/rest/RTMSOBJSvc/getRTMSDataSvcAptTradeDev?serviceKey=%s&pageNo=1&numOfRows=40&LAWD_CD=11110&DEAL_YMD=%s", ENCODED_API_KEY, ymd);
+                    String lawdCode = lawdCodes[lawdIndex];
+                    final String uri = String.format("http://openapi.molit.go.kr/OpenAPI_ToolInstallPackage/service/rest/RTMSOBJSvc/getRTMSDataSvcAptTradeDev?serviceKey=%s&pageNo=1&numOfRows=10&LAWD_CD=%s&DEAL_YMD=%s", ENCODED_API_KEY, lawdCode, ymd);
                     String response = webClient.get()
                             .uri(new URI(uri))
                             .accept(MediaType.APPLICATION_XML)
@@ -114,6 +126,12 @@ public class AptTradeDetailBatchJob {
                     // XML 파싱 라이브러리를 사용하여 response를 AptSaleDTO로 변환
                     XmlMapper xmlMapper = new XmlMapper();
                     AptSaleDTO aptSaleDTO = xmlMapper.readValue(response, AptSaleDTO.class);
+
+                    lawdIndex++;
+                    if (lawdIndex >= lawdCodes.length) {
+                        lawdIndex = 0;
+                    }
+
                     return aptSaleDTO;
                 } else {
                     return null;
@@ -127,6 +145,7 @@ public class AptTradeDetailBatchJob {
         return new ItemWriter<AptSaleDTO>() {
             @Override
             public void write(Chunk<? extends AptSaleDTO> items) throws Exception {
+                log.info("aptTradeDetailWriter 호출");
                 StepExecution stepExecution = StepSynchronizationManager.getContext().getStepExecution();
                 if (stepExecution != null) {
                     stepExecution.getJobExecution().getExecutionContext().put("aptSaleDTOList", new ArrayList<>(items.getItems()));
@@ -137,11 +156,13 @@ public class AptTradeDetailBatchJob {
 
     @Bean
     public ItemReader<AptSale> aptCoordinateReader() {
+
         return new ItemReader<AptSale>() {
             private Iterator<AptSale> iterator;
 
             @Override
             public AptSale read() throws JsonProcessingException {
+                log.info("aptCoordinateReader 호출");
                 if (iterator == null) {
                     List<AptSaleDTO> aptSaleDTOList = (List<AptSaleDTO>) StepSynchronizationManager.getContext()
                             .getStepExecution().getJobExecution().getExecutionContext().get("aptSaleDTOList");
@@ -166,12 +187,12 @@ public class AptTradeDetailBatchJob {
 
 
                             address+=regionName+" ";
-                            if (!subCode.equals("0")) {
-                                address += roadName + " " + mainCode + "-" + subCode;
+                            if (!subCode.isEmpty()) {
+                                address += roadName + " " + mainCode + "-" + subCode; // 싸피로 2-2
                             } else {
-                                address += roadName + " " + mainCode;
+                                address += roadName + " " + mainCode; // 싸피로 2
                             }
-                            System.out.println(address);
+//                            System.out.println(address);
 
                             String url = "https://api.vworld.kr/req/address?service=address&request=getcoord&version=2.0&crs=epsg:4326&address=" + address + "&refine=true&simple=false&format=xml&type=road&key=92B84E44-5710-3F5A-9AE1-6F3CF087E8EC";
 
@@ -250,10 +271,13 @@ public class AptTradeDetailBatchJob {
 
     @Bean
     public ItemWriter<AptSale> aptCoordinateWriter() {
+
         return items -> {
+            log.info("aptCoordinateWriter 호출");
+            aptSaleRepository.saveAll(items);
             for (AptSale item : items) {
-                aptSaleRepository.save(item);
-                System.out.println(item);
+                memoryAptSaleRepository.save(item);
+                log.info("{}",item);
             }
         };
     }

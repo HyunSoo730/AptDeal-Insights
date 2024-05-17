@@ -11,14 +11,14 @@ import java.util.List;
 @Service
 public class AptSaleService {
 
-    private final AptSaleRepository aptSaleRepository;
+    private final MemoryAptSaleRepository memoryAptSaleRepository;
 
     @Autowired
-    public AptSaleService(AptSaleRepository aptSaleRepository) {
-        this.aptSaleRepository = aptSaleRepository;
+    public AptSaleService(MemoryAptSaleRepository memoryAptSaleRepository) {
+        this.memoryAptSaleRepository = memoryAptSaleRepository;
     }
 
     public List<AptSale> getAllAptSales() {
-        return aptSaleRepository.findAll();
+        return memoryAptSaleRepository.findAll();
     }
 }

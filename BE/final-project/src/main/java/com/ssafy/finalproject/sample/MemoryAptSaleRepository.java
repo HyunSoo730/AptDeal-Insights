@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-public class AptSaleRepository {
+public class MemoryAptSaleRepository {
 
     private final Map<Long, AptSale> aptSaleMap = new HashMap<>();
     private long nextId = 1;
