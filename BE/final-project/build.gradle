@@ -41,7 +41,10 @@ dependencies {
 
     // ! jdk 17버전에서 XML 파싱을 위해 추가해야 하는 의존성
     implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.0'
-
+    // https://mvnrepository.com/artifact/org.glassfish.jaxb/jaxb-runtime
+    implementation group: 'org.glassfish.jaxb', name: 'jaxb-runtime', version: '4.0.5'
+// https://mvnrepository.com/artifact/jakarta.activation/jakarta.activation-api
+    implementation group: 'jakarta.activation', name: 'jakarta.activation-api', version: '2.1.0'
 }
 
 tasks.named('test') {

@@ -76,6 +76,8 @@ public class AptTradeDetailBatchJob {
                 .build();
     }
 
+
+    // ! XML로 파싱해서 읽어올 부분, WebClient는 OPEN API 호출할 때마다 URL 수정해야함 (mutate)
     @Bean
     public Step aptCoordinateStep(JobRepository jobRepository) {
         return new StepBuilder("aptCoordinateStep", jobRepository)
