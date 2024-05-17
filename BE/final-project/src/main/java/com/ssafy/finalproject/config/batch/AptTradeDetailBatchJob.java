@@ -7,7 +7,6 @@ import com.ssafy.finalproject.aptsale.dto.request.AptSaleDTO;
 import com.ssafy.finalproject.aptsale.entity.AptSale;
 import com.ssafy.finalproject.aptsale.repository.AptSaleRepository;
 import com.ssafy.finalproject.data.Region;
-import com.ssafy.finalproject.sample.MemoryAptSaleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -43,8 +42,6 @@ import java.util.stream.Stream;
 @Slf4j
 public class AptTradeDetailBatchJob {
 
-    // 지도 뿌리기 테스트용 MemoryRepository임 ㅇㅇ. 프로젝트 진행과 무관
-    private final MemoryAptSaleRepository memoryAptSaleRepository;
 
     private final AptSaleRepository aptSaleRepository;
 
@@ -276,7 +273,6 @@ public class AptTradeDetailBatchJob {
             log.info("aptCoordinateWriter 호출");
             aptSaleRepository.saveAll(items);
             for (AptSale item : items) {
-                memoryAptSaleRepository.save(item);
                 log.info("{}",item);
             }
         };
