@@ -13,13 +13,21 @@ export default defineConfig({
   build: {
     outDir: '../../BE/final-project/src/main/resources/static',
   },
+  // server: {
+  //   proxy: {
+  //     '/ap': {
+  //       target: 'http://localhost:8080',
+  //       changeOrigin: true,
+  //       rewrite: (path) => path.replace(/^\/api/, ''),
+  //     },
+  //   },
+  // },
   server: {
-    proxy: {
-      '/api': {
-        target: 'http://localhost:8080',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
-      },
+  proxy: {
+    '/apartments': {
+      target: 'http://localhost:8080',
+      changeOrigin: true,
     },
   },
+},
 });
