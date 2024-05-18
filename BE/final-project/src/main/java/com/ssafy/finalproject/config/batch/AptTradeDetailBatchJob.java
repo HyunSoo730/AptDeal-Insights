@@ -48,7 +48,7 @@ public class AptTradeDetailBatchJob {
     private final WebClient webClient;
     private final PlatformTransactionManager transactionManager;
     private static final String SEOUL_BASE_URL = "http://openapi.molit.go.kr/OpenAPI_ToolInstallPackage/service/rest/RTMSOBJSvc/getRTMSDataSvcAptTradeDev";
-    private static final String ENCODED_API_KEY = "jMJCTIZSOT9a34dKu0QVnzV4psUhzFnra60JbkjydQelnAYlftbQs1tTrEMN3AmKxjhChrcKi9eaBUGwirsXGw%3D%3D";
+    private static final String ENCODED_API_KEY = "vk%2FAjAkbf0K4e9bDC7RWG%2B2uj9hSsRVSVOe4WtENZY1dLBUec1AyEgn9AnEPksMUKQ%2FvDw%2BlLuRgusRy5OOLfA%3D%3D";
     private static final String SEOUL_API_KEY = URLDecoder.decode(ENCODED_API_KEY, StandardCharsets.UTF_8);
 
     @Bean
@@ -66,7 +66,7 @@ public class AptTradeDetailBatchJob {
     public Step aptTradeDetailStep(JobRepository jobRepository) {
         log.info("aptTradeDetailStep 호출");
         return new StepBuilder("aptTradeDetailStep", jobRepository)
-                .<AptSaleDTO, AptSaleDTO>chunk(10, transactionManager)
+                .<AptSaleDTO, AptSaleDTO>chunk(100, transactionManager)
                 .reader(aptTradeDetailReader())
                 .writer(aptTradeDetailWriter())
                 .allowStartIfComplete(true)
@@ -76,7 +76,7 @@ public class AptTradeDetailBatchJob {
     @Bean
     public Step aptCoordinateStep(JobRepository jobRepository) {
         return new StepBuilder("aptCoordinateStep", jobRepository)
-                .<AptSale, AptSale>chunk(10, transactionManager)
+                .<AptSale, AptSale>chunk(100, transactionManager)
                 .reader(aptCoordinateReader())
 //                .processor(aptCoordinateProcessor())
                 .writer(aptCoordinateWriter())
@@ -106,12 +106,10 @@ public class AptTradeDetailBatchJob {
         return new ItemReader<AptSaleDTO>() {
             private int lawdIndex = 0;
 
-
             @Override
             public AptSaleDTO read() throws JsonProcessingException, URISyntaxException {
                 log.info("aptTradeDetailReader 호출");
                 if (ymdIterator.hasNext()) {
-                    log.info("aptTradeDetailReader 호출2");
                     String ymd = ymdIterator.next();
                     String lawdCode = lawdCodes[lawdIndex];
                     System.out.println("lawdCode = " + lawdCode);
@@ -181,8 +179,10 @@ public class AptTradeDetailBatchJob {
 
                             String address="";
 
+                            log.info("legalsicode: {}",legalSiCode);
                             Region region = Region.fromCode(legalSiCode);
                             String regionName = region.getName();
+                            log.info("regionName: {}",regionName);
 
 
                             address+=regionName+" ";
@@ -273,7 +273,7 @@ public class AptTradeDetailBatchJob {
 
         return items -> {
             log.info("aptCoordinateWriter 호출");
-            aptSaleRepository.saveAll(items);
+//            aptSaleRepository.saveAll(items);
             for (AptSale item : items) {
                 log.info("{}",item);
             }
