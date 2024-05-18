@@ -41,7 +41,12 @@ dependencies {
 
     // ! jdk 17버전에서 XML 파싱을 위해 추가해야 하는 의존성
     implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.0'
-
+    // ! querydsl 버전
+    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+    implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0'
+    annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
+    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 }
 
 tasks.named('test') {

@@ -1,17 +1,21 @@
-<script setup>
-import { KakaoMap, KakaoMapMarker } from 'vue3-kakao-maps';
-const coordinate = {
-  lat: 37.566826,
-  lng: 126.9786567
-};
-
-</script>
-
 <template>
-    <div>
-        카카오 지도 변경오옹오옹
-        <KakaoMap :lat="coordinate.lat" :lng="coordinate.lng" :draggable="true">
-            <KakaoMapMarker :lat="coordinate.lat" :lng="coordinate.lng"></KakaoMapMarker>
+    <div class="flex">
+      <div class="w-2/3">
+        <KakaoMap :lat="lat" :lng="lng">
+          <KakaoMapMarker :lat="lat" :lng="lng"></KakaoMapMarker>
         </KakaoMap>
+      </div>
+      <div class="w-1/3 ml-4">
+        <!-- 아파트 상세 정보 컴포넌트 자리 -->
+      </div>
     </div>
-</template>
+  </template>
+  
+  <script setup>
+  import { KakaoMap, KakaoMapMarker } from 'vue3-kakao-maps';
+  
+  const props = defineProps({
+    lat: Number,
+    lng: Number
+  });
+  </script>

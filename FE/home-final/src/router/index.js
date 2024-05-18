@@ -3,6 +3,7 @@ import MainPage from '@/pages/MainPage.vue';
 import MyPage from '@/pages/MyPage.vue';
 import ApartmentDetails from '@/pages/ApartmentDetails.vue';
 import CommunityPage from '@/pages/CommunityPage.vue';
+import Kakao from '@/components/Kakao.vue';
 
 const routes = [
   {
@@ -21,12 +22,20 @@ const routes = [
     component: ApartmentDetails,
   },
   {
-    path : "/community",
-    name : "communityPage",
+    path: '/community',
+    name: 'communityPage',
     component: CommunityPage,
-  }
+  },
+  {
+    path: '/map',
+    name: 'KakaoMap',
+    component: Kakao,
+    props: route => ({
+      lat: Number(route.params.lat),
+      lng: Number(route.params.lng)
+    })
+  },
 ];
-
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
