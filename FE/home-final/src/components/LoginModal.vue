@@ -6,11 +6,11 @@
         <form @submit.prevent="handleLogin">
           <div class="mb-4">
             <label for="email" class="block mb-2">이메일</label>
-            <input type="email" id="email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <input v-model="email" type="email" id="email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
           </div>
           <div class="mb-4">
             <label for="password" class="block mb-2">비밀번호</label>
-            <input type="password" id="password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <input v-model="password" type="password" id="password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
           </div>
           <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">로그인</button>
         </form>
@@ -21,13 +21,35 @@
     </div>
   </div>
 </template>
-
 <script setup>
+import { ref } from 'vue';
+import axios from 'axios';
+import { useCounterStore } from '@/stores/counter'; // Pinia 스토어 가져오기
+
+const email = ref('');
+const password = ref('');
+const store = useCounterStore(); // Pinia 스토어 사용
+
+
 const emit = defineEmits(['close', 'openSignup']);
 
-const handleLogin = () => {
-  // 로그인 로직
-  emit('close');
+const handleLogin = async () => {
+  try {
+    const response = await axios.post('/api/login', {
+      email: email.value,
+      password: password.value,
+    });
+    if (response.data) {
+    store.login(response.data); // Pinia 스토어의 login 액션 호출
+      console.log(response.data)      
+      emit('close');
+    } else {
+      alert('로그인 실패');
+    }
+  } catch (error) {
+    console.error(error);
+    alert('로그인 실패');
+  }
 };
 
 const openSignup = () => {
@@ -39,7 +61,6 @@ const close = () => {
   emit('close');
 };
 </script>
-
 <style scoped>
 .modal-overlay {
   position: fixed;

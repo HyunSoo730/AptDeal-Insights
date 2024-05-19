@@ -80,7 +80,7 @@
         </form>
         <p class="mt-4">
           이미 회원이신가요?
-          <a href="#" @click.prevent="closeModal" class="text-blue-500 hover:underline">로그인하기</a>
+          <a href="#" @click.prevent="openLogin" class="text-blue-500 hover:underline">로그인하기</a>
         </p>
       </div>
     </div>
@@ -92,7 +92,7 @@ import axios from 'axios';
 
 const handleSignup = async () => {
   try {
-    const response = await axios.post('/join', {
+    const response = await axios.post('/api/join', {
       email: email.value,
       password: password.value,
       name: name.value,
@@ -106,7 +106,7 @@ const handleSignup = async () => {
   }
 };
 
-const emit = defineEmits(['close']);
+const emit = defineEmits(['close','openLogin']);
 
 let email = ref('');
 let password = ref('');
@@ -117,8 +117,9 @@ let role = ref('');
 let passwordMatch = ref(false);
 
 
-const closeModal = () => {
+const openLogin = () => {
   emit('close');
+  emit('openLogin');
 };
 
 const checkPasswordMatch = () => {

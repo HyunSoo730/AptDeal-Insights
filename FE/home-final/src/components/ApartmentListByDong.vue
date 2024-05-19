@@ -37,8 +37,9 @@ export default {
 
     const fetchApartments = async (dongCode) => {
       try {
-        const response = await axios.get(`/apartments?dongcode=${dongCode}`);
+        const response = await axios.get(`/api/apartments?dongcode=${dongCode}`);
         apartments.value = response.data;
+        console.log("동별 아파트 받아오기")
       } catch (error) {
         console.error("Failed to fetch apartments:", error);
       }

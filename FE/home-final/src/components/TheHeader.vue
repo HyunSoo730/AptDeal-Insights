@@ -5,21 +5,29 @@
       <nav>
         <ul class="flex space-x-4">
           <li><router-link to="/" class="text-gray-700 hover:text-black">Home</router-link></li>
-          <li><router-link to="/mypage" class="text-gray-700 hover:text-black">마이페이지</router-link></li>
-          <li><a href="#" @click.prevent="openLoginModal" class="text-gray-700 hover:text-black">로그인</a></li>
+          <li><router-link v-if="isLoggedIn" to="/mypage" class="text-gray-700 hover:text-black">마이페이지</router-link></li>
+          <li><a href="#" v-if="!isLoggedIn" @click.prevent="openLoginModal" class="text-gray-700 hover:text-black">로그인</a></li>
+          <li><a href="#" v-if="isLoggedIn" @click.prevent="logout" class="text-gray-700 hover:text-black">로그아웃</a></li>
         </ul>
       </nav>
     </div>
   </header>
   <div class="modal-backdrop" v-if="showLoginModal || showSignupModal"></div>
   <LoginModal v-if="showLoginModal" @close="closeLoginModal" @openSignup="openSignupModal" />
-  <SignupModal v-if="showSignupModal" @close="closeSignupModal" />
+  <SignupModal v-if="showSignupModal" @close="closeSignupModal" @openLogin="openLoginModal"/>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { useCounterStore } from '@/stores/counter';
+import { ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import LoginModal from '@/components/LoginModal.vue';
 import SignupModal from '@/components/SignupModal.vue';
+
+const store = useCounterStore();
+const router = useRouter();
+
+const isLoggedIn = computed(() => store.isLoggedIn);
 
 const showLoginModal = ref(false);
 const showSignupModal = ref(false);
@@ -39,6 +47,13 @@ const openSignupModal = () => {
 const closeSignupModal = () => {
   showSignupModal.value = false;
 };
+
+
+const logout = () => {
+  store.logout();
+  router.push('/');
+};
+
 </script>
 
 <style scoped>

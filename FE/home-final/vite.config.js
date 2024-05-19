@@ -23,15 +23,12 @@ export default defineConfig({
   //   },
   // },
   server: {
-  proxy: {
-    '/apartments': {
-      target: 'http://localhost:8080',
-      changeOrigin: true,
-      },
-    '/join': {
+    proxy: {
+      '/api': {
         target: 'http://localhost:8080',
         changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
       },
+    },
   },
-},
 });
