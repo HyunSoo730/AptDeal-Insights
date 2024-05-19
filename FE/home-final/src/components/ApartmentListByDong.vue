@@ -15,7 +15,7 @@
           <p>거래 금액: {{ apartment.dealAmount }}</p>
           <p>건축년도: {{ apartment.constructionYear }}</p>
           <p>주소: {{ apartment.roadName }}</p>
-          <p>위도: {{ apartment.latitu }}</p>
+          <p>위도: {{ apartment.latitude }}</p>
           <p>경도: {{ apartment.longitude }}</p>
           
 
