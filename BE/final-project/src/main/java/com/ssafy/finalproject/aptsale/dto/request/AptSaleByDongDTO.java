@@ -17,5 +17,6 @@ public class AptSaleByDongDTO {
     private String roadName;
     private Integer constructionYear;
     private String aptCode;
-    private Long count;
+    private Double latitude;
+    private Double longitude;
 }

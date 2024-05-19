@@ -4,6 +4,7 @@ import MyPage from '@/pages/MyPage.vue';
 import ApartmentDetails from '@/pages/ApartmentDetails.vue';
 import CommunityPage from '@/pages/CommunityPage.vue';
 import ApartmentListByDong from "@/components/ApartmentListByDong.vue"
+import ApartmentMap from '@/components/ApartmentMap.vue';
 
 const routes = [
   {
@@ -30,6 +31,12 @@ const routes = [
     path: "/apartments/:dongCode",
     name: "ApartmentListByDong",
     component: ApartmentListByDong,
+  },
+  {
+    path: '/apartment-map',
+    name: 'ApartmentMap',
+    component: ApartmentMap,
+    props: true,
   },
 ];
 
