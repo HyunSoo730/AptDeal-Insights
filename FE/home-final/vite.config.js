@@ -27,7 +27,11 @@ export default defineConfig({
     '/apartments': {
       target: 'http://localhost:8080',
       changeOrigin: true,
-    },
+      },
+    '/join': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+      },
   },
 },
 });

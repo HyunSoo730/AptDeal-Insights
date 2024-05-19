@@ -88,6 +88,23 @@
 </template>
 <script setup>
 import { ref, watch } from 'vue';
+import axios from 'axios';
+
+const handleSignup = async () => {
+  try {
+    const response = await axios.post('/join', {
+      email: email.value,
+      password: password.value,
+      name: name.value,
+      nickname: nickname.value,
+      role: role.value,
+    });
+    console.log('회원가입 완료:', response.data);
+    emit('close');
+  } catch (error) {
+    console.error('회원가입 실패:', error);
+  }
+};
 
 const emit = defineEmits(['close']);
 
@@ -99,10 +116,6 @@ let nickname = ref('');
 let role = ref('');
 let passwordMatch = ref(false);
 
-const handleSignup = () => {
-  // 회원가입 로직
-  emit('close');
-};
 
 const closeModal = () => {
   emit('close');
