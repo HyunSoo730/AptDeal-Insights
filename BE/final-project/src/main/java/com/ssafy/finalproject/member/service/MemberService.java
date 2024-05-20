@@ -1,12 +1,15 @@
 package com.ssafy.finalproject.member.service;
 
 
+import com.ssafy.finalproject.config.jwt.JwtUtil;
 import com.ssafy.finalproject.member.dto.LoginDTO;
 import com.ssafy.finalproject.member.entity.Member;
 import com.ssafy.finalproject.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +31,20 @@ public class MemberService {
             return member;
         }
         return null;
+    }
+
+
+    public Member updateMember(String email, Member updatedMember) {
+        Member member = memberRepository.findByEmail(email);
+        if (member != null) {
+            // 수정된 정보 업데이트
+            member.setName(updatedMember.getName());
+            member.setNickname(updatedMember.getNickname());
+            member.setUpdatedAt(LocalDateTime.now());
+
+            return memberRepository.save(member);
+        }
+        throw new RuntimeException("Member not found");
     }
 
 

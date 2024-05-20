@@ -8,6 +8,7 @@ import com.ssafy.finalproject.member.service.MemberService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -34,6 +35,18 @@ public class MemberController {
         String email = JwtUtil.getEmail(token);
         log.info("회원정보 불러오기 email:{}",email);
         return memberService.findByEmail(email);
+    }
+
+    @PutMapping("/user")
+    public ResponseEntity<Member> updateUser(@RequestBody Member updatedMember, @RequestHeader("Authorization") String token) {
+        try {
+            String email = JwtUtil.getEmail(token);
+            Member member = memberService.updateMember(email, updatedMember);
+            log.info("선택된 회원: {}",member);
+            return ResponseEntity.ok(member);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
 

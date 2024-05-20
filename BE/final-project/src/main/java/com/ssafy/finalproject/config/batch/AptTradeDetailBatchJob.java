@@ -100,7 +100,7 @@ public class AptTradeDetailBatchJob {
     public ItemReader<AptSaleDTO> aptTradeDetailReader() {
 
         Iterator<String> ymdIterator = generateYMDParameters().iterator();
-        String[] lawdCodes = {};
+        String[] lawdCodes = {"11010","11020"};
         return new ItemReader<AptSaleDTO>() {
             private int lawdIndex = 0;
 

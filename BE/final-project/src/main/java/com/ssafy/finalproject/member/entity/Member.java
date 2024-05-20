@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Data
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,10 +30,10 @@ public class Member {
     private String nickname;
 
     @Column(name = "created_at")
-    private LocalDateTime createdAt=LocalDateTime.now();;
+    private LocalDateTime createdAt=LocalDateTime.now();
 
     @Column(name = "updated_at")
-    private LocalDateTime updatedAt=LocalDateTime.now();;
+    private LocalDateTime updatedAt=LocalDateTime.now();
 
 
 }
