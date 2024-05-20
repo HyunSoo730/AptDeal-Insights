@@ -7,7 +7,7 @@
           :lat="marker.latitude"
           :lng="marker.longitude"
           :clickable="true"
-          @onClickKakaoMapMarker="() => onClickKakaoMapMarker(marker.aptCode)"
+          @onClickKakaoMapMarker="onClickKakaoMapMarker(marker.aptCode)"
         />
       </KakaoMap>
     </div>
@@ -39,6 +39,7 @@ const setMarker = (apartment) => {
   };
   lat.value = apartment.latitude;
   lng.value = apartment.longitude;
+  selectedAptCode.value = apartment.aptCode;
 };
 
 watch(() => route.query, (newQuery) => {

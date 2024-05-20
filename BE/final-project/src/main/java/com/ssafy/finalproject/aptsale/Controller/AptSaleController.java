@@ -3,13 +3,11 @@ package com.ssafy.finalproject.aptsale.Controller;
 
 import com.ssafy.finalproject.aptsale.Service.AptSaleService;
 import com.ssafy.finalproject.aptsale.dto.request.AptNameAddressDTO;
+import com.ssafy.finalproject.aptsale.dto.response.AptSaleDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -28,8 +26,9 @@ public class AptSaleController {
         return new ResponseEntity<>(aptNameAddresses, HttpStatus.OK);
     }
 
-//    @GetMapping("/apartments")
-//    public List<AptSale> getApartmentsByDongCode(@RequestParam("dongcode") String dongcode) {
-//        return aptSaleService.getApartmentsByDongCode(dongcode);
-//    }
+    @GetMapping("/details/{aptCode}")
+    public ResponseEntity<?> getAptSaleDetails(@PathVariable("aptCode") String aptCode) {
+        List<AptSaleDetails> aptSaleDetailsList =  aptSaleService.findAptSaleDetails(aptCode);
+        return new ResponseEntity<>(aptSaleDetailsList, HttpStatus.OK);
+    }
 }
