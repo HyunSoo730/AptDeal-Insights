@@ -46,6 +46,7 @@ const searchResults = ref([]);
 const highlightedIndex = ref(-1);
 const selectedApartment = ref(null);
 const mapStore = useMapStore();
+const selectedAptCode = ref(mapStore.selectedAptCode);
 
 const fetchSearchResults = async () => {
   if (searchInput.value.trim() !== '') {
@@ -67,6 +68,8 @@ const selectApartment = (apartment) => {
   selectedApartment.value = apartment;
   searchResults.value = [];
   highlightedIndex.value = -1;
+  mapStore.setSelectedAptCode(apartment.aptCode);
+  selectedAptCode.value = apartment.aptCode;
 };
 
 const selectHighlighted = () => {
@@ -78,7 +81,14 @@ const selectHighlighted = () => {
 const searchApartment = () => {
   if (selectedApartment.value) {
     mapStore.setCoordinates(selectedApartment.value.latitude, selectedApartment.value.longitude);
-    router.push({ name: 'KakaoMap' });
+    router.push({
+      name: 'KakaoMap',
+      query: {
+        latitude: selectedApartment.value.latitude,
+        longitude: selectedApartment.value.longitude,
+        aptCode: selectedApartment.value.aptCode,
+      },
+    });
   } else {
     console.log('아파트를 선택해주세요.');
   }
