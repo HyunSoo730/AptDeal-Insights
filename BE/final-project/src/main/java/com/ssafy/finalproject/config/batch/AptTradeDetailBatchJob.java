@@ -17,10 +17,7 @@ import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.scope.context.StepSynchronizationManager;
 import org.springframework.batch.core.step.builder.StepBuilder;
-import org.springframework.batch.item.Chunk;
-import org.springframework.batch.item.ItemProcessor;
-import org.springframework.batch.item.ItemReader;
-import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.item.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -42,13 +39,15 @@ import java.util.stream.Stream;
 @Slf4j
 public class AptTradeDetailBatchJob {
 
+    // 지도 뿌리기 테스트용 MemoryRepository임 ㅇㅇ. 프로젝트 진행과 무관
+//    private final MemoryAptSaleRepository memoryAptSaleRepository;
 
     private final AptSaleRepository aptSaleRepository;
 
     private final WebClient webClient;
     private final PlatformTransactionManager transactionManager;
     private static final String SEOUL_BASE_URL = "http://openapi.molit.go.kr/OpenAPI_ToolInstallPackage/service/rest/RTMSOBJSvc/getRTMSDataSvcAptTradeDev";
-    private static final String ENCODED_API_KEY = "i5SnhtREYyEma0ugs1nE0%2FfQ3T9V6tM%2FVtD75d0znUOd4WTmn2srNORGPFxd7j1iTaX8SZiqba5XtrxW%2BBYG9g%3D%3D";
+    private static final String ENCODED_API_KEY = "VYskyTf2Mx18xL%2FEz0C0iT17vpNxlf0OJKnnkJLmnbnpX%2F5LcWneqipwQO1M4QMyCxJC1Df7WUGfh%2FqnCA6Q8A%3D%3D";
     private static final String SEOUL_API_KEY = URLDecoder.decode(ENCODED_API_KEY, StandardCharsets.UTF_8);
 
     @Bean
@@ -66,17 +65,19 @@ public class AptTradeDetailBatchJob {
     public Step aptTradeDetailStep(JobRepository jobRepository) {
         log.info("aptTradeDetailStep 호출");
         return new StepBuilder("aptTradeDetailStep", jobRepository)
-                .<AptSaleDTO, AptSaleDTO>chunk(10, transactionManager)
+                .<AptSaleDTO, AptSaleDTO>chunk(100, transactionManager)
                 .reader(aptTradeDetailReader())
                 .writer(aptTradeDetailWriter())
                 .allowStartIfComplete(true)
                 .build();
     }
 
+
+    // ! XML로 파싱해서 읽어올 부분, WebClient는 OPEN API 호출할 때마다 URL 수정해야함 (mutate)
     @Bean
     public Step aptCoordinateStep(JobRepository jobRepository) {
         return new StepBuilder("aptCoordinateStep", jobRepository)
-                .<AptSale, AptSale>chunk(12, transactionManager)
+                .<AptSale, AptSale>chunk(100, transactionManager)
                 .reader(aptCoordinateReader())
 //                .processor(aptCoordinateProcessor())
                 .writer(aptCoordinateWriter())
@@ -99,20 +100,35 @@ public class AptTradeDetailBatchJob {
     @Bean
     public ItemReader<AptSaleDTO> aptTradeDetailReader() {
 
-        Iterator<String> ymdIterator = generateYMDParameters().iterator();
-        String[] lawdCodes = {"11010","11020"};
+        String[] ymdParams = IntStream.rangeClosed(1, 17)
+                .mapToObj(month -> {
+                    int year = (month <= 12) ? 2023 : 2024;
+                    int adjustedMonth = month % 12;
+                    if (adjustedMonth == 0) {
+                        adjustedMonth = 12;
+                    }
+                    return String.format("%d%02d", year, adjustedMonth);
+                })
+                .toArray(String[]::new);
+
+        String[] lawdCodes = {"11680", "11740", "11305", "11500", "11620", "11215", "11530", "11545", "11350", "11320",
+                "11230", "11590", "11440", "11410", "11650", "11200", "11290", "11710", "11470", "11560",
+                "11170", "11380", "11110", "11140", "11260"};
+
+//        String[] lawdCodes = {"11680", "11740", "11305", "11500"};
+
         return new ItemReader<AptSaleDTO>() {
             private int lawdIndex = 0;
+            private int ymdIndex = 0;
 
             @Override
             public AptSaleDTO read() throws JsonProcessingException, URISyntaxException {
                 log.info("aptTradeDetailReader 호출");
-                if (ymdIterator.hasNext()) {
-                    String ymd = ymdIterator.next();
+                if (lawdIndex < lawdCodes.length) {
                     String lawdCode = lawdCodes[lawdIndex];
-                    System.out.println("lawdCode = " + lawdCode);
-                    System.out.println("ymd = " + ymd);
-                    final String uri = String.format("http://openapi.molit.go.kr/OpenAPI_ToolInstallPackage/service/rest/RTMSOBJSvc/getRTMSDataSvcAptTradeDev?serviceKey=%s&pageNo=1&numOfRows=7&LAWD_CD=%s&DEAL_YMD=%s", ENCODED_API_KEY, lawdCode, ymd);
+                    String ymd = ymdParams[ymdIndex];
+                    log.info("ymd: {}, lawCode: {}", ymd, lawdCode);
+                    final String uri = String.format("http://openapi.molit.go.kr/OpenAPI_ToolInstallPackage/service/rest/RTMSOBJSvc/getRTMSDataSvcAptTradeDev?serviceKey=%s&pageNo=1&numOfRows=10&LAWD_CD=%s&DEAL_YMD=%s", ENCODED_API_KEY, lawdCode, ymd);
                     String response = webClient.get()
                             .uri(new URI(uri))
                             .accept(MediaType.APPLICATION_XML)
@@ -124,9 +140,10 @@ public class AptTradeDetailBatchJob {
                     XmlMapper xmlMapper = new XmlMapper();
                     AptSaleDTO aptSaleDTO = xmlMapper.readValue(response, AptSaleDTO.class);
 
-                    lawdIndex++;
-                    if (lawdIndex >= lawdCodes.length) {
-                        lawdIndex = 0;
+                    ymdIndex++;
+                    if (ymdIndex >= ymdParams.length) {
+                        ymdIndex = 0;
+                        lawdIndex++;
                     }
 
                     return aptSaleDTO;
@@ -145,7 +162,13 @@ public class AptTradeDetailBatchJob {
                 log.info("aptTradeDetailWriter 호출");
                 StepExecution stepExecution = StepSynchronizationManager.getContext().getStepExecution();
                 if (stepExecution != null) {
-                    stepExecution.getJobExecution().getExecutionContext().put("aptSaleDTOList", new ArrayList<>(items.getItems()));
+                    ExecutionContext executionContext = stepExecution.getJobExecution().getExecutionContext();
+                    List<AptSaleDTO> aptSaleDTOList = (List<AptSaleDTO>) executionContext.get("aptSaleDTOList");
+                    if (aptSaleDTOList == null) {
+                        aptSaleDTOList = new ArrayList<>();
+                    }
+                    aptSaleDTOList.addAll(items.getItems());
+                    executionContext.put("aptSaleDTOList", aptSaleDTOList);
                 }
             }
         };
@@ -177,10 +200,10 @@ public class AptTradeDetailBatchJob {
 
                             String address="";
 
-                            log.info("legalsicode: {}",legalSiCode);
+//                            log.info("legalsicode: {}",legalSiCode);
                             Region region = Region.fromCode(legalSiCode);
                             String regionName = region.getName();
-                            log.info("regionName: {}",regionName);
+//                            log.info("regionName: {}",regionName);
 
 
                             address+=regionName+" ";
@@ -271,8 +294,9 @@ public class AptTradeDetailBatchJob {
 
         return items -> {
             log.info("aptCoordinateWriter 호출");
-//            aptSaleRepository.saveAll(items);
+            aptSaleRepository.saveAll(items);
             for (AptSale item : items) {
+//                memoryAptSaleRepository.save(item);
                 log.info("{}",item);
             }
         };
