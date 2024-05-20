@@ -1,7 +1,8 @@
+
 import { createRouter, createWebHistory } from "vue-router";
 import MainPage from "@/pages/MainPage.vue";
 import MyPage from "@/pages/MyPage.vue";
-import ApartmentDetails from "@/pages/ApartmentDetails.vue";
+import ApartmentDetails from "@/components/ApartmentDetails.vue";
 import CommunityPage from "@/pages/CommunityPage.vue";
 import Kakao from "@/components/Kakao.vue";
 import ApartmentListByDong from "@/components/ApartmentListByDong.vue";
