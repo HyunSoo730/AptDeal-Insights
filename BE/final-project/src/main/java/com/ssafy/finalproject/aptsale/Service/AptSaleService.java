@@ -1,6 +1,8 @@
 package com.ssafy.finalproject.aptsale.Service;
 
 
+import com.ssafy.finalproject.aptsale.dto.request.AptSaleByDongDTO;
+import com.ssafy.finalproject.aptsale.entity.AptSale;
 import com.ssafy.finalproject.aptsale.dto.request.AptNameAddressDTO;
 import com.ssafy.finalproject.aptsale.repository.AptSaleRepository;
 import com.ssafy.finalproject.aptsale.repository.AptSaleRepositoryCustom;
@@ -21,9 +23,8 @@ public class AptSaleService {
         return aptSaleRepositoryCustom.findAptNamesByPrefix(prefix, offset, size);
     }
 
+    public List<AptSaleByDongDTO> getApartmentsByDongCode(String dongcode) {
 
-//    public List<AptSale> getApartmentsByDongCode(String dongcode) {
-//
-//        return aptSaleRepository.findByDongCodeGroupByAptCode(dongcode);
-//    }
+        return aptSaleRepository.findByDongcodeGroupByAptCode(dongcode);
+    }
 }

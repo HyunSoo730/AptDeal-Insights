@@ -1,39 +1,52 @@
-import { createRouter, createWebHistory } from 'vue-router';
-import MainPage from '@/pages/MainPage.vue';
-import MyPage from '@/pages/MyPage.vue';
-import ApartmentDetails from '@/pages/ApartmentDetails.vue';
-import CommunityPage from '@/pages/CommunityPage.vue';
-import Kakao from '@/components/Kakao.vue';
+import { createRouter, createWebHistory } from "vue-router";
+import MainPage from "@/pages/MainPage.vue";
+import MyPage from "@/pages/MyPage.vue";
+import ApartmentDetails from "@/pages/ApartmentDetails.vue";
+import CommunityPage from "@/pages/CommunityPage.vue";
+import Kakao from "@/components/Kakao.vue";
+import ApartmentListByDong from "@/components/ApartmentListByDong.vue";
+import ApartmentMap from "@/components/ApartmentMap.vue";
 
 const routes = [
   {
-    path: '/',
-    name: 'MainPage',
+    path: "/",
+    name: "MainPage",
     component: MainPage,
   },
   {
-    path: '/mypage',
-    name: 'MyPage',
+    path: "/mypage",
+    name: "MyPage",
     component: MyPage,
   },
   {
-    path: '/apartment/:id',
-    name: 'ApartmentDetails',
+    path: "/apartment/:id",
+    name: "ApartmentDetails",
     component: ApartmentDetails,
   },
   {
-    path: '/community',
-    name: 'communityPage',
+    path: "/community",
+    name: "communityPage",
     component: CommunityPage,
   },
   {
-    path: '/map',
-    name: 'KakaoMap',
+    path: "/map",
+    name: "KakaoMap",
     component: Kakao,
-    props: route => ({
+    props: (route) => ({
       lat: Number(route.params.lat),
-      lng: Number(route.params.lng)
-    })
+      lng: Number(route.params.lng),
+    }),
+  },
+  {
+    path: "/apartments/:dongCode",
+    name: "ApartmentListByDong",
+    component: ApartmentListByDong,
+  },
+  {
+    path: "/apartment-map",
+    name: "ApartmentMap",
+    component: ApartmentMap,
+    props: true,
   },
 ];
 
