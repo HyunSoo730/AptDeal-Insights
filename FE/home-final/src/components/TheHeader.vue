@@ -1,6 +1,7 @@
 <template>
   <header class="bg-white shadow">
     <div class="container mx-auto py-6 flex justify-between items-center">
+      {{ isLoggedIn }}
       <h1 class="text-3xl font-bold text-gray-800">아파트 거래 정보</h1>
       <nav>
         <ul class="flex space-x-4">
@@ -25,6 +26,7 @@ import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import LoginModal from '@/components/LoginModal.vue';
 import SignupModal from '@/components/SignupModal.vue';
+
 
 const store = useCounterStore();
 const router = useRouter();

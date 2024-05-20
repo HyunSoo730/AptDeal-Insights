@@ -12,8 +12,7 @@
           <p>주소: {{ apartment.roadName }}</p>
           <p>위도: {{ apartment.latitude }}</p>
           <p>경도: {{ apartment.longitude }}</p>
-
-
+          <p>아파트 고유번호: {{ apartment.aptCode }}</p>
           <!-- 추가적인 아파트 정보를 표시할 수 있습니다 -->
         </div>
       </div>

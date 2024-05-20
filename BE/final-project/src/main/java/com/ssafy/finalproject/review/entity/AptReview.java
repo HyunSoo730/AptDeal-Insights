@@ -24,7 +24,7 @@ public class AptReview {
     private Member member;
 
     @Column(name = "apartment_id")
-    private Long apartmentId;
+    private String apartmentId;
 
     @Lob
     private String content;
@@ -32,7 +32,7 @@ public class AptReview {
     private Integer rating;
 
     @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt=LocalDateTime.now();
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
