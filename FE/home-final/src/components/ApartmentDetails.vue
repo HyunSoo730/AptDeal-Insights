@@ -4,11 +4,14 @@
     <div v-if="details.length">
       <div v-for="(detail, index) in displayedDetails" :key="index" class="mb-4">
         <h3 class="text-xl font-semibold">{{ detail.aptName }}</h3>
-        <p>거래 금액: {{ detail.dealAmount }}원</p>
+        <p>거래 날짜: {{ detail.dealYear }}년 {{ detail.dealMonth }}월 {{ detail.dealDay }}일</p>
+        <p>거래 금액: {{ detail.dealAmount }}만원</p>
         <p>건축년도: {{ detail.constructionYear }}</p>
-        <p>주소: {{ detail.roadNameAddress }}</p>
-        <p>위도: {{ detail.latitude }}</p>
-        <p>경도: {{ detail.longitude }}</p>
+        <p>도로명 주소: {{ detail.roadNameAddress }}</p>
+        <p v-if="detail.dong">동: {{ detail.dong }}</p>
+        <p>법정동: {{ detail.legalDong }}</p>
+        <p>거래 면적: {{ detail.exclusiveArea }}㎡</p>
+        <p>층: {{ detail.floor }}층</p>
         <hr class="my-2">
       </div>
       <button
@@ -65,7 +68,6 @@ watch(() => mapStore.selectedAptCode, (newAptCode) => {
   }
 }, { immediate: true });
 </script>
-
 
 <style scoped>
 .bg-white {
