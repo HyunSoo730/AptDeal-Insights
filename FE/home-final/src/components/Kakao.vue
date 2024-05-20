@@ -13,6 +13,7 @@
     </div>
     <div class="w-1/3 ml-4">
       <ApartmentDetails v-if="selectedAptCode" :aptCode="selectedAptCode" />
+      <SubwayStationDetails v-if="marker" :lat="marker.latitude" :lng="marker.longitude" />
     </div>
   </div>
 </template>
@@ -22,6 +23,7 @@ import { ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { KakaoMap, KakaoMapMarker } from 'vue3-kakao-maps';
 import ApartmentDetails from '@/components/ApartmentDetails.vue';
+import SubwayStationDetails from '@/components/SubwayStationDetails.vue'; // SubwayStationDetails 컴포넌트 추가
 import { useMapStore } from '@/stores/mapStore';
 
 const mapStore = useMapStore();
