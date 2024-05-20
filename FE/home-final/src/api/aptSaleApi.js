@@ -19,11 +19,3 @@ export function getAptNamesByPrefix(prefix, page = 1, size = 10) {
 export function getAptSaleDetails(aptCode) {
   return aptSaleApi.get(`/apt-sales/details/${aptCode}`);
 }
-
-export function getAptMarkersByName(name) {
-  return aptSaleApi.get(`/apt-sales/markers`, {
-    params: {
-      name,
-    },
-  });
-}
