@@ -1,6 +1,5 @@
 <template>
   <div class="container">
-    <!-- {{ apartments }} -->
     <div class="map-container">
       <KakaoMap :lat=selectedApartment.latitude :lng=selectedApartment.longitude>
         <KakaoMapMarker v-for="apartment in apartments" :key="apartment.aptCode" :lat=apartment.latitude
@@ -10,7 +9,6 @@
     <div v-if="selectedApartment" class="detail-container">
       <h2>아파트 상세 정보</h2>
       <div>
-        <!-- {{ selectedApartment }} -->
         <h3>아파트 이름: {{ selectedApartment.aptName }}</h3>
         <p>거래 금액: {{ selectedApartment.dealAmount }}</p>
         <p>건축년도: {{ selectedApartment.constructionYear }}</p>

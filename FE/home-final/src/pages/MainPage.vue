@@ -82,10 +82,10 @@ const searchApartments = () => {
       <div class="lg:col-span-2">
         <div class="bg-white shadow-md rounded-lg p-6 mb-8">
           <h2 class="text-2xl font-bold mb-6 text-gray-800">아파트 검색</h2>
-          <div class="mb-4">
+          <!-- <div class="mb-4">
             <input type="text" placeholder="아파트, 지역 등을 입력하세요"
               class="w-full p-3 rounded-t border border-gray-400 focus:outline-none focus:border-blue-500 text-lg" />
-          </div>
+          </div> -->
           <div class="mb-4">
             <select v-model="selectedCity" @change="handleCityChange"
               class="w-full p-3 rounded-t border border-gray-400 focus:outline-none focus:border-blue-500 text-lg">
@@ -130,7 +130,7 @@ const searchApartments = () => {
             <li v-for="notice in notices" :key="notice.id" class="border-b border-gray-200 py-2">
               <a :href="notice.url" class="text-blue-500 hover:underline">{{
                 notice.title
-                }}</a>
+              }}</a>
               <span class="text-gray-500 text-sm ml-2">{{ notice.date }}</span>
             </li>
           </ul>
@@ -142,7 +142,7 @@ const searchApartments = () => {
             <li v-for="post in communityPosts" :key="post.id" class="border-b border-gray-200 py-2">
               <a :href="post.url" class="text-blue-500 hover:underline">{{
                 post.title
-                }}</a>
+              }}</a>
               <span class="text-gray-500 text-sm ml-2">{{ post.author }}</span>
             </li>
           </ul>
