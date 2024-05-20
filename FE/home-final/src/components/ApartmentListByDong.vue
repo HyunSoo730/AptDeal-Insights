@@ -7,7 +7,6 @@
         <div class="card-content">
           <!-- 아파트 정보를 표시하는 내용을 추가하세요 -->
           <h3>{{ apartment.aptName }}</h3>
-          <p>거래 금액: {{ apartment.dealAmount }}</p>
           <p>건축년도: {{ apartment.constructionYear }}</p>
           <p>주소: {{ apartment.roadName }}</p>
           <p>위도: {{ apartment.latitude }}</p>

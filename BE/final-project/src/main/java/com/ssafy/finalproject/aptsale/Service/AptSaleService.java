@@ -28,6 +28,7 @@ public class AptSaleService {
 
     public List<AptSaleDetails> findAptSaleDetails(String aptCode) {
         List<AptSale> aptSales = aptSaleRepository.findAptSaleByAptCodeOrderByDealYearDescDealMonthDescDealDayDesc(aptCode);
+
         return aptSales.stream()
                 .map(AptSaleDetails::fromEntity)
                 .collect(Collectors.toList());
@@ -35,6 +36,10 @@ public class AptSaleService {
 
     public List<AptSaleByDongDTO> getApartmentsByDongCode(String dongcode) {
 
-        return aptSaleRepository.findByDongcodeGroupByAptCode(dongcode);
+        List<AptSaleByDongDTO> byDongcodeGroupByAptCode = aptSaleRepository.findByDongcodeGroupByAptCode(dongcode);
+        for (AptSaleByDongDTO aptSaleByDongDTO : byDongcodeGroupByAptCode) {
+            System.out.println("aptSaleByDongDTO = " + aptSaleByDongDTO);
+        }
+        return byDongcodeGroupByAptCode;
     }
 }
