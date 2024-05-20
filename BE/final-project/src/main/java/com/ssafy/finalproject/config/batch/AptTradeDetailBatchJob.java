@@ -47,7 +47,7 @@ public class AptTradeDetailBatchJob {
     private final WebClient webClient;
     private final PlatformTransactionManager transactionManager;
     private static final String SEOUL_BASE_URL = "http://openapi.molit.go.kr/OpenAPI_ToolInstallPackage/service/rest/RTMSOBJSvc/getRTMSDataSvcAptTradeDev";
-    private static final String ENCODED_API_KEY = "VYskyTf2Mx18xL%2FEz0C0iT17vpNxlf0OJKnnkJLmnbnpX%2F5LcWneqipwQO1M4QMyCxJC1Df7WUGfh%2FqnCA6Q8A%3D%3D";
+    private static final String ENCODED_API_KEY = "iKsPFx8Qh%2F4qz8Ys3N2Q5pNtBD5Qcjg6UdYhj1zQ%2BVMy49hTMhJ65auzfFDdpx11fX4ABr0glasN9QP%2B3QmKeQ%3D%3D";
     private static final String SEOUL_API_KEY = URLDecoder.decode(ENCODED_API_KEY, StandardCharsets.UTF_8);
 
     @Bean
@@ -115,7 +115,6 @@ public class AptTradeDetailBatchJob {
                 "11230", "11590", "11440", "11410", "11650", "11200", "11290", "11710", "11470", "11560",
                 "11170", "11380", "11110", "11140", "11260"};
 
-//        String[] lawdCodes = {"11680", "11740", "11305", "11500"};
 
         return new ItemReader<AptSaleDTO>() {
             private int lawdIndex = 0;
@@ -234,8 +233,14 @@ public class AptTradeDetailBatchJob {
                             String y = rootNode.path("result").path("point").path("y").asText();
                             String detail = rootNode.path("refined").path("structure").path("detail").asText();
 
+                            log.info("{} {} {} {} {},{},{}",text,x,y,detail,myItem.getYear(),myItem.getMonth(),myItem.getDay());
 //                            System.out.println(text+" "+x+" "+" "+y+" "+detail);
 //                            System.out.println("myItem = " + myItem);
+
+                            if (x.isEmpty() || y.isEmpty()) {
+                                log.warn("좌표 정보가 없어 건너뜁니다. 주소: {}", address);
+                                continue; // 현재 반복을 건너뛰고 다음 반복으로 이동
+                            }
 
                             AptSale aptSale = AptSale.builder()
                                     .aptName(myItem.getApartment())

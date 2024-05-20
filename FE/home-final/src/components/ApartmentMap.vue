@@ -1,17 +1,10 @@
 <template>
-    
   <div class="container">
     <!-- {{ apartments }} -->
     <div class="map-container">
-      <KakaoMap :lat=selectedApartment.latitude :lng=selectedApartment.longitude >
-        <KakaoMapMarker
-          v-for="apartment in apartments"
-          :key="apartment.aptCode"
-          :lat=apartment.latitude
-          :lng=apartment.longitude
-          :clickable="true"
-          @onClickKakaoMapMarker="showApartmentDetail(apartment)"
-        />
+      <KakaoMap :lat=selectedApartment.latitude :lng=selectedApartment.longitude>
+        <KakaoMapMarker v-for="apartment in apartments" :key="apartment.aptCode" :lat=apartment.latitude
+          :lng=apartment.longitude :clickable="true" @onClickKakaoMapMarker="showApartmentDetail(apartment)" />
       </KakaoMap>
     </div>
     <div v-if="selectedApartment" class="detail-container">
@@ -45,8 +38,8 @@ const mapCenter = computed(() => ({
 }));
 
 const showApartmentDetail = (apartment) => {
-    console.log("클릭됨!")
-    selectedApartment.value = apartment;
+  console.log("클릭됨!")
+  selectedApartment.value = apartment;
 };
 </script>
 
