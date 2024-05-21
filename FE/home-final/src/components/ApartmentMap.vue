@@ -1,5 +1,4 @@
 <template>
-
   <div class="container">
     <div class="map-container">
       <KakaoMap :lat="mapCenter.lat" :lng="mapCenter.lng" width="70rem" height="50rem">
@@ -54,9 +53,8 @@ import { getAptSaleDetails } from '@/api/aptSaleApi';
 const reviews = ref([]);
 const route = useRoute();
 const router = useRouter();
-const apartments = ref(JSON.parse(route.params.apartments || '[]'));
-const initialApartment = ref(JSON.parse(route.params.initialApartment || 'null'));
-const selectedApartment = ref(initialApartment.value || {});
+const apartments = ref([]);
+const selectedApartment = ref(null);
 const reviewFormOpen = ref(false);
 const user = ref(null);
 const isLoggedIn = ref(false);
@@ -74,7 +72,6 @@ const fetchReviews = async (apartmentCode) => {
 };
 
 const fetchApartmentDetails = async () => {
-  console.log()
   if (selectedApartment.value && selectedApartment.value.aptCode) {
     try {
       const response = await getAptSaleDetails(selectedApartment.value.aptCode);
@@ -85,16 +82,9 @@ const fetchApartmentDetails = async () => {
   }
 };
 
-const saveToLocalStorage = () => {
-  localStorage.setItem('apartments', JSON.stringify(apartments.value));
-  localStorage.setItem('initialApartment', JSON.stringify(initialApartment.value));
-  localStorage.setItem('selectedApartment', JSON.stringify(selectedApartment.value));
-};
-
 onMounted(async () => {
   const token = localStorage.getItem('token');
   if (token) {
-    console.log("로그인 됨 ㅇㅇ")
     try {
       const response = await axios.get('/api/user', {
         headers: { Authorization: `${token}` },
@@ -109,14 +99,17 @@ onMounted(async () => {
     router.push('/login');
   }
 
-  if (selectedApartment.value && selectedApartment.value.aptCode) {
-    console.log(selectedApartment.value.aptCode)
+  const apartmentCode = route.params.apartment;
+  const savedApartment = localStorage.getItem('selectedApartment');
+
+  if (savedApartment) {
+    selectedApartment.value = JSON.parse(savedApartment);
     fetchReviews(selectedApartment.value.aptCode);
     fetchApartmentDetails();
+  } else if (apartmentCode) {
+    // 서버에서 아파트 정보를 가져오는 코드 추가
   }
 });
-
-watch([apartments, initialApartment, selectedApartment], saveToLocalStorage, { deep: true });
 
 const mapCenter = computed(() => ({
   lat: selectedApartment.value?.latitude || 37.5665,
@@ -127,6 +120,7 @@ const showApartmentDetail = (apartment) => {
   selectedApartment.value = apartment;
   fetchReviews(apartment.aptCode);
   fetchApartmentDetails();
+  localStorage.setItem('selectedApartment', JSON.stringify(apartment));
 };
 
 const openReviewForm = (apartment) => {

@@ -23,12 +23,11 @@ const groupByAptCode = (apartments) => {
 
 const navigateToAptDetail = (aptCode) => {
     const selectedApartment = likedApts.value.find(apt => apt.aptCode === aptCode);
+    localStorage.setItem('selectedApartment', JSON.stringify(selectedApartment));
+    localStorage.setItem('apartments', JSON.stringify(groupedApts.value[aptCode]));
     router.push({
         name: 'ApartmentMap',
-        params: {
-            apartments: JSON.stringify(groupedApts.value[aptCode]),
-            initialApartment: JSON.stringify(selectedApartment),
-        },
+        params: { aptCode },
     });
 };
 
