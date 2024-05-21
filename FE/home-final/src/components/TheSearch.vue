@@ -36,7 +36,6 @@ const searchResults = ref([]);
 const highlightedIndex = ref(-1);
 const selectedApartment = ref(null);
 const mapStore = useMapStore();
-const selectedAptCode = ref(mapStore.selectedAptCode);
 
 const fetchSearchResults = async () => {
   if (searchInput.value.trim() !== '') {
@@ -70,6 +69,7 @@ const searchApartment = () => {
   if (selectedApartment.value) {
     mapStore.setCoordinates(selectedApartment.value.latitude, selectedApartment.value.longitude);
     mapStore.setSelectedAptCode(selectedApartment.value.aptCode);
+    mapStore.setDongcode(selectedApartment.value.dongcode); // dongcode 설정
     router.push({
       name: 'KakaoMap',
       query: {

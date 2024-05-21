@@ -1,7 +1,7 @@
 <template>
     <div>
       <h2 class="text-2xl font-bold mb-4">아파트 거래 정보</h2>
-      <select v-model="selectedYears" @change="fetchTransactions">
+      <select v-model="selectedYears" @change="fetchTransactions" class="mb-4 p-2 border rounded">
         <option v-for="year in availableYears" :key="year" :value="year">{{ year }}년</option>
       </select>
       <Line :data="chartData" :options="chartOptions" />
@@ -14,7 +14,6 @@
   import { Line } from 'vue-chartjs';
   import { Chart as ChartJS, Title, Tooltip, Legend, LineElement, PointElement, LinearScale, CategoryScale } from 'chart.js';
   
-  // Register the components globally
   ChartJS.register(Title, Tooltip, Legend, LineElement, PointElement, LinearScale, CategoryScale);
   
   const props = defineProps({
@@ -28,8 +27,8 @@
     }
   });
   
-  const availableYears = ref([1, 2, 3, 4, 5]); // 사용할 수 있는 년도 옵션
-  const selectedYears = ref(3); // 기본적으로 3년 선택
+  const availableYears = ref([1, 2, 3, 4, 5]);
+  const selectedYears = ref(3);
   
   const chartData = ref({
     labels: [],
@@ -73,18 +72,41 @@
       const aptTransactions = aptResponse.data;
       const dongTransactions = dongResponse.data;
   
-      chartData.value.labels = aptTransactions.map(t => t.transactionDate);
-      chartData.value.datasets[0].data = aptTransactions.map(t => t.transactionAmount);
-      chartData.value.datasets[1].data = dongTransactions.map(t => t.transactionAmount);
-  
+      // 데이터가 올바르게 업데이트되는지 확인하는 로그 추가
       console.log('Apt Transactions:', aptTransactions);
       console.log('Dong Transactions:', dongTransactions);
+  
+      // 데이터 업데이트
+      chartData.value = {
+        labels: aptTransactions.map(t => t.transactionDate),
+        datasets: [
+          {
+            label: '아파트 거래 금액 (만원)',
+            data: aptTransactions.map(t => t.transactionAmount),
+            borderColor: 'rgba(75, 192, 192, 1)',
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          },
+          {
+            label: '구 거래 금액 (만원)',
+            data: dongTransactions.map(t => t.transactionAmount),
+            borderColor: 'rgba(255, 99, 132, 1)',
+            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+          }
+        ]
+      };
+  
+      // 업데이트된 chartData 확인 로그
+      console.log('Updated chartData:', JSON.parse(JSON.stringify(chartData.value)));
     } catch (error) {
       console.error('Failed to fetch transactions:', error);
     }
   };
   
   onMounted(fetchTransactions);
-  watch(selectedYears, fetchTransactions); // 년도가 변경될 때마다 데이터를 다시 불러옴
+  watch(selectedYears, fetchTransactions);
   </script>
+  
+  <style scoped>
+  /* 스타일을 여기 추가할 수 있습니다 */
+  </style>
   
