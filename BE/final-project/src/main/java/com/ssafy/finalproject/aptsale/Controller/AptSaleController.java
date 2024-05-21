@@ -45,4 +45,12 @@ public class AptSaleController {
         List<AptSaleDetails> aptSaleDetailsList =  aptSaleService.findAptSaleDetails(aptCode);
         return new ResponseEntity<>(aptSaleDetailsList, HttpStatus.OK);
     }
+
+
+    @PostMapping("/registerSale")
+    public void registerSale(@RequestBody AptSale aptSale){
+        aptSaleService.registerSale(aptSale);
+    }
+
+
 }

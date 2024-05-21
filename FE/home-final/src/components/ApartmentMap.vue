@@ -1,4 +1,5 @@
 <template>
+
   <div class="container">
     <div class="map-container">
       <KakaoMap :lat="mapCenter.lat" :lng="mapCenter.lng" width="70rem" height="50rem">
@@ -93,6 +94,7 @@ const saveToLocalStorage = () => {
 onMounted(async () => {
   const token = localStorage.getItem('token');
   if (token) {
+    console.log("로그인 됨 ㅇㅇ")
     try {
       const response = await axios.get('/api/user', {
         headers: { Authorization: `${token}` },

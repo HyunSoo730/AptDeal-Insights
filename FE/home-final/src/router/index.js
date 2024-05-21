@@ -7,6 +7,8 @@ import Kakao from "@/components/Kakao.vue";
 import ApartmentListByDong from "@/components/ApartmentListByDong.vue";
 import ApartmentMap from "@/components/ApartmentMap.vue";
 import Wishlist from "@/pages/Wishlist.vue";
+import RegisterSale from "@/components/RegisterSale.vue";
+
 const routes = [
   {
     path: "/",
@@ -48,6 +50,7 @@ const routes = [
     name: "Wishlist",
     component: Wishlist,
   },
+  { path: "/registerSale", name: "RegisterSale", component: RegisterSale, props: true },
 ];
 
 const router = createRouter({

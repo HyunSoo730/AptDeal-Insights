@@ -42,4 +42,17 @@ public class AptSaleService {
         }
         return byDongcodeGroupByAptCode;
     }
+
+
+    public void registerSale(AptSale aptSale){
+        AptSale realOne=aptSaleRepository.findAptSaleByAptCodeOrderByDealYearDescDealMonthDescDealDayDesc(aptSale.getAptCode()).get(0);
+        aptSale.setConstructionYear(realOne.getConstructionYear());
+        aptSale.setRoadName(realOne.getRoadName());
+        aptSale.setRoadNameBonbun(realOne.getRoadNameBonbun());
+        aptSale.setDong(realOne.getDong());
+        aptSale.setLegalDong(realOne.getLegalDong());
+        aptSale.setFloor(realOne.getFloor());
+        aptSale.setSidoName(realOne.getSidoName());
+        aptSaleRepository.save(aptSale);
+    }
 }

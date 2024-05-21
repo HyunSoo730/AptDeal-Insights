@@ -38,7 +38,7 @@ onMounted(async () => {
         try {
             const response = await axios.get('/api/api/likes', {
                 params: { memberId: memberId.value },
-                headers: { Authorization: `Bearer ${token}` },
+                headers: { Authorization: `${token}` },
             });
             likedApts.value = response.data;
             groupedApts.value = groupByAptCode(likedApts.value);
