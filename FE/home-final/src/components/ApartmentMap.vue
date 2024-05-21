@@ -1,49 +1,5 @@
-<template>
-  <div class="container">
-    <div class="map-container">
-      <KakaoMap :lat="mapCenter.lat" :lng="mapCenter.lng" width="70rem" height="50rem">
-        <KakaoMapMarker v-for="apartment in apartments" :key="apartment.aptCode" :lat="apartment.latitude"
-          :lng="apartment.longitude" :clickable="true" @onClickKakaoMapMarker="showApartmentDetail(apartment)" />
-      </KakaoMap>
-    </div>
-    <div v-if="selectedApartment" class="detail-container">
-      <h2>아파트 상세 정보</h2>
-      <div class="apartment-details">
-        <h3>아파트 이름: {{ selectedApartment.aptName }}</h3>
-        <div v-if="apartmentDetails" class="info-cards">
-          <div v-for="detail in apartmentDetails" :key="detail.aptCode" class="info-card">
-            <h4>거래 금액</h4>
-            <p>{{ detail.dealAmount }}원</p>
-            <h4>거래 날짜</h4>
-            <p>{{ detail.dealYear }}년 {{ detail.dealMonth }}월 {{ detail.dealDay }}일</p>
-            <h4>전용 면적</h4>
-            <p>{{ detail.exclusiveArea }}m²</p>
-            <h4>층</h4>
-            <p>{{ detail.floor }}층</p>
-          </div>
-        </div>
-        <div class="button-container">
-          <button class="like-button" @click="likeApartment(selectedApartment)">찜하기</button>
-          <button class="review-button" @click="openReviewForm(selectedApartment)">리뷰 남기기</button>
-        </div>
-        <ReviewForm v-if="reviewFormOpen" :apartment="selectedApartment" :user="user"
-          @review-submitted="handleReviewSubmitted" />
-        <h3>리뷰</h3>
-        <div v-if="reviews.length > 0" class="reviews">
-          <div v-for="review in reviews" :key="review.id" class="review-card">
-            <p><strong>작성자:</strong> {{ review.member.nickname }}</p>
-            <p><strong>내용:</strong> {{ review.content }}</p>
-            <p><strong>평점:</strong> {{ review.rating }}</p>
-          </div>
-        </div>
-        <p v-else>리뷰가 없습니다.</p>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { KakaoMap, KakaoMapMarker } from 'vue3-kakao-maps';
 import { useRoute, useRouter } from 'vue-router';
 import ReviewForm from '@/components/ReviewForm.vue';
@@ -99,11 +55,13 @@ onMounted(async () => {
     router.push('/login');
   }
 
-  const apartmentCode = route.params.apartment;
-  const savedApartment = localStorage.getItem('selectedApartment');
+  const apartmentCode = route.params.aptCode;
+  const savedApartments = localStorage.getItem('apartments');
+  const savedSelectedApartment = localStorage.getItem('selectedApartment');
 
-  if (savedApartment) {
-    selectedApartment.value = JSON.parse(savedApartment);
+  if (savedApartments && savedSelectedApartment) {
+    apartments.value = JSON.parse(savedApartments);
+    selectedApartment.value = JSON.parse(savedSelectedApartment);
     fetchReviews(selectedApartment.value.aptCode);
     fetchApartmentDetails();
   } else if (apartmentCode) {
@@ -121,6 +79,7 @@ const showApartmentDetail = (apartment) => {
   fetchReviews(apartment.aptCode);
   fetchApartmentDetails();
   localStorage.setItem('selectedApartment', JSON.stringify(apartment));
+  localStorage.setItem('apartments', JSON.stringify(apartments.value));
 };
 
 const openReviewForm = (apartment) => {
@@ -152,6 +111,50 @@ const likeApartment = async (apartment) => {
   }
 };
 </script>
+
+<template>
+  <div class="container">
+    <div class="map-container">
+      <KakaoMap :lat="mapCenter.lat" :lng="mapCenter.lng" width="70rem" height="50rem">
+        <KakaoMapMarker v-for="apartment in apartments" :key="apartment.aptCode" :lat="apartment.latitude"
+          :lng="apartment.longitude" :clickable="true" @onClickKakaoMapMarker="showApartmentDetail(apartment)" />
+      </KakaoMap>
+    </div>
+    <div v-if="selectedApartment" class="detail-container">
+      <h2>아파트 상세 정보</h2>
+      <div class="apartment-details">
+        <h3>아파트 이름: {{ selectedApartment.aptName }}</h3>
+        <div v-if="apartmentDetails" class="info-cards">
+          <div v-for="detail in apartmentDetails" :key="detail.aptCode" class="info-card">
+            <h4>거래 금액</h4>
+            <p>{{ detail.dealAmount }}원</p>
+            <h4>거래 날짜</h4>
+            <p>{{ detail.dealYear }}년 {{ detail.dealMonth }}월 {{ detail.dealDay }}일</p>
+            <h4>전용 면적</h4>
+            <p>{{ detail.exclusiveArea }}m²</p>
+            <h4>층</h4>
+            <p>{{ detail.floor }}층</p>
+          </div>
+        </div>
+        <div class="button-container">
+          <button class="like-button" @click="likeApartment(selectedApartment)">찜하기</button>
+          <button class="review-button" @click="openReviewForm(selectedApartment)">리뷰 남기기</button>
+        </div>
+        <ReviewForm v-if="reviewFormOpen" :apartment="selectedApartment" :user="user"
+          @review-submitted="handleReviewSubmitted" />
+        <h3>리뷰</h3>
+        <div v-if="reviews.length > 0" class="reviews">
+          <div v-for="review in reviews" :key="review.id" class="review-card">
+            <p><strong>작성자:</strong> {{ review.member.nickname }}</p>
+            <p><strong>내용:</strong> {{ review.content }}</p>
+            <p><strong>평점:</strong> {{ review.rating }}</p>
+          </div>
+        </div>
+        <p v-else>리뷰가 없습니다.</p>
+      </div>
+    </div>
+  </div>
+</template>
 
 <style scoped>
 .info-cards {

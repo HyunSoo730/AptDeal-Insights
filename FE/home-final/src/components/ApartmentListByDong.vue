@@ -32,6 +32,7 @@ export default {
       try {
         const response = await sample(dongCode);
         apartments.value = response.data;
+        localStorage.setItem('apartments', JSON.stringify(apartments.value));
       } catch (error) {
         console.error("Failed to fetch apartments:", error);
       }
@@ -59,10 +60,6 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-/* 스타일 내용 생략 */
-</style>
 
 <style scoped>
 .card-container {
