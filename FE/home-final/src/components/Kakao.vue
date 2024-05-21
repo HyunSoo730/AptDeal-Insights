@@ -1,15 +1,17 @@
 <template>
-  <div class="flex">
-    <div class="w-2/3 kakao-map">
-      <KakaoMap :lat="lat" :lng="lng">
+  <div class="flex h-screen">
+    <div class="w-2/3 h-full">
+      <KakaoMap :lat="lat" :lng="lng" class="h-full">
         <KakaoMapMarker v-if="marker" :lat="marker.latitude" :lng="marker.longitude" :clickable="true" @onClickKakaoMapMarker="onClickKakaoMapMarker(marker.aptCode)" />
       </KakaoMap>
     </div>
-    <div class="w-1/3 ml-4">
-      <AptTransactionChart v-if="selectedAptCode && dongcode" :aptCode="selectedAptCode" :dongcode="dongcode" />
-      <ApartmentDetails v-if="selectedAptCode" :aptCode="selectedAptCode" />
-      <SubwayStationDetails v-if="lat && lng" :lat="lat" :lng="lng" />
-      <AptSchoolInfo v-if="selectedAptCode" :aptCode="selectedAptCode" :aptName="aptName" />
+    <div class="w-1/3 ml-4 overflow-y-auto h-full">
+      <div class="p-4">
+        <AptTransactionChart v-if="selectedAptCode && dongcode" :aptCode="selectedAptCode" :dongcode="dongcode" />
+        <ApartmentDetails v-if="selectedAptCode" :aptCode="selectedAptCode" />
+        <SubwayStationDetails v-if="lat && lng" :lat="lat" :lng="lng" />
+        <AptSchoolInfo v-if="selectedAptCode" :aptCode="selectedAptCode" :aptName="aptName" />
+      </div>
     </div>
   </div>
 </template>
@@ -78,5 +80,26 @@ const onClickKakaoMapMarker = (aptCode) => {
   width: 100%;
   height: 100%;
   min-height: 400px;
+}
+</style>
+
+<style scoped>
+.flex {
+  display: flex;
+}
+.h-screen {
+  height: 100vh;
+}
+.overflow-y-auto {
+  overflow-y: auto;
+}
+.h-full {
+  height: 100%;
+}
+.ml-4 {
+  margin-left: 1rem;
+}
+.p-4 {
+  padding: 1rem;
 }
 </style>
