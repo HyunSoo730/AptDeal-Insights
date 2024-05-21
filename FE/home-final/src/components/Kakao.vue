@@ -2,14 +2,13 @@
   <div class="flex">
     <div class="w-2/3 kakao-map">
       <KakaoMap :lat="lat" :lng="lng">
-        <KakaoMapMarker v-if="marker" :lat="marker.latitude" :lng="marker.longitude" :clickable="true"
-          @onClickKakaoMapMarker="onClickKakaoMapMarker(marker.aptCode)" />
+        <KakaoMapMarker v-if="marker" :lat="marker.latitude" :lng="marker.longitude" :clickable="true" @onClickKakaoMapMarker="onClickKakaoMapMarker(marker.aptCode)" />
       </KakaoMap>
     </div>
     <div class="w-1/3 ml-4">
       <AptTransactionChart v-if="selectedAptCode && dongcode" :aptCode="selectedAptCode" :dongcode="dongcode" />
       <ApartmentDetails v-if="selectedAptCode" :aptCode="selectedAptCode" />
-      <SubwayStationDetails v-if="marker" :lat="marker.latitude" :lng="marker.longitude" />
+      <SubwayStationDetails v-if="lat && lng" :lat="lat" :lng="lng" />
       <AptSchoolInfo v-if="selectedAptCode" :aptCode="selectedAptCode" :aptName="aptName" />
     </div>
   </div>
@@ -56,12 +55,16 @@ const setMarker = (apartment) => {
   }
 };
 
-watch(() => route.query, (newQuery) => {
-  console.log('Route query:', newQuery);
-  if (newQuery.latitude && newQuery.longitude && newQuery.aptCode) {
-    setMarker(newQuery);
-  }
-}, { immediate: true });
+watch(
+  () => route.query,
+  (newQuery) => {
+    console.log('Route query:', newQuery);
+    if (newQuery.latitude && newQuery.longitude && newQuery.aptCode) {
+      setMarker(newQuery);
+    }
+  },
+  { immediate: true }
+);
 
 const onClickKakaoMapMarker = (aptCode) => {
   console.log('Kakao map marker clicked:', aptCode);
