@@ -58,8 +58,6 @@ const selectApartment = (apartment) => {
   selectedApartment.value = apartment;
   searchResults.value = [];
   highlightedIndex.value = -1;
-  mapStore.setSelectedAptCode(apartment.aptCode);
-  selectedAptCode.value = apartment.aptCode;
 };
 
 const selectHighlighted = () => {
@@ -71,12 +69,15 @@ const selectHighlighted = () => {
 const searchApartment = () => {
   if (selectedApartment.value) {
     mapStore.setCoordinates(selectedApartment.value.latitude, selectedApartment.value.longitude);
+    mapStore.setSelectedAptCode(selectedApartment.value.aptCode);
     router.push({
       name: 'KakaoMap',
       query: {
         latitude: selectedApartment.value.latitude,
         longitude: selectedApartment.value.longitude,
         aptCode: selectedApartment.value.aptCode,
+        aptName: selectedApartment.value.aptName,
+        dongcode: selectedApartment.value.dongcode // dongcode 추가
       },
     });
   } else {

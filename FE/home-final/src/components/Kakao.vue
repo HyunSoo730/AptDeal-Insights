@@ -7,8 +7,10 @@
       </KakaoMap>
     </div>
     <div class="w-1/3 ml-4">
+      <AptTransactionChart v-if="selectedAptCode && dongcode" :aptCode="selectedAptCode" :dongcode="dongcode" />
       <ApartmentDetails v-if="selectedAptCode" :aptCode="selectedAptCode" />
       <SubwayStationDetails v-if="marker" :lat="marker.latitude" :lng="marker.longitude" />
+      <AptSchoolInfo v-if="selectedAptCode" :aptCode="selectedAptCode" :aptName="aptName" />
     </div>
   </div>
 </template>
@@ -18,17 +20,22 @@ import { ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { KakaoMap, KakaoMapMarker } from 'vue3-kakao-maps';
 import ApartmentDetails from '@/components/ApartmentDetails.vue';
-import SubwayStationDetails from '@/components/SubwayStationDetails.vue'; // SubwayStationDetails 컴포넌트 추가
+import SubwayStationDetails from '@/components/SubwayStationDetails.vue';
+import AptSchoolInfo from '@/components/AptSchoolInfo.vue';
+import AptTransactionChart from '@/components/AptTransactionChart.vue';
 import { useMapStore } from '@/stores/mapStore';
 
 const mapStore = useMapStore();
 const route = useRoute();
-const lat = ref(mapStore.lat);
-const lng = ref(mapStore.lng);
-const marker = ref(null); // 마커 하나만 관리합니다.
+const lat = ref(null);
+const lng = ref(null);
+const marker = ref(null);
 const selectedAptCode = ref(null);
+const aptName = ref('');
+const dongcode = ref('');
 
 const setMarker = (apartment) => {
+  console.log('Setting marker:', apartment);
   marker.value = {
     latitude: apartment.latitude,
     longitude: apartment.longitude,
@@ -37,15 +44,24 @@ const setMarker = (apartment) => {
   lat.value = apartment.latitude;
   lng.value = apartment.longitude;
   selectedAptCode.value = apartment.aptCode;
+  aptName.value = apartment.aptName;
+  if (apartment.dongcode) {
+    dongcode.value = apartment.dongcode.substring(0, 5); // dongcode의 앞 5자리 사용
+    console.log('Dongcode set to:', dongcode.value);
+  } else {
+    dongcode.value = '';
+  }
 };
 
 watch(() => route.query, (newQuery) => {
+  console.log('Route query changed:', newQuery);
   if (newQuery.latitude && newQuery.longitude && newQuery.aptCode) {
     setMarker(newQuery);
   }
 }, { immediate: true });
 
 const onClickKakaoMapMarker = (aptCode) => {
+  console.log('Kakao map marker clicked:', aptCode);
   mapStore.setSelectedAptCode(aptCode);
   selectedAptCode.value = aptCode;
 };
