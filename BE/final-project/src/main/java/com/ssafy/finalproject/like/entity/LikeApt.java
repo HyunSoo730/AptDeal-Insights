@@ -25,5 +25,5 @@ public class LikeApt {
     @Column(name = "apt_code")
     private String aptCode;
 
-    // Getters and Setters
+
 }

@@ -2,13 +2,8 @@
   <div class="flex">
     <div class="w-2/3 kakao-map">
       <KakaoMap :lat="lat" :lng="lng">
-        <KakaoMapMarker
-          v-if="marker"
-          :lat="marker.latitude"
-          :lng="marker.longitude"
-          :clickable="true"
-          @onClickKakaoMapMarker="onClickKakaoMapMarker(marker.aptCode)"
-        />
+        <KakaoMapMarker v-if="marker" :lat="marker.latitude" :lng="marker.longitude" :clickable="true"
+          @onClickKakaoMapMarker="onClickKakaoMapMarker(marker.aptCode)" />
       </KakaoMap>
     </div>
     <div class="w-1/3 ml-4">
