@@ -12,9 +12,10 @@
           <ul v-if="searchResults.length > 0"
             class="absolute top-full left-0 right-0 w-full mt-2 bg-white border border-gray-400 rounded shadow-md z-10">
             <li v-for="(result, index) in searchResults" :key="result.aptCode"
-              :class="['px-4 py-2 cursor-pointer', { 'bg-gray-200': highlightedIndex === index }]"
+              :class="['flex justify-between items-center px-4 py-2 cursor-pointer', { 'bg-gray-200': highlightedIndex === index }]"
               @click="selectApartment(result)" @mouseover="highlightedIndex = index">
-              {{ result.aptName }} - {{ result.roadNameAddress }}
+              <span>{{ result.aptName }} - {{ result.roadNameAddress }}</span>
+              <button @click.stop="registerSale(result)" class="bg-green-500 text-white px-2 py-1 rounded">매물등록</button>
             </li>
           </ul>
         </div>
@@ -36,6 +37,7 @@ const searchResults = ref([]);
 const highlightedIndex = ref(-1);
 const selectedApartment = ref(null);
 const mapStore = useMapStore();
+const selectedAptCode = ref(mapStore.selectedAptCode);
 
 const fetchSearchResults = async () => {
   if (searchInput.value.trim() !== '') {
@@ -57,6 +59,8 @@ const selectApartment = (apartment) => {
   selectedApartment.value = apartment;
   searchResults.value = [];
   highlightedIndex.value = -1;
+  mapStore.setSelectedAptCode(apartment.aptCode);
+  selectedAptCode.value = apartment.aptCode;
 };
 
 const selectHighlighted = () => {
@@ -83,5 +87,12 @@ const searchApartment = () => {
   } else {
     console.log('아파트를 선택해주세요.');
   }
+};
+
+const registerSale = (apartment) => {
+  localStorage.setItem('selectedApartment', JSON.stringify(apartment));
+  router.push({
+    name: 'RegisterSale'
+  });
 };
 </script>

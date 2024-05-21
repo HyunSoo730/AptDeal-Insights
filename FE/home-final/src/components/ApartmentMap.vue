@@ -1,3 +1,117 @@
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue';
+import { KakaoMap, KakaoMapMarker } from 'vue3-kakao-maps';
+import { useRoute, useRouter } from 'vue-router';
+import ReviewForm from '@/components/ReviewForm.vue';
+import axios from "axios";
+import { getAptSaleDetails } from '@/api/aptSaleApi';
+
+const reviews = ref([]);
+const route = useRoute();
+const router = useRouter();
+const apartments = ref([]);
+const selectedApartment = ref(null);
+const reviewFormOpen = ref(false);
+const user = ref(null);
+const isLoggedIn = ref(false);
+const apartmentDetails = ref(null);
+
+const fetchReviews = async (apartmentCode) => {
+  try {
+    const response = await axios.get('/api/api/apt-review/list', {
+      params: { apartmentCode },
+    });
+    reviews.value = response.data;
+  } catch (error) {
+    console.error('리뷰 데이터 가져오기 실패:', error);
+  }
+};
+
+const fetchApartmentDetails = async () => {
+  if (selectedApartment.value && selectedApartment.value.aptCode) {
+    try {
+      const response = await getAptSaleDetails(selectedApartment.value.aptCode);
+      apartmentDetails.value = response.data;
+    } catch (error) {
+      console.error('아파트 상세 정보 가져오기 실패:', error);
+    }
+  }
+};
+
+onMounted(async () => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    try {
+      const response = await axios.get('/api/user', {
+        headers: { Authorization: `${token}` },
+      });
+      user.value = response.data;
+      isLoggedIn.value = true;
+    } catch (error) {
+      console.error('사용자 정보 가져오기 실패:', error);
+      router.push('/login');
+    }
+  } else {
+    router.push('/login');
+  }
+
+  const apartmentCode = route.params.aptCode;
+  const savedApartments = localStorage.getItem('apartments');
+  const savedSelectedApartment = localStorage.getItem('selectedApartment');
+
+  if (savedApartments && savedSelectedApartment) {
+    apartments.value = JSON.parse(savedApartments);
+    selectedApartment.value = JSON.parse(savedSelectedApartment);
+    fetchReviews(selectedApartment.value.aptCode);
+    fetchApartmentDetails();
+  } else if (apartmentCode) {
+    // 서버에서 아파트 정보를 가져오는 코드 추가
+  }
+});
+
+const mapCenter = computed(() => ({
+  lat: selectedApartment.value?.latitude || 37.5665,
+  lng: selectedApartment.value?.longitude || 126.9780,
+}));
+
+const showApartmentDetail = (apartment) => {
+  selectedApartment.value = apartment;
+  fetchReviews(apartment.aptCode);
+  fetchApartmentDetails();
+  localStorage.setItem('selectedApartment', JSON.stringify(apartment));
+  localStorage.setItem('apartments', JSON.stringify(apartments.value));
+};
+
+const openReviewForm = (apartment) => {
+  selectedApartment.value = apartment;
+  reviewFormOpen.value = true;
+};
+
+const closeReviewForm = () => {
+  reviewFormOpen.value = false;
+};
+
+const handleReviewSubmitted = (review) => {
+  reviews.value.push(review);
+  closeReviewForm();
+};
+
+const likeApartment = async (apartment) => {
+  try {
+    const token = localStorage.getItem('token');
+    await axios.post('/api/api/like', {
+      member: user.value,
+      aptCode: apartment.aptCode,
+    }, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    alert('아파트가 찜목록에 추가되었습니다.');
+  } catch (error) {
+    console.error('찜하기 실패:', error);
+  }
+};
+</script>
+
 <template>
   <div class="container">
     <div class="map-container">
@@ -41,121 +155,6 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue';
-import { KakaoMap, KakaoMapMarker } from 'vue3-kakao-maps';
-import { useRoute, useRouter } from 'vue-router';
-import ReviewForm from '@/components/ReviewForm.vue';
-import axios from "axios";
-import { getAptSaleDetails } from '@/api/aptSaleApi';
-
-const reviews = ref([]);
-const route = useRoute();
-const router = useRouter();
-const apartments = ref(JSON.parse(route.params.apartments || '[]'));
-const initialApartment = ref(JSON.parse(route.params.initialApartment || 'null'));
-const selectedApartment = ref(initialApartment.value || {});
-const reviewFormOpen = ref(false);
-const user = ref(null);
-const isLoggedIn = ref(false);
-const apartmentDetails = ref(null);
-
-const fetchReviews = async (apartmentCode) => {
-  try {
-    const response = await axios.get('/api/api/apt-review/list', {
-      params: { apartmentCode },
-    });
-    reviews.value = response.data;
-  } catch (error) {
-    console.error('리뷰 데이터 가져오기 실패:', error);
-  }
-};
-
-const fetchApartmentDetails = async () => {
-  console.log()
-  if (selectedApartment.value && selectedApartment.value.aptCode) {
-    try {
-      const response = await getAptSaleDetails(selectedApartment.value.aptCode);
-      apartmentDetails.value = response.data;
-    } catch (error) {
-      console.error('아파트 상세 정보 가져오기 실패:', error);
-    }
-  }
-};
-
-const saveToLocalStorage = () => {
-  localStorage.setItem('apartments', JSON.stringify(apartments.value));
-  localStorage.setItem('initialApartment', JSON.stringify(initialApartment.value));
-  localStorage.setItem('selectedApartment', JSON.stringify(selectedApartment.value));
-};
-
-onMounted(async () => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    try {
-      const response = await axios.get('/api/user', {
-        headers: { Authorization: `${token}` },
-      });
-      user.value = response.data;
-      isLoggedIn.value = true;
-    } catch (error) {
-      console.error('사용자 정보 가져오기 실패:', error);
-      router.push('/login');
-    }
-  } else {
-    router.push('/login');
-  }
-
-  if (selectedApartment.value && selectedApartment.value.aptCode) {
-    console.log(selectedApartment.value.aptCode)
-    fetchReviews(selectedApartment.value.aptCode);
-    fetchApartmentDetails();
-  }
-});
-
-watch([apartments, initialApartment, selectedApartment], saveToLocalStorage, { deep: true });
-
-const mapCenter = computed(() => ({
-  lat: selectedApartment.value?.latitude || 37.5665,
-  lng: selectedApartment.value?.longitude || 126.9780,
-}));
-
-const showApartmentDetail = (apartment) => {
-  selectedApartment.value = apartment;
-  fetchReviews(apartment.aptCode);
-  fetchApartmentDetails();
-};
-
-const openReviewForm = (apartment) => {
-  selectedApartment.value = apartment;
-  reviewFormOpen.value = true;
-};
-
-const closeReviewForm = () => {
-  reviewFormOpen.value = false;
-};
-
-const handleReviewSubmitted = (review) => {
-  reviews.value.push(review);
-  closeReviewForm();
-};
-
-const likeApartment = async (apartment) => {
-  try {
-    const token = localStorage.getItem('token');
-    await axios.post('/api/api/like', {
-      member: user.value,
-      aptCode: apartment.aptCode,
-    }, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    alert('아파트가 찜목록에 추가되었습니다.');
-  } catch (error) {
-    console.error('찜하기 실패:', error);
-  }
-};
-</script>
 
 <style scoped>
 .info-cards {

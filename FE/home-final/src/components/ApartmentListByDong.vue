@@ -5,19 +5,18 @@
       <div v-for="(apartment, index) in apartments" :key="apartment.aptCode" class="card"
         :class="{ 'new-line': index % 2 === 0 }" @click="goToApartmentMap(apartment)">
         <div class="card-content">
-          <!-- 아파트 정보를 표시하는 내용을 추가하세요 -->
           <h3>{{ apartment.aptName }}</h3>
           <p>건축년도: {{ apartment.constructionYear }}</p>
           <p>주소: {{ apartment.roadName }}</p>
           <p>위도: {{ apartment.latitude }}</p>
           <p>경도: {{ apartment.longitude }}</p>
           <p>아파트 고유번호: {{ apartment.aptCode }}</p>
-          <!-- 추가적인 아파트 정보를 표시할 수 있습니다 -->
         </div>
       </div>
     </div>
   </div>
 </template>
+
 <script>
 import axios from "axios";
 import { useRouter } from "vue-router";
@@ -30,22 +29,21 @@ export default {
     const apartments = ref([]);
 
     const fetchApartments = async (dongCode) => {
-      console.log(dongCode)
       try {
         const response = await sample(dongCode);
         apartments.value = response.data;
-        console.log("동별 아파트 받아오기")
+        localStorage.setItem('apartments', JSON.stringify(apartments.value));
       } catch (error) {
         console.error("Failed to fetch apartments:", error);
       }
     };
 
     const goToApartmentMap = (apartment) => {
+      localStorage.setItem('selectedApartment', JSON.stringify(apartment));
       router.push({
         name: 'ApartmentMap',
         params: {
-          apartments: JSON.stringify(apartments.value),
-          initialApartment: JSON.stringify(apartment),
+          apartment: apartment.aptCode,
         },
       });
     };
@@ -62,6 +60,7 @@ export default {
   },
 };
 </script>
+
 <style scoped>
 .card-container {
   display: flex;

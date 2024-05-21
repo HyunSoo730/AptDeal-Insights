@@ -76,4 +76,12 @@ public class AptSaleController {
         }
         return recentSalesByAptCode;
     }
+
+
+    @PostMapping("/registerSale")
+    public void registerSale(@RequestBody AptSale aptSale){
+        aptSaleService.registerSale(aptSale);
+    }
+
+
 }
