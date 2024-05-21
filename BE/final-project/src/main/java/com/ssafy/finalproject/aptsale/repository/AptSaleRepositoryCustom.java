@@ -3,9 +3,12 @@ package com.ssafy.finalproject.aptsale.repository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ssafy.finalproject.aptsale.dto.request.AptNameAddressDTO;
 import com.ssafy.finalproject.aptsale.dto.request.QAptNameAddressDTO;
+import com.ssafy.finalproject.aptsale.dto.response.AptSaleGraphDTO;
+import com.ssafy.finalproject.aptsale.dto.response.QAptSaleGraphDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static com.ssafy.finalproject.aptsale.entity.QAptSale.aptSale;
@@ -29,5 +32,36 @@ public class AptSaleRepositoryCustom {
                 .limit(limit)
                 .fetch();
     }
+
+    // TODO : 구(지역) 거래 정보 조회
+    public List<AptSaleGraphDTO> findSalesByDongcode(String dongcodePrefix, int recentYears) {
+        LocalDate startDate = LocalDate.now().minusYears(recentYears); // ! 가져오고자 하는 시작 년도
+        return queryFactory
+                .select(new QAptSaleGraphDTO(
+                        aptSale.aptCode, aptSale.aptName, aptSale.dealAmount, aptSale.dealYear, aptSale.dealMonth, aptSale.dealDay, aptSale.exclusiveArea, aptSale.dongcode
+                ))
+                .from(aptSale)
+                .where(
+                        aptSale.dongcode.startsWith(dongcodePrefix)
+                                .and(aptSale.dealYear.goe(startDate.getYear()))
+                )
+                .fetch();
+    }
+
+    // TODO : 특정 아파트의 거래 정보 조회
+    public List<AptSaleGraphDTO> findSalesByAptCode(String aptCode, int recentYears) {
+        LocalDate startDate = LocalDate.now().minusYears(recentYears);
+        return queryFactory
+                .select(new QAptSaleGraphDTO(
+                        aptSale.aptCode, aptSale.aptName, aptSale.dealAmount, aptSale.dealYear, aptSale.dealMonth, aptSale.dealDay, aptSale.exclusiveArea, aptSale.dongcode
+                ))
+                .from(aptSale)
+                .where(
+                        aptSale.aptCode.eq(aptCode)
+                                .and(aptSale.dealYear.goe(startDate.getYear()))
+                )
+                .fetch();
+    }
+
 
 }

@@ -5,6 +5,7 @@ import com.ssafy.finalproject.aptsale.Service.AptSaleService;
 import com.ssafy.finalproject.aptsale.dto.request.AptNameAddressDTO;
 import com.ssafy.finalproject.aptsale.dto.response.AptSaleDetails;
 import com.ssafy.finalproject.aptsale.dto.request.AptSaleByDongDTO;
+import com.ssafy.finalproject.aptsale.dto.response.AptTransactionResDTO;
 import com.ssafy.finalproject.aptsale.entity.AptSale;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,5 +45,15 @@ public class AptSaleController {
     public ResponseEntity<?> getAptSaleDetails(@PathVariable("aptCode") String aptCode) {
         List<AptSaleDetails> aptSaleDetailsList =  aptSaleService.findAptSaleDetails(aptCode);
         return new ResponseEntity<>(aptSaleDetailsList, HttpStatus.OK);
+    }
+
+    @GetMapping("/area/{dongcode}/{years}")
+    public List<AptTransactionResDTO> getTransactionsByDongcode(@PathVariable("dongcode") String dongcode, @PathVariable("years") int years) {
+        return aptSaleService.findRecentSalesByDongcode(dongcode, years);
+    }
+
+    @GetMapping("/apartment/{aptCode}/{years}")
+    public List<AptTransactionResDTO> getTransactionsByAptCode(@PathVariable("aptCode") String aptCode, @PathVariable("years") int years) {
+        return aptSaleService.findRecentSalesByAptCode(aptCode, years);
     }
 }
