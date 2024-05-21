@@ -49,11 +49,31 @@ public class AptSaleController {
 
     @GetMapping("/area/{dongcode}/{years}")
     public List<AptTransactionResDTO> getTransactionsByDongcode(@PathVariable("dongcode") String dongcode, @PathVariable("years") int years) {
-        return aptSaleService.findRecentSalesByDongcode(dongcode, years);
+        List<AptTransactionResDTO> recentSalesByDongcode = aptSaleService.findRecentSalesByDongcode(dongcode, years);
+        if (recentSalesByDongcode.isEmpty()) {
+            System.out.println("데이터없음");
+        } else {
+            System.out.println("데이터 있음");
+        }
+        for (AptTransactionResDTO aptTransactionResDTO : recentSalesByDongcode) {
+            log.info("aptTransactionResDto: {}", aptTransactionResDTO);
+        }
+        return recentSalesByDongcode;
     }
 
     @GetMapping("/apartment/{aptCode}/{years}")
     public List<AptTransactionResDTO> getTransactionsByAptCode(@PathVariable("aptCode") String aptCode, @PathVariable("years") int years) {
-        return aptSaleService.findRecentSalesByAptCode(aptCode, years);
+        List<AptTransactionResDTO> recentSalesByAptCode = aptSaleService.findRecentSalesByAptCode(aptCode, years);
+        if (recentSalesByAptCode.size() > 0) {
+            System.out.println("데이터 존재");
+        } else {
+            System.out.println("데이터 없음");
+        }
+
+        for (AptTransactionResDTO aptTransactionResDTO : recentSalesByAptCode) {
+
+            log.info("AptTransactionResDTO : {}", aptTransactionResDTO);
+        }
+        return recentSalesByAptCode;
     }
 }
