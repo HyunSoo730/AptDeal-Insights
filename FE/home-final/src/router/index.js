@@ -1,4 +1,3 @@
-
 import { createRouter, createWebHistory } from "vue-router";
 import MainPage from "@/pages/MainPage.vue";
 import MyPage from "@/pages/MyPage.vue";
@@ -7,7 +6,7 @@ import CommunityPage from "@/pages/CommunityPage.vue";
 import Kakao from "@/components/Kakao.vue";
 import ApartmentListByDong from "@/components/ApartmentListByDong.vue";
 import ApartmentMap from "@/components/ApartmentMap.vue";
-
+import Wishlist from "@/pages/Wishlist.vue";
 const routes = [
   {
     path: "/",
@@ -18,11 +17,6 @@ const routes = [
     path: "/mypage",
     name: "MyPage",
     component: MyPage,
-  },
-  {
-    path: "/apartment/:id",
-    name: "ApartmentDetails",
-    component: ApartmentDetails,
   },
   {
     path: "/community",
@@ -48,6 +42,11 @@ const routes = [
     name: "ApartmentMap",
     component: ApartmentMap,
     props: true,
+  },
+  {
+    path: "/wishlist",
+    name: "Wishlist",
+    component: Wishlist,
   },
 ];
 

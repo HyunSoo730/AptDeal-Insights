@@ -15,6 +15,7 @@ import java.util.List;
 public interface AptSaleRepository extends JpaRepository<AptSale,Long> {
 
     List<AptSale> findAptSaleByAptCodeOrderByDealYearDescDealMonthDescDealDayDesc(String aptCode);
+
     @Query("SELECT new com.ssafy.finalproject.aptsale.dto.request.AptSaleByDongDTO(a.aptName, a.dealAmount, a.roadName, a.constructionYear, a.aptCode, a.latitude, a.longitude) FROM AptSale a WHERE a.dongcode = :dongCode GROUP BY a.aptCode")
     List<AptSaleByDongDTO> findByDongcodeGroupByAptCode(@Param("dongCode") String dongCode);
 

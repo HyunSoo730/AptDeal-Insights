@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="map-container">
-      <KakaoMap :lat="selectedApartment.latitude" :lng="selectedApartment.longitude" width="70rem" height="50rem">
+      <KakaoMap :lat="mapCenter.lat" :lng="mapCenter.lng" width="70rem" height="50rem">
         <KakaoMapMarker v-for="apartment in apartments" :key="apartment.aptCode" :lat="apartment.latitude"
           :lng="apartment.longitude" :clickable="true" @onClickKakaoMapMarker="showApartmentDetail(apartment)" />
       </KakaoMap>
@@ -53,9 +53,9 @@ import { getAptSaleDetails } from '@/api/aptSaleApi';
 const reviews = ref([]);
 const route = useRoute();
 const router = useRouter();
-const apartments = ref(JSON.parse(localStorage.getItem('apartments') || '[]'));
-const initialApartment = ref(JSON.parse(localStorage.getItem('initialApartment') || 'null'));
-const selectedApartment = ref(initialApartment.value);
+const apartments = ref(JSON.parse(route.params.apartments || '[]'));
+const initialApartment = ref(JSON.parse(route.params.initialApartment || 'null'));
+const selectedApartment = ref(initialApartment.value || {});
 const reviewFormOpen = ref(false);
 const user = ref(null);
 const isLoggedIn = ref(false);
@@ -73,6 +73,7 @@ const fetchReviews = async (apartmentCode) => {
 };
 
 const fetchApartmentDetails = async () => {
+  console.log()
   if (selectedApartment.value && selectedApartment.value.aptCode) {
     try {
       const response = await getAptSaleDetails(selectedApartment.value.aptCode);
@@ -81,6 +82,12 @@ const fetchApartmentDetails = async () => {
       console.error('아파트 상세 정보 가져오기 실패:', error);
     }
   }
+};
+
+const saveToLocalStorage = () => {
+  localStorage.setItem('apartments', JSON.stringify(apartments.value));
+  localStorage.setItem('initialApartment', JSON.stringify(initialApartment.value));
+  localStorage.setItem('selectedApartment', JSON.stringify(selectedApartment.value));
 };
 
 onMounted(async () => {
@@ -100,11 +107,14 @@ onMounted(async () => {
     router.push('/login');
   }
 
-  if (selectedApartment.value) {
+  if (selectedApartment.value && selectedApartment.value.aptCode) {
+    console.log(selectedApartment.value.aptCode)
     fetchReviews(selectedApartment.value.aptCode);
     fetchApartmentDetails();
   }
 });
+
+watch([apartments, initialApartment, selectedApartment], saveToLocalStorage, { deep: true });
 
 const mapCenter = computed(() => ({
   lat: selectedApartment.value?.latitude || 37.5665,
@@ -113,7 +123,6 @@ const mapCenter = computed(() => ({
 
 const showApartmentDetail = (apartment) => {
   selectedApartment.value = apartment;
-  localStorage.setItem('initialApartment', JSON.stringify(apartment));
   fetchReviews(apartment.aptCode);
   fetchApartmentDetails();
 };
@@ -132,35 +141,10 @@ const handleReviewSubmitted = (review) => {
   closeReviewForm();
 };
 
-const saveToLocalStorage = () => {
-  localStorage.setItem('apartments', JSON.stringify(apartments.value));
-  localStorage.setItem('initialApartment', JSON.stringify(selectedApartment.value));
-};
-
-watch(
-  () => route.params,
-  (newParams) => {
-    if (newParams.apartments) {
-      apartments.value = JSON.parse(newParams.apartments);
-      saveToLocalStorage();
-    }
-    if (newParams.initialApartment) {
-      initialApartment.value = JSON.parse(newParams.initialApartment);
-      selectedApartment.value = initialApartment.value;
-      saveToLocalStorage();
-      if (initialApartment.value) {
-        fetchReviews(initialApartment.value.aptCode);
-        fetchApartmentDetails();
-      }
-    }
-  },
-  { immediate: true }
-);
-
 const likeApartment = async (apartment) => {
   try {
     const token = localStorage.getItem('token');
-    const response = await axios.post('/api/api/like', {
+    await axios.post('/api/api/like', {
       member: user.value,
       aptCode: apartment.aptCode,
     }, {
@@ -176,7 +160,7 @@ const likeApartment = async (apartment) => {
 <style scoped>
 .info-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 20px;
   margin-bottom: 20px;
 }
@@ -210,12 +194,14 @@ const likeApartment = async (apartment) => {
   padding: 15px;
   margin-bottom: 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  width: 100%; /* 리뷰 카드가 detail-container의 전체 너비를 차지하도록 설정 */
+  width: 100%;
 }
 
 .container {
   display: flex;
   height: 100vh;
+  width: 100vw;
+  /* 전체 너비 사용 */
 }
 
 .map-container {
@@ -251,11 +237,9 @@ const likeApartment = async (apartment) => {
 }
 
 .reviews {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 10px;
-  list-style: none;
-  padding: 0;
 }
 
 .review-item {

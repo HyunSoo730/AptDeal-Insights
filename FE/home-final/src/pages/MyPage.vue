@@ -47,13 +47,17 @@ const updateUser = async () => {
   }
 };
 
+const navigateToWishlist = () => {
+  router.push('/wishlist');
+};
+
+
 const cancelEditing = () => {
   editedUser.value = null;
   isEditing.value = false;
 };
 </script>
 
-<!-- MyPage.vue -->
 <!-- MyPage.vue -->
 <template>
   <!-- <div>{{ user }}</div> -->
@@ -64,6 +68,7 @@ const cancelEditing = () => {
       <p><strong>이름:</strong> {{ user.name }}</p>
       <p><strong>닉네임:</strong> {{ user.nickname }}</p>
       <button @click="startEditing" class="bg-blue-500 text-white px-4 py-2 rounded-md mt-4">수정</button>
+      <button @click="navigateToWishlist" class="bg-green-500 text-white px-4 py-2 rounded-md mt-4">찜 목록</button>
     </div>
     <div v-else-if="isEditing">
       <form @submit.prevent="updateUser">
