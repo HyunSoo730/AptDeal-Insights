@@ -23,7 +23,7 @@ public class AptSaleRepositoryCustom {
     public List<AptNameAddressDTO> findAptNamesByPrefix(String prefix, int offset, int limit) {
         return queryFactory
                 .select(new QAptNameAddressDTO(
-                        aptSale.aptCode, aptSale.aptName, aptSale.roadNameAddress, aptSale.latitude, aptSale.longitude
+                        aptSale.aptCode, aptSale.aptName, aptSale.roadNameAddress, aptSale.latitude, aptSale.longitude, aptSale.dongcode
                 ))
                 .from(aptSale)
                 .where(aptSale.aptName.startsWith(prefix))
