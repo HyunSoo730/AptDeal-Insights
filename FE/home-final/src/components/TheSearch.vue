@@ -66,6 +66,8 @@ const selectApartment = (apartment) => {
 const selectHighlighted = () => {
   if (highlightedIndex.value !== -1 && searchResults.value.length > 0) {
     selectApartment(searchResults.value[highlightedIndex.value]);
+    searchResults.value = []; // 엔터를 누르면 자동완성 리스트 숨기기
+    searchApartment(); // 엔터를 누르면 아파트 정보 갱신
   }
 };
 
