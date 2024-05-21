@@ -47,7 +47,7 @@ public class AptTradeDetailBatchJob {
     private final WebClient webClient;
     private final PlatformTransactionManager transactionManager;
     private static final String SEOUL_BASE_URL = "http://openapi.molit.go.kr/OpenAPI_ToolInstallPackage/service/rest/RTMSOBJSvc/getRTMSDataSvcAptTradeDev";
-    private static final String ENCODED_API_KEY = "iKsPFx8Qh%2F4qz8Ys3N2Q5pNtBD5Qcjg6UdYhj1zQ%2BVMy49hTMhJ65auzfFDdpx11fX4ABr0glasN9QP%2B3QmKeQ%3D%3D";
+    private static final String ENCODED_API_KEY = "TgmE7Y4ushOdLL8RFCgmK3Kyndd6uKdmWtYvDr0ORkChnst6Kwv8eN3zC%2BQgTBlgMKrYcm8eVX713AivtR%2BDGQ%3D%3D";
     private static final String SEOUL_API_KEY = URLDecoder.decode(ENCODED_API_KEY, StandardCharsets.UTF_8);
 
     @Bean
@@ -111,9 +111,10 @@ public class AptTradeDetailBatchJob {
                 })
                 .toArray(String[]::new);
 
-        String[] lawdCodes = {"11680", "11740", "11305", "11500", "11620", "11215", "11530", "11545", "11350", "11320",
-                "11230", "11590", "11440", "11410", "11650", "11200", "11290", "11710", "11470", "11560",
-                "11170", "11380", "11110", "11140", "11260"};
+        String[] lawdCodes = {"11680", "11740", "11305", "11500", "11620", "11215", "11530"};
+//        "11545", "11350", "11320",
+//                "11230", "11590", "11440", "11410", "11650", "11200", "11290", "11710", "11470", "11560",
+//                "11170", "11380", "11110", "11140", "11260"};
 
 
         return new ItemReader<AptSaleDTO>() {
@@ -175,7 +176,6 @@ public class AptTradeDetailBatchJob {
 
     @Bean
     public ItemReader<AptSale> aptCoordinateReader() {
-
         return new ItemReader<AptSale>() {
             private Iterator<AptSale> iterator;
 
@@ -186,32 +186,27 @@ public class AptTradeDetailBatchJob {
                     List<AptSaleDTO> aptSaleDTOList = (List<AptSaleDTO>) StepSynchronizationManager.getContext()
                             .getStepExecution().getJobExecution().getExecutionContext().get("aptSaleDTOList");
 
-
                     List<AptSale> aptSaleList = new ArrayList<>();
 
                     // aptSaleDTOList의 각 항목에 대해 좌표 정보를 받아오는 로직 추가
                     for (AptSaleDTO item : aptSaleDTOList) {
                         for (AptSaleDTO.Item myItem : item.getBody().getItemList()) {
-                            String legalSiCode=myItem.getLegalDongSigunguCode().substring(0,2); // 시군구 코드에서 시 부분만 뽑아오기 (11021 -> 11 (서울))
+                            String legalSiCode = myItem.getLegalDongSigunguCode().substring(0, 2); // 시군구 코드에서 시 부분만 뽑아오기 (11021 -> 11 (서울))
                             String roadName = myItem.getRoadName();
                             String mainCode = removeLeadingZeros(myItem.getRoadNameBuildingMainCode());
                             String subCode = removeLeadingZeros(myItem.getRoadNameBuildingSubCode());
 
-                            String address="";
+                            String address = "";
 
-//                            log.info("legalsicode: {}",legalSiCode);
                             Region region = Region.fromCode(legalSiCode);
                             String regionName = region.getName();
-//                            log.info("regionName: {}",regionName);
 
-
-                            address+=regionName+" ";
+                            address += regionName + " ";
                             if (!subCode.isEmpty()) {
                                 address += roadName + " " + mainCode + "-" + subCode; // 싸피로 2-2
                             } else {
                                 address += roadName + " " + mainCode; // 싸피로 2
                             }
-//                            System.out.println(address);
 
                             String url = "https://api.vworld.kr/req/address?service=address&request=getcoord&version=2.0&crs=epsg:4326&address=" + address + "&refine=true&simple=false&format=xml&type=road&key=92B84E44-5710-3F5A-9AE1-6F3CF087E8EC";
 
@@ -233,14 +228,26 @@ public class AptTradeDetailBatchJob {
                             String y = rootNode.path("result").path("point").path("y").asText();
                             String detail = rootNode.path("refined").path("structure").path("detail").asText();
 
-                            log.info("{} {} {} {} {},{},{}",text,x,y,detail,myItem.getYear(),myItem.getMonth(),myItem.getDay());
-//                            System.out.println(text+" "+x+" "+" "+y+" "+detail);
-//                            System.out.println("myItem = " + myItem);
+                            log.info("{} {} {} {} {},{},{}", text, x, y, detail, myItem.getYear(), myItem.getMonth(), myItem.getDay());
 
                             if (x.isEmpty() || y.isEmpty()) {
                                 log.warn("좌표 정보가 없어 건너뜁니다. 주소: {}", address);
                                 continue; // 현재 반복을 건너뛰고 다음 반복으로 이동
                             }
+
+                            double latitude = Double.parseDouble(y);
+                            double longitude = Double.parseDouble(x); // x 경도, y 위도
+
+                            // ! 위도와 경도의 소수점 이후 3자리 추출
+                            int idx1 = x.indexOf(".");
+                            String latitudeString = x.substring(idx1 + 1, idx1 + 4);
+                            int idx2 = y.indexOf(".");
+                            String longitudeString = y.substring(idx2 + 1, idx2 + 4);
+
+                            // ! aptCode 생성
+                            String aptCode = myItem.getLegalDongSigunguCode() + myItem.getLegalDongEupmyeondongCode() +
+                                    myItem.getRoadNameBuildingMainCode() + myItem.getRoadNameBuildingSubCode() +
+                                    latitudeString + longitudeString;
 
                             AptSale aptSale = AptSale.builder()
                                     .aptName(myItem.getApartment())
@@ -258,15 +265,13 @@ public class AptTradeDetailBatchJob {
                                     .dealDay(myItem.getDay())
                                     .exclusiveArea(myItem.getExclusiveArea())
                                     .floor(myItem.getFloor())
-                                    .latitude(Double.parseDouble(y))
-                                    .longitude(Double.parseDouble(x))
+                                    .latitude(latitude)
+                                    .longitude(longitude)
                                     .sidoName(address)
-                                    .aptCode(myItem.getLegalDongSigunguCode() + myItem.getLegalDongEupmyeondongCode() +
-                                            myItem.getRoadNameBuildingMainCode() + myItem.getRoadNameBuildingSubCode())
+                                    .aptCode(aptCode)
                                     .build();
 
                             aptSaleList.add(aptSale);
-
                         }
                     }
 
