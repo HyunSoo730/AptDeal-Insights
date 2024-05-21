@@ -103,7 +103,7 @@
   };
   
   onMounted(fetchTransactions);
-  watch(selectedYears, fetchTransactions);
+  watch([() => props.aptCode, () => props.dongcode, selectedYears], fetchTransactions);
   </script>
   
   <style scoped>
