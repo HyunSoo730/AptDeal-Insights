@@ -70,7 +70,7 @@ public class AptSchoolBatchJob {
     @Bean
     public ItemProcessor<AptSchoolInfoDTO, AptSchoolInfo> aptSchoolInfoProcessor() {
         return aptSchoolInfoDTO -> {
-            String aptCode = generateAptCode(aptSchoolInfoDTO.getRoadNameAddress(), aptSchoolInfoDTO.getLegalDong());
+            String aptCode = generateAptCode(aptSchoolInfoDTO.getRoadNameAddress(), aptSchoolInfoDTO.getLegalDong(), String.valueOf(aptSchoolInfoDTO.getLongitude()), String.valueOf(aptSchoolInfoDTO.getLatitude()));
 //            log.info("apt = {}", aptSchoolInfoDTO);
             return AptSchoolInfo.builder()
                     .aptName(aptSchoolInfoDTO.getAptName())
@@ -96,7 +96,7 @@ public class AptSchoolBatchJob {
                 .build();
     }
 
-    private String generateAptCode(String roadNameAddress, String legalDong) {
+    private String generateAptCode(String roadNameAddress, String legalDong, String x, String y ) {
         String[] addressParts = roadNameAddress.split(" ");
         String lastPart = addressParts[addressParts.length - 1];
         String[] codeParts = lastPart.split("-");
@@ -113,6 +113,15 @@ public class AptSchoolBatchJob {
         if (codeParts.length == 1) {
             aptCode += "00000";
         }
+
+        // ! 위도와 경도의 소수점 이후 3자리 추출
+        int idx1 = x.indexOf(".");
+        String latitudeString = x.substring(idx1 + 1, idx1 + 4); // ! x 위도
+        int idx2 = y.indexOf(".");
+        String longitudeString = y.substring(idx2 + 1, idx2 + 4); // ! y 경도
+
+        aptCode += latitudeString;
+        aptCode += longitudeString;
 
         return aptCode;
     }

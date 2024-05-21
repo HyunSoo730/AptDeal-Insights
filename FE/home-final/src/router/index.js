@@ -1,12 +1,12 @@
 import { createRouter, createWebHistory } from "vue-router";
 import MainPage from "@/pages/MainPage.vue";
 import MyPage from "@/pages/MyPage.vue";
-import ApartmentDetails from "@/components/ApartmentDetails.vue";
 import CommunityPage from "@/pages/CommunityPage.vue";
 import Kakao from "@/components/Kakao.vue";
 import ApartmentListByDong from "@/components/ApartmentListByDong.vue";
 import ApartmentMap from "@/components/ApartmentMap.vue";
 import Wishlist from "@/pages/Wishlist.vue";
+
 const routes = [
   {
     path: "/",
@@ -28,8 +28,11 @@ const routes = [
     name: "KakaoMap",
     component: Kakao,
     props: (route) => ({
-      lat: Number(route.params.lat),
-      lng: Number(route.params.lng),
+      lat: Number(route.query.latitude),
+      lng: Number(route.query.longitude),
+      aptCode: route.query.aptCode,
+      aptName: route.query.aptName,
+      dongcode: route.query.dongcode
     }),
   },
   {
@@ -48,6 +51,11 @@ const routes = [
     name: "Wishlist",
     component: Wishlist,
   },
+  {
+    path: "/asdasd",
+    name : "chart",
+    component: () => import("@/components/AptTransactionChart.vue"),
+  }
 ];
 
 const router = createRouter({

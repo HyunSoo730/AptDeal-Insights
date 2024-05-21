@@ -33,6 +33,13 @@ import { ref, watch } from 'vue';
 import { getAptSaleDetails } from '@/api/aptSaleApi';
 import { useMapStore } from '@/stores/mapStore';
 
+const props = defineProps({
+  aptCode: {
+    type: String,
+    required: true
+  }
+});
+
 const mapStore = useMapStore();
 const aptCode = ref(mapStore.selectedAptCode);
 
@@ -42,6 +49,8 @@ const allDetailsShown = ref(false);
 
 const fetchAptSaleDetails = async (aptCode) => {
   try {
+    details.value = []; // 초기화
+    displayedDetails.value = []; // 초기화
     const response = await getAptSaleDetails(aptCode);
     details.value = response.data;
     loadMore();
