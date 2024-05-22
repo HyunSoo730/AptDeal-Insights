@@ -8,11 +8,12 @@
         <li><a href="#" class="text-gray-700 hover:text-black text-lg">인구흐름</a></li>
       </ul>
     </div>
-    </nav>
+  </nav>
 </template>
 
 <style scoped>
 .navbar {
-  border-bottom: 1px solid #e2e8f0; /* Tailwind's border-gray-300 */
+  border-bottom: 1px solid #e2e8f0;
+  /* Tailwind's border-gray-300 */
 }
 </style>

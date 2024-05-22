@@ -9,6 +9,9 @@ import Wishlist from "@/pages/Wishlist.vue";
 
 import RegisterSale from "@/components/RegisterSale.vue";
 
+import ChatRoomList from "@/components/chat/ChatRoomList.vue";
+import ChatRoom from "@/components/chat/ChatRoom.vue";
+
 const routes = [
   {
     path: "/",
@@ -34,7 +37,7 @@ const routes = [
       lng: Number(route.query.longitude),
       aptCode: route.query.aptCode,
       aptName: route.query.aptName,
-      dongcode: route.query.dongcode
+      dongcode: route.query.dongcode,
     }),
   },
   {
@@ -55,10 +58,21 @@ const routes = [
   },
   {
     path: "/asdasd",
-    name : "chart",
+    name: "chart",
     component: () => import("@/components/AptTransactionChart.vue"),
   },
   { path: "/registerSale", name: "RegisterSale", component: RegisterSale, props: true },
+  {
+    path: "/chatroomlist",
+    name: "ChatRoomList",
+    component: ChatRoomList,
+  },
+  {
+    path: "/room/:name",
+    name: "ChatRoom",
+    component: ChatRoom,
+    props: (route) => ({ roomName: route.params.name, userName: route.query.userName }),
+  },
 ];
 
 const router = createRouter({
