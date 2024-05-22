@@ -22,6 +22,7 @@ public class AptRentSaleRepositoryCustom {
 
     // TODO : 구(지역) 및 동(법정동) 전월세 정보 조회
     public List<AptRentSaleDTO> findRentSalesByConditions(SearchConditionDTO searchCondition) {
+        System.out.println("searchCondition: " + searchCondition);
         return queryFactory
                 .select(new QAptRentSaleDTO(
                         aptRentSale.constructionYear, aptRentSale.contractType, aptRentSale.contractPeriod,
@@ -32,6 +33,7 @@ public class AptRentSaleRepositoryCustom {
                 ))
                 .from(aptRentSale)
                 .where(buildBooleanExpression(searchCondition))
+//                .where(eqRegionCode(searchCondition.getRegionCode()), eqLegalDong(searchCondition.getLegalDong()))
                 .offset(searchCondition.getOffset())
                 .limit(searchCondition.getLimit())
                 .fetch();
@@ -65,19 +67,19 @@ public class AptRentSaleRepositoryCustom {
         return legalDong != null ? aptRentSale.legalDong.eq(legalDong) : null;
     }
 
-    private BooleanExpression goeDeposit(String minDeposit) {
+    private BooleanExpression goeDeposit(Integer minDeposit) {
         return minDeposit != null ? aptRentSale.depositAmount.goe(minDeposit) : null;
     }
 
-    private BooleanExpression loeDeposit(String maxDeposit) {
+    private BooleanExpression loeDeposit(Integer maxDeposit) {
         return maxDeposit != null ? aptRentSale.depositAmount.loe(maxDeposit) : null;
     }
 
-    private BooleanExpression goeMonthlyRent(String minMonthlyRent) {
+    private BooleanExpression goeMonthlyRent(Integer minMonthlyRent) {
         return minMonthlyRent != null ? aptRentSale.monthlyRent.goe(minMonthlyRent) : null;
     }
 
-    private BooleanExpression loeMonthlyRent(String maxMonthlyRent) {
+    private BooleanExpression loeMonthlyRent(Integer maxMonthlyRent) {
         return maxMonthlyRent != null ? aptRentSale.monthlyRent.loe(maxMonthlyRent) : null;
     }
 

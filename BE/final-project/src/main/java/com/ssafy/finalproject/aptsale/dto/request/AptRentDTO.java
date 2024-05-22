@@ -107,18 +107,25 @@ public class AptRentDTO {
                     .contractPeriod(this.contractPeriod)
                     .year(this.year)
                     .legalDong(this.legalDong)
-                    .depositAmount(this.depositAmount)
+                    .depositAmount(parsePrice(this.depositAmount))
                     .apartmentName(this.apartmentName)
                     .month(this.month)
-                    .monthlyRent(this.monthlyRent)
+                    .monthlyRent(parsePrice(this.monthlyRent))
                     .day(this.day)
                     .exclusiveArea(this.exclusiveArea)
-                    .previousContractDeposit(this.previousContractDeposit)
-                    .previousContractRent(this.previousContractRent)
+                    .previousContractDeposit(parsePrice(this.previousContractDeposit))
+                    .previousContractRent(parsePrice(this.previousContractRent))
                     .lotNumber(this.lotNumber)
                     .regionCode(this.regionCode)
                     .floor(this.floor)
                     .build();
+        }
+
+        private int parsePrice(String price) {
+            if (price == null || price.trim().isEmpty()) {
+                return 0;
+            }
+            return Integer.parseInt(price.replaceAll(",", ""));
         }
 
     }

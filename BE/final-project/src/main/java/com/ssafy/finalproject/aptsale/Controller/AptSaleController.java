@@ -89,8 +89,11 @@ public class AptSaleController {
 
     // TODO : 검색 조건으로 아파트 전월세 결과 반환
     @PostMapping("/rent-sales")
-    public List<AptRentSaleDTO> getRentSales(@RequestBody SearchConditionDTO searchCondition) {
-        log.info("Received search condition: {}", searchCondition);
-        return aptRentSaleService.getRentSalesByConditions(searchCondition);
+    public ResponseEntity<?> getRentSales(@RequestBody SearchConditionDTO searchCondition) {
+        log.info("Received search condition: {}", searchCondition.toString());
+        List<AptRentSaleDTO> rentSalesByConditions = aptRentSaleService.getRentSalesByConditions(searchCondition);
+        return new ResponseEntity<>(rentSalesByConditions, HttpStatus.OK);
     }
+
+
 }
