@@ -55,10 +55,6 @@
           >
             <template #suffix="{ value }">만원</template>
           </VueSimpleRangeSlider>
-          <input type="number" v-model="minExclusiveArea" placeholder="최소 전용 면적" 
-            class="w-full p-3 border border-gray-400 focus:outline-none focus:border-blue-500 text-lg" />
-          <input type="number" v-model="maxExclusiveArea" placeholder="최대 전용 면적" 
-            class="w-full p-3 border border-gray-400 focus:outline-none focus:border-blue-500 text-lg" />
           <input type="date" v-model="startDate" placeholder="시작 날짜" 
             class="w-full p-3 border border-gray-400 focus:outline-none focus:border-blue-500 text-lg" />
           <input type="date" v-model="endDate" placeholder="종료 날짜" 
@@ -80,6 +76,16 @@
               </label>
             </div>
           </div>
+          <!-- 평수 선택 옵션 추가 -->
+          <div class="w-full p-3">
+            <label class="text-lg">평수 선택</label>
+            <div class="mt-2">
+              <label class="inline-flex items-center mr-4" v-for="pyeong in pyeongOptions" :key="pyeong">
+                <input type="checkbox" v-model="selectedPyeongRanges" :value="pyeong" class="form-checkbox">
+                <span class="ml-2">{{ pyeong }}평대</span>
+              </label>
+            </div>
+          </div>
         </div>
         <button @click="filterListings" class="bg-blue-500 text-white px-6 py-3 rounded-lg text-lg w-full mt-4">
           필터링
@@ -92,6 +98,7 @@
         <p>임대 유형: {{ lease.contractType }}</p>
         <p>임대 금액: {{ lease.depositAmount }}만원</p>
         <p>월세: {{ lease.monthlyRent }}만원</p>
+        <p>전용면적: {{ lease.exclusiveArea }}㎡</p> <!-- 전용면적 표시 -->
         <p>주소: {{ lease.legalDong }}</p>
         <p>건축년도: {{ lease.constructionYear }}</p>
         <p>층: {{ lease.floor }}</p>
@@ -127,8 +134,6 @@ const leaseListings = ref([]);
 
 const depositRange = ref([100, 100000]); // 보증금 범위
 const monthlyRentRange = ref([0, 1000]); // 월세 범위
-const minExclusiveArea = ref("");
-const maxExclusiveArea = ref("");
 const startDate = ref("");
 const endDate = ref("");
 const rentType = ref("all"); // 임대 유형 필터
@@ -137,6 +142,10 @@ const offset = ref(0);
 const limit = ref(9);
 const loading = ref(false);
 const allDataLoaded = ref(false);
+
+// 평수 옵션과 선택된 평수 리스트
+const pyeongOptions = [10, 20, 30, 40, 50, 60, 70];
+const selectedPyeongRanges = ref<number[]>([]);
 
 onMounted(() => {
   fetchCities();
@@ -223,11 +232,10 @@ const loadMoreListings = async () => {
       maxDeposit: depositRange.value[1],
       minMonthlyRent: monthlyRentRange.value[0],
       maxMonthlyRent: monthlyRentRange.value[1],
-      minExclusiveArea: minExclusiveArea.value,
-      maxExclusiveArea: maxExclusiveArea.value,
       startDate: startDate.value,
       endDate: endDate.value,
       isCharter, // 필터링 조건으로 추가된 값
+      selectedPyeongRanges: selectedPyeongRanges.value, // 선택된 평수 범위 추가
       offset: offset.value,
       limit: limit.value
     };
@@ -268,11 +276,10 @@ const filterListings = async () => {
       maxDeposit: depositRange.value[1],
       minMonthlyRent: monthlyRentRange.value[0],
       maxMonthlyRent: monthlyRentRange.value[1],
-      minExclusiveArea: minExclusiveArea.value,
-      maxExclusiveArea: maxExclusiveArea.value,
       startDate: startDate.value,
       endDate: endDate.value,
       isCharter, // 필터링 조건으로 추가된 값
+      selectedPyeongRanges: selectedPyeongRanges.value, // 선택된 평수 범위 추가
       offset: offset.value,
       limit: limit.value
     };
