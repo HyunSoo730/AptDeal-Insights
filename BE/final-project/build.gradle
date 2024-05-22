@@ -22,6 +22,8 @@ repositories {
 }
 
 dependencies {
+    // 웹소켓
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
     /*JWT 의존성*/
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'

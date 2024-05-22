@@ -6,6 +6,10 @@ import ReviewForm from '@/components/ReviewForm.vue';
 import axios from "axios";
 import { getAptSaleDetails } from '@/api/aptSaleApi';
 
+import SubwayStationDetails from '@/components/SubwayStationDetails.vue';
+import AptSchoolInfo from '@/components/AptSchoolInfo.vue';
+import AptTransactionChart from '@/components/AptTransactionChart.vue';
+
 const reviews = ref([]);
 const route = useRoute();
 const router = useRouter();
@@ -110,9 +114,14 @@ const likeApartment = async (apartment) => {
     console.error('찜하기 실패:', error);
   }
 };
+
+const dongcode = computed(() => {
+  return selectedApartment.value?.aptCode.substring(0, 10) || '';
+});
 </script>
 
 <template>
+  {{ selectedApartment }}
   <div class="container">
     <div class="map-container">
       <KakaoMap :lat="mapCenter.lat" :lng="mapCenter.lng" width="70rem" height="50rem">
@@ -122,6 +131,7 @@ const likeApartment = async (apartment) => {
     </div>
     <div v-if="selectedApartment" class="detail-container">
       <h2>아파트 상세 정보</h2>
+      <AptTransactionChart v-if="selectedApartment" :aptCode="selectedApartment?.aptCode" :dongcode="dongcode" />
       <div class="apartment-details">
         <h3>아파트 이름: {{ selectedApartment.aptName }}</h3>
         <div v-if="apartmentDetails" class="info-cards">
@@ -136,6 +146,10 @@ const likeApartment = async (apartment) => {
             <p>{{ detail.floor }}층</p>
           </div>
         </div>
+        <SubwayStationDetails v-if="selectedApartment" :lat="selectedApartment?.latitude"
+          :lng="selectedApartment?.longitude" />
+        <AptSchoolInfo v-if="selectedApartment" :aptCode="selectedApartment?.aptCode"
+          :aptName="selectedApartment?.aptName" />
         <div class="button-container">
           <button class="like-button" @click="likeApartment(selectedApartment)">찜하기</button>
           <button class="review-button" @click="openReviewForm(selectedApartment)">리뷰 남기기</button>
@@ -155,6 +169,7 @@ const likeApartment = async (apartment) => {
     </div>
   </div>
 </template>
+
 
 <style scoped>
 .info-cards {

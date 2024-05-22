@@ -86,35 +86,29 @@ public class AptTradeDetailBatchJob {
     }
 
     private Stream<String> generateYMDParameters() {
-        return IntStream.rangeClosed(1, 17)
+        return IntStream.rangeClosed(1, 12)
                 .mapToObj(month -> {
-                    int year = (month <= 12) ? 2023 : 2024;
-                    int adjustedMonth = month % 12;
-                    if (adjustedMonth == 0) {
-                        adjustedMonth = 12;
-                    }
-                    return String.format("%d%02d", year, adjustedMonth);
+                    int year = 2022;
+                    return String.format("%d%02d", year, month);
                 });
     }
 
     @Bean
     public ItemReader<AptSaleDTO> aptTradeDetailReader() {
 
-        String[] ymdParams = IntStream.rangeClosed(1, 17)
-                .mapToObj(month -> {
-                    int year = (month <= 12) ? 2023 : 2024;
-                    int adjustedMonth = month % 12;
-                    if (adjustedMonth == 0) {
-                        adjustedMonth = 12;
-                    }
-                    return String.format("%d%02d", year, adjustedMonth);
-                })
-                .toArray(String[]::new);
 
-        String[] lawdCodes = {"11680", "11740", "11305", "11500", "11620", "11215", "11530"};
-//        "11545", "11350", "11320",
-//                "11230", "11590", "11440", "11410", "11650", "11200", "11290", "11710", "11470", "11560",
-//                "11170", "11380", "11110", "11140", "11260"};
+
+        String[] ymdParams = generateYMDParameters().toArray(String[]::new);
+
+        String[] lawdCodes = {"11680", "11740", "11305", "11500", "11620", "11215", "11530","11545", "11350", "11320", "11230", "11590","11440", "11410", "11650", "11200", "11290",
+                "11710", "11470", "11560", "11170","11380", "11110", "11140", "11260"};
+
+
+//        String[] lawdCodes = {"11680", "11740", "11305", "11500", "11620", "11215", "11530"};
+//         String[] lawdCodes ={"11545", "11350", "11320", "11230", "11590"};
+//         String[] lawdCodes ={"11440", "11410", "11650", "11200", "11290"};
+//        String[] lawdCodes ={ "11710", "11470", "11560", "11170", };
+//         String[] lawdCodes ={"11380", "11110", "11140", "11260"};
 
 
         return new ItemReader<AptSaleDTO>() {
@@ -191,6 +185,13 @@ public class AptTradeDetailBatchJob {
                     // aptSaleDTOList의 각 항목에 대해 좌표 정보를 받아오는 로직 추가
                     for (AptSaleDTO item : aptSaleDTOList) {
                         for (AptSaleDTO.Item myItem : item.getBody().getItemList()) {
+                            // 도로명 주소가 없는 것은 건너뛰기!
+                            if (myItem.getRoadName() == null || myItem.getRoadName().isEmpty() ||
+                                    myItem.getRoadNameBuildingSubCode() == null || myItem.getRoadNameBuildingSubCode().isEmpty() ||
+                                    myItem.getRoadNameBuildingMainCode() == null || myItem.getRoadNameBuildingMainCode().isEmpty()) {
+                                continue;
+                            }
+                            System.out.println(myItem);
                             String legalSiCode = myItem.getLegalDongSigunguCode().substring(0, 2); // 시군구 코드에서 시 부분만 뽑아오기 (11021 -> 11 (서울))
                             String roadName = myItem.getRoadName();
                             String mainCode = removeLeadingZeros(myItem.getRoadNameBuildingMainCode());
@@ -228,7 +229,7 @@ public class AptTradeDetailBatchJob {
                             String y = rootNode.path("result").path("point").path("y").asText();
                             String detail = rootNode.path("refined").path("structure").path("detail").asText();
 
-                            log.info("{} {} {} {} {},{},{}", text, x, y, detail, myItem.getYear(), myItem.getMonth(), myItem.getDay());
+//                            log.info("{} {} {} {} {},{},{}", text, x, y, detail, myItem.getYear(), myItem.getMonth(), myItem.getDay());
 
                             if (x.isEmpty() || y.isEmpty()) {
                                 log.warn("좌표 정보가 없어 건너뜁니다. 주소: {}", address);

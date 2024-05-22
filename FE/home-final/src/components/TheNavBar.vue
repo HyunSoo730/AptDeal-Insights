@@ -13,6 +13,7 @@
 
 <style scoped>
 .navbar {
-  border-bottom: 1px solid #e2e8f0; /* Tailwind's border-gray-300 */
+  border-bottom: 1px solid #e2e8f0;
+  /* Tailwind's border-gray-300 */
 }
 </style>

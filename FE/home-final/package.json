@@ -10,7 +10,8 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
   },
   "dependencies": {
-    "axios": "^1.7.1",
+    "@stomp/stompjs": "^7.0.0",
+    "axios": "^1.7.2",
     "chart.js": "^4.4.3",
     "pako": "^2.1.0",
     "pinia": "^2.1.7",

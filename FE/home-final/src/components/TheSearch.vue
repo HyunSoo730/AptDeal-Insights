@@ -30,6 +30,7 @@ import { ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { getAptNamesByPrefix } from '@/api/aptSaleApi';
 import { useMapStore } from '@/stores/mapStore';
+// import ApartmentMap from "@/components/ApartmentMap.vue"
 
 const router = useRouter();
 const searchInput = ref('');
@@ -71,23 +72,19 @@ const selectHighlighted = () => {
   }
 };
 
+
 const searchApartment = () => {
   if (selectedApartment.value) {
-    mapStore.setCoordinates(selectedApartment.value.latitude, selectedApartment.value.longitude);
-    mapStore.setSelectedAptCode(selectedApartment.value.aptCode);
-    mapStore.setDongcode(selectedApartment.value.dongcode); // dongcode 설정
+    localStorage.setItem('selectedApartment', JSON.stringify(selectedApartment.value));
     router.push({
-      name: 'KakaoMap',
-      query: {
-        latitude: selectedApartment.value.latitude,
-        longitude: selectedApartment.value.longitude,
+      name: 'ApartmentMap',
+      params: {
         aptCode: selectedApartment.value.aptCode,
         aptName: selectedApartment.value.aptName,
-        dongcode: selectedApartment.value.dongcode // dongcode 추가
+        latitude: selectedApartment.value.latitude,
+        longitude: selectedApartment.value.longitude,
       },
     });
-  } else {
-    console.log('아파트를 선택해주세요.');
   }
 };
 
