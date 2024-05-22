@@ -14,6 +14,7 @@
     "chart.js": "^4.4.3",
     "pako": "^2.1.0",
     "pinia": "^2.1.7",
+    "sockjs-client": "^1.6.1",
     "vue": "^3.4.21",
     "vue-chartjs": "^5.3.1",
     "vue-range-slider": "^0.6.0",
@@ -22,7 +23,8 @@
     "vue-slider-component": "^3.2.24",
     "vue3-kakao-maps": "^2.3.6",
     "vue3-slider": "^1.9.0",
-    "vuex": "^4.0.2"
+    "vuex": "^4.0.2",
+    "webstomp-client": "^1.2.6"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.4",
