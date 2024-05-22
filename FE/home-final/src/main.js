@@ -2,6 +2,9 @@ import { createApp } from "vue";
 import { createPinia } from "pinia";
 import { useKakao } from "vue3-kakao-maps/@utils";
 import "./index.css";
+// import vuetify from './plugins/vuetify';
+// import 'vuetify/styles';
+
 
 import {
   Chart as ChartJS,
@@ -25,5 +28,6 @@ const app = createApp(App);
 
 app.use(createPinia());
 app.use(router);
+// app.use(vuetify);
 
 app.mount("#app");

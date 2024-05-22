@@ -47,7 +47,7 @@ public class AptTradeDetailBatchJob {
     private final WebClient webClient;
     private final PlatformTransactionManager transactionManager;
     private static final String SEOUL_BASE_URL = "http://openapi.molit.go.kr/OpenAPI_ToolInstallPackage/service/rest/RTMSOBJSvc/getRTMSDataSvcAptTradeDev";
-    private static final String ENCODED_API_KEY = "TgmE7Y4ushOdLL8RFCgmK3Kyndd6uKdmWtYvDr0ORkChnst6Kwv8eN3zC%2BQgTBlgMKrYcm8eVX713AivtR%2BDGQ%3D%3D";
+    private static final String ENCODED_API_KEY = "VYskyTf2Mx18xL%2FEz0C0iT17vpNxlf0OJKnnkJLmnbnpX%2F5LcWneqipwQO1M4QMyCxJC1Df7WUGfh%2FqnCA6Q8A%3D%3D";
     private static final String SEOUL_API_KEY = URLDecoder.decode(ENCODED_API_KEY, StandardCharsets.UTF_8);
 
     @Bean
@@ -88,7 +88,7 @@ public class AptTradeDetailBatchJob {
     private Stream<String> generateYMDParameters() {
         return IntStream.rangeClosed(1, 12)
                 .mapToObj(month -> {
-                    int year = 2022;
+                    int year = 2019;
                     return String.format("%d%02d", year, month);
                 });
     }
@@ -100,8 +100,9 @@ public class AptTradeDetailBatchJob {
 
         String[] ymdParams = generateYMDParameters().toArray(String[]::new);
 
-        String[] lawdCodes = {"11680", "11740", "11305", "11500", "11620", "11215", "11530","11545", "11350", "11320", "11230", "11590","11440", "11410", "11650", "11200", "11290",
-                "11710", "11470", "11560", "11170","11380", "11110", "11140", "11260"};
+        String[] lawdCodes = {"11680", "11740", "11305", "11500", "11620", "11215", "11530","11545", "11350", "11320",
+                "11230", "11590","11440", "11410", "11650", "11200", "11290", "11710", "11470", "11560", "11170",
+                "11380", "11110", "11140", "11260"};
 
 
 //        String[] lawdCodes = {"11680", "11740", "11305", "11500", "11620", "11215", "11530"};
@@ -191,7 +192,7 @@ public class AptTradeDetailBatchJob {
                                     myItem.getRoadNameBuildingMainCode() == null || myItem.getRoadNameBuildingMainCode().isEmpty()) {
                                 continue;
                             }
-                            System.out.println(myItem);
+                            log.info("{}",myItem);
                             String legalSiCode = myItem.getLegalDongSigunguCode().substring(0, 2); // 시군구 코드에서 시 부분만 뽑아오기 (11021 -> 11 (서울))
                             String roadName = myItem.getRoadName();
                             String mainCode = removeLeadingZeros(myItem.getRoadNameBuildingMainCode());
