@@ -1,8 +1,11 @@
 package com.ssafy.finalproject.aptsale.Controller;
 
 
+import com.ssafy.finalproject.aptsale.Service.AptRentSaleService;
 import com.ssafy.finalproject.aptsale.Service.AptSaleService;
 import com.ssafy.finalproject.aptsale.dto.request.AptNameAddressDTO;
+import com.ssafy.finalproject.aptsale.dto.request.SearchConditionDTO;
+import com.ssafy.finalproject.aptsale.dto.response.AptRentSaleDTO;
 import com.ssafy.finalproject.aptsale.dto.response.AptSaleDetails;
 import com.ssafy.finalproject.aptsale.dto.request.AptSaleByDongDTO;
 import com.ssafy.finalproject.aptsale.dto.response.AptTransactionResDTO;
@@ -22,6 +25,7 @@ import java.util.List;
 public class AptSaleController {
 
     private final AptSaleService aptSaleService;
+    private final AptRentSaleService aptRentSaleService;
 
     @GetMapping("/apt-names")
     public ResponseEntity<List<AptNameAddressDTO>> getAptNameAddressByPrefix(
@@ -83,5 +87,10 @@ public class AptSaleController {
         aptSaleService.registerSale(aptSale);
     }
 
-
+    // TODO : 검색 조건으로 아파트 전월세 결과 반환
+    @PostMapping("/rent-sales")
+    public List<AptRentSaleDTO> getRentSales(@RequestBody SearchConditionDTO searchCondition) {
+        log.info("Received search condition: {}", searchCondition);
+        return aptRentSaleService.getRentSalesByConditions(searchCondition);
+    }
 }
