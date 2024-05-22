@@ -86,32 +86,25 @@ public class AptTradeDetailBatchJob {
     }
 
     private Stream<String> generateYMDParameters() {
-        return IntStream.rangeClosed(1, 17)
+        return IntStream.rangeClosed(1, 12)
                 .mapToObj(month -> {
-                    int year = (month <= 12) ? 2023 : 2024;
-                    int adjustedMonth = month % 12;
-                    if (adjustedMonth == 0) {
-                        adjustedMonth = 12;
-                    }
-                    return String.format("%d%02d", year, adjustedMonth);
+                    int year = 2022;
+                    return String.format("%d%02d", year, month);
                 });
     }
 
     @Bean
     public ItemReader<AptSaleDTO> aptTradeDetailReader() {
 
-        String[] ymdParams = IntStream.rangeClosed(1, 17)
-                .mapToObj(month -> {
-                    int year = (month <= 12) ? 2023 : 2024;
-                    int adjustedMonth = month % 12;
-                    if (adjustedMonth == 0) {
-                        adjustedMonth = 12;
-                    }
-                    return String.format("%d%02d", year, adjustedMonth);
-                })
-                .toArray(String[]::new);
 
-        String[] lawdCodes = {"11680", "11740", "11305", "11500", "11620", "11215", "11530"};
+
+        String[] ymdParams = generateYMDParameters().toArray(String[]::new);
+
+        String[] lawdCodes = {"11680", "11740", "11305", "11500", "11620", "11215", "11530","11545", "11350", "11320", "11230", "11590","11440", "11410", "11650", "11200", "11290",
+                "11710", "11470", "11560", "11170","11380", "11110", "11140", "11260"};
+
+
+//        String[] lawdCodes = {"11680", "11740", "11305", "11500", "11620", "11215", "11530"};
 //         String[] lawdCodes ={"11545", "11350", "11320", "11230", "11590"};
 //         String[] lawdCodes ={"11440", "11410", "11650", "11200", "11290"};
 //        String[] lawdCodes ={ "11710", "11470", "11560", "11170", };
