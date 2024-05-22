@@ -1,6 +1,6 @@
 <template>
   <div v-if="stations.length" class="mt-6 p-4 bg-white shadow rounded-lg">
-    <h2 class="text-lg font-semibold mb-4">가장 가까운 지하철역</h2>
+    <h2 class="text-lg font-semibold mb-4">가장 가까운 지하철역🚇</h2>
     <ul class="list-disc pl-5 space-y-2">
       <li v-for="(station, index) in stations" :key="index" class="text-sm">
         {{ station.stationName }} - {{ station.lineNum }} (거리: {{ station.distance.toFixed(2) }} km, 걷기 시간: {{ station.walkingTime }})

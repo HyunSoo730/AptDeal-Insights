@@ -121,7 +121,6 @@ const dongcode = computed(() => {
 </script>
 
 <template>
-  {{ selectedApartment }}
   <div class="container">
     <div class="map-container">
       <KakaoMap :lat="mapCenter.lat" :lng="mapCenter.lng" width="70rem" height="50rem">
@@ -131,7 +130,7 @@ const dongcode = computed(() => {
     </div>
     <div v-if="selectedApartment" class="detail-container">
       <h2>아파트 상세 정보</h2>
-      <AptTransactionChart v-if="selectedApartment" :aptCode="selectedApartment?.aptCode" :dongcode="dongcode" />
+      <AptTransactionChart v-if="selectedApartment" :apartment="selectedApartment":aptCode="selectedApartment?.aptCode" :dongcode="dongcode" />
       <div class="apartment-details">
         <h3>아파트 이름: {{ selectedApartment.aptName }}</h3>
         <div v-if="apartmentDetails" class="info-cards">
