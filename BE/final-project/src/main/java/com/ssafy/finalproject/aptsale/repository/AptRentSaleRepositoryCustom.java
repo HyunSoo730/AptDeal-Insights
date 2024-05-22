@@ -22,7 +22,7 @@ public class AptRentSaleRepositoryCustom {
 
     // TODO : 구(지역) 및 동(법정동) 전월세 정보 조회
     public List<AptRentSaleDTO> findRentSalesByConditions(SearchConditionDTO searchCondition) {
-        System.out.println("searchCondition: " + searchCondition);
+//        System.out.println("searchCondition: " + searchCondition);
         return queryFactory
                 .select(new QAptRentSaleDTO(
                         aptRentSale.constructionYear, aptRentSale.contractType, aptRentSale.contractPeriod,
@@ -32,7 +32,7 @@ public class AptRentSaleRepositoryCustom {
                         aptRentSale.floor
                 ))
                 .from(aptRentSale)
-                .where(buildBooleanExpression(searchCondition))
+                .where(buildBooleanExpression(searchCondition), inExclusiveAreaRanges(searchCondition.getSelectedPyeongRanges()))
 //                .where(eqRegionCode(searchCondition.getRegionCode()), eqLegalDong(searchCondition.getLegalDong()))
                 .offset(searchCondition.getOffset())
                 .limit(searchCondition.getLimit())
@@ -68,6 +68,23 @@ public class AptRentSaleRepositoryCustom {
         } else {
             return aptRentSale.monthlyRent.gt(0); // * 반전세(월세)
         }
+    }
+
+    // ! 선택한 평수 범위에 해당하는 전용면적 조건 추가
+    private BooleanBuilder inExclusiveAreaRanges(List<Integer> selectedPyeongRanges) {
+        if (selectedPyeongRanges == null || selectedPyeongRanges.isEmpty()) {
+            return new BooleanBuilder(); // ! 전체를 의미하도록 빈 BooleanBuilder 반환
+        }
+
+        BooleanBuilder builder = new BooleanBuilder();
+        for (Integer pyeong : selectedPyeongRanges) {
+            double minArea = pyeong * 3.3;
+            double maxArea = (pyeong + 9) * 3.3;
+            builder.or(aptRentSale.exclusiveArea.between(minArea, maxArea));
+        }
+//        System.out.println(builder.toString());
+
+        return builder;
     }
 
     private BooleanExpression eqRegionCode(String regionCode) {

@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -23,6 +24,7 @@ public class SearchConditionDTO {
     private LocalDate startDate;
     private LocalDate endDate;
     private Boolean isCharter; // ! 전세인지
+    private List<Integer> selectedPyeongRanges; // ! 선택한 평수 리스트
     private int offset = 0;  // ! 기본값 설정
     private int limit = 20; // ! 기본값 설정
 }
