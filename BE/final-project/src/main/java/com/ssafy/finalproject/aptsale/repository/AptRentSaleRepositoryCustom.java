@@ -39,6 +39,42 @@ public class AptRentSaleRepositoryCustom {
                 .fetch();
     }
 
+    // TODO : 특정 아파트의 최근 N년간의 전월세 거래 데이터 조회
+    public List<AptRentSaleDTO> findRentSalesByApartmentAndYears(String apartmentName, int years) {
+        LocalDate now = LocalDate.now();
+        LocalDate startDate = now.minusYears(years);
+
+        return queryFactory
+                .select(new QAptRentSaleDTO(
+                        aptRentSale.constructionYear, aptRentSale.contractType, aptRentSale.contractPeriod,
+                        aptRentSale.year, aptRentSale.legalDong, aptRentSale.depositAmount, aptRentSale.apartmentName,
+                        aptRentSale.month, aptRentSale.monthlyRent, aptRentSale.day, aptRentSale.exclusiveArea,
+                        aptRentSale.previousContractDeposit, aptRentSale.previousContractRent, aptRentSale.regionCode,
+                        aptRentSale.floor
+                ))
+                .from(aptRentSale)
+                .where(aptRentSale.apartmentName.eq(apartmentName).and(aptRentSale.year.goe(startDate.getYear())))
+                .fetch();
+    }
+
+    // TODO : 특정 구의 최근 N년간의 전월세 거래 데이터 조회
+    public List<AptRentSaleDTO> findRentSalesByRegionCodeAndYears(String regionCode, int years) {
+        LocalDate now = LocalDate.now();
+        LocalDate startDate = now.minusYears(years);
+
+        return queryFactory
+                .select(new QAptRentSaleDTO(
+                        aptRentSale.constructionYear, aptRentSale.contractType, aptRentSale.contractPeriod,
+                        aptRentSale.year, aptRentSale.legalDong, aptRentSale.depositAmount, aptRentSale.apartmentName,
+                        aptRentSale.month, aptRentSale.monthlyRent, aptRentSale.day, aptRentSale.exclusiveArea,
+                        aptRentSale.previousContractDeposit, aptRentSale.previousContractRent, aptRentSale.regionCode,
+                        aptRentSale.floor
+                ))
+                .from(aptRentSale)
+                .where(aptRentSale.regionCode.eq(regionCode).and(aptRentSale.year.goe(startDate.getYear())))
+                .fetch();
+    }
+
     // TODO:  모든 조건 조합
     // ! BooleanBuilder는 null값 허용 -> null인 경우 해당 조건 무시된다. (NPE 발생하지 않고 알아서 처리함 -> getter가 null 반환해도 상관없음)
     private BooleanBuilder buildBooleanExpression(SearchConditionDTO searchCondition) {

@@ -47,7 +47,7 @@ public class AptSaleController {
 
     @GetMapping("/details/{aptCode}")
     public ResponseEntity<?> getAptSaleDetails(@PathVariable("aptCode") String aptCode) {
-        List<AptSaleDetails> aptSaleDetailsList =  aptSaleService.findAptSaleDetails(aptCode);
+        List<AptSaleDetails> aptSaleDetailsList = aptSaleService.findAptSaleDetails(aptCode);
         return new ResponseEntity<>(aptSaleDetailsList, HttpStatus.OK);
     }
 
@@ -83,7 +83,7 @@ public class AptSaleController {
 
 
     @PostMapping("/registerSale")
-    public void registerSale(@RequestBody AptSale aptSale){
+    public void registerSale(@RequestBody AptSale aptSale) {
         aptSaleService.registerSale(aptSale);
     }
 
@@ -95,5 +95,17 @@ public class AptSaleController {
         return new ResponseEntity<>(rentSalesByConditions, HttpStatus.OK);
     }
 
+    // TODO : 특정 아파트의 최근 N년간의 전월세 거래 데이터 조회
+    @GetMapping("/apartment-rent-sales/{apartmentName}/{years}")
+    public ResponseEntity<?> getRentSalesByApartmentAndYears(@PathVariable("apartmentName") String apartmentName, @PathVariable("years") int years) {
+        List<AptRentSaleDTO> rentSalesByApartmentAndYears = aptRentSaleService.getRentSalesByApartmentAndYears(apartmentName, years);
+        return new ResponseEntity<>(rentSalesByApartmentAndYears, HttpStatus.OK);
+    }
 
+    // TODO : 특정 구의 최근 N년간의 전월세 거래 데이터 조회
+    @GetMapping("/region-rent-sales/{regionCode}/{years}")
+    public ResponseEntity<?> getRentSalesByRegionCodeAndYears(@PathVariable("regionCode") String regionCode, @PathVariable("years") int years) {
+        List<AptRentSaleDTO> rentSalesByRegionCodeAndYears = aptRentSaleService.getRentSalesByRegionCodeAndYears(regionCode, years);
+        return new ResponseEntity<>(rentSalesByRegionCodeAndYears, HttpStatus.OK);
+    }
 }
