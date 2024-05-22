@@ -5,7 +5,7 @@
         <h2 class="text-2xl font-bold mb-4">회원가입</h2>
         <form @submit.prevent="handleSignup">
           <div class="mb-4">
-            <label for="email" class="block mb-2">이메일</label>
+            <label for="email" class="block mb-2 text-gray-700">이메일</label>
             <input
               type="email"
               id="email"
@@ -14,7 +14,7 @@
             />
           </div>
           <div class="mb-4">
-            <label for="password" class="block mb-2">비밀번호</label>
+            <label for="password" class="block mb-2 text-gray-700">비밀번호</label>
             <input
               type="password"
               id="password"
@@ -24,7 +24,7 @@
             />
           </div>
           <div class="mb-4">
-            <label for="confirm-password" class="block mb-2">비밀번호 확인</label>
+            <label for="confirm-password" class="block mb-2 text-gray-700">비밀번호 확인</label>
             <input
               type="password"
               id="confirm-password"
@@ -43,7 +43,7 @@
             </p>
           </div>
           <div class="mb-4">
-            <label for="name" class="block mb-2">이름</label>
+            <label for="name" class="block mb-2 text-gray-700">이름</label>
             <input
               type="text"
               id="name"
@@ -52,7 +52,7 @@
             />
           </div>
           <div class="mb-4">
-            <label for="nickname" class="block mb-2">닉네임</label>
+            <label for="nickname" class="block mb-2 text-gray-700">닉네임</label>
             <input
               type="text"
               id="nickname"
@@ -61,7 +61,7 @@
             />
           </div>
           <div class="mb-4">
-            <label for="role" class="block mb-2">역할</label>
+            <label for="role" class="block mb-2 text-gray-700">역할</label>
             <select
               id="role"
               v-model="role"
@@ -73,12 +73,12 @@
           </div>
           <button
             type="submit"
-            class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+            class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors duration-200"
           >
             회원가입
           </button>
         </form>
-        <p class="mt-4">
+        <p class="mt-4 text-gray-700">
           이미 회원이신가요?
           <a href="#" @click.prevent="openLogin" class="text-blue-500 hover:underline">로그인하기</a>
         </p>
@@ -86,7 +86,8 @@
     </div>
   </div>
 </template>
-<script setup>
+
+<script lang="ts" setup>
 import { ref, watch } from 'vue';
 import axios from 'axios';
 
@@ -106,16 +107,15 @@ const handleSignup = async () => {
   }
 };
 
-const emit = defineEmits(['close','openLogin']);
+const emit = defineEmits(['close', 'openLogin']);
 
 let email = ref('');
 let password = ref('');
 let confirmPassword = ref('');
 let name = ref('');
 let nickname = ref('');
-let role = ref('');
+let role = ref('USER');
 let passwordMatch = ref(false);
-
 
 const openLogin = () => {
   emit('close');
@@ -130,6 +130,7 @@ watch([password, confirmPassword], () => {
   checkPasswordMatch();
 });
 </script>
+
 <style scoped>
 .modal-overlay {
   position: fixed;
@@ -151,5 +152,11 @@ watch([password, confirmPassword], () => {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   z-index: 1000; /* Ensure modal container is above the overlay */
   position: relative;
+  max-width: 400px;
+  width: 100%;
+}
+
+.modal-content {
+  text-align: center;
 }
 </style>
