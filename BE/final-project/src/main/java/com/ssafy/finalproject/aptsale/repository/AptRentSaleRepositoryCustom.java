@@ -40,6 +40,7 @@ public class AptRentSaleRepositoryCustom {
     }
 
     // TODO:  모든 조건 조합
+    // ! BooleanBuilder는 null값 허용 -> null인 경우 해당 조건 무시된다. (NPE 발생하지 않고 알아서 처리함 -> getter가 null 반환해도 상관없음)
     private BooleanBuilder buildBooleanExpression(SearchConditionDTO searchCondition) {
         BooleanBuilder builder = new BooleanBuilder();
 
@@ -52,12 +53,22 @@ public class AptRentSaleRepositoryCustom {
                 .and(goeExclusiveArea(searchCondition.getMinExclusiveArea()))
                 .and(loeExclusiveArea(searchCondition.getMaxExclusiveArea()))
                 .and(goeStartDate(searchCondition.getStartDate()))
-                .and(loeEndDate(searchCondition.getEndDate()));
+                .and(loeEndDate(searchCondition.getEndDate()))
+                .and(eqIsCharter(searchCondition.getIsCharter()));
 
         return builder;
     }
 
-
+    // ! 전세인지 반전세(월세)인지 -> monthlyRent값이 0 이면 전세
+    private BooleanExpression eqIsCharter(Boolean isCharter) {
+        if (isCharter == null) {
+            return null; // 전체
+        } else if (isCharter) {
+            return aptRentSale.monthlyRent.eq(0); // * 전세
+        } else {
+            return aptRentSale.monthlyRent.gt(0); // * 반전세(월세)
+        }
+    }
 
     private BooleanExpression eqRegionCode(String regionCode) {
         return regionCode != null ? aptRentSale.regionCode.eq(regionCode) : null;

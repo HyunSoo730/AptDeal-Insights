@@ -22,6 +22,7 @@ public class SearchConditionDTO {
     private Double maxExclusiveArea;
     private LocalDate startDate;
     private LocalDate endDate;
+    private Boolean isCharter; // ! 전세인지
     private int offset = 0;  // ! 기본값 설정
     private int limit = 20; // ! 기본값 설정
 }
