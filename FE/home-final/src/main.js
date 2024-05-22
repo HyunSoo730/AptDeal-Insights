@@ -19,7 +19,7 @@ ChartJS.register(Title, Tooltip, Legend, LineElement, PointElement, LinearScale,
 
 import App from "./App.vue";
 import router from "./router";
-useKakao("49c41bd6197ebea05e29425dd6780f25");
+useKakao("49c41bd6197ebea05e29425dd6780f25", ["clusterer", "services", "drawing"]);
 
 const app = createApp(App);
 

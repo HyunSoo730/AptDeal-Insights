@@ -14,11 +14,7 @@
         <p>층: {{ detail.floor }}층</p>
         <hr class="my-2">
       </div>
-      <button
-        v-if="!allDetailsShown"
-        @click="loadMore"
-        class="bg-blue-500 text-white px-4 py-2 rounded-lg"
-      >
+      <button v-if="!allDetailsShown" @click="loadMore" class="bg-blue-500 text-white px-4 py-2 rounded-lg">
         더보기
       </button>
     </div>
@@ -82,47 +78,61 @@ watch(() => mapStore.selectedAptCode, (newAptCode) => {
 .bg-white {
   background-color: #fff;
 }
+
 .p-6 {
   padding: 1.5rem;
 }
+
 .shadow-md {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
+
 .rounded-lg {
   border-radius: 0.5rem;
 }
+
 .text-2xl {
   font-size: 1.5rem;
 }
+
 .font-bold {
   font-weight: 700;
 }
+
 .mb-4 {
   margin-bottom: 1rem;
 }
+
 .text-xl {
   font-size: 1.25rem;
 }
+
 .font-semibold {
   font-weight: 600;
 }
+
 .my-2 {
   margin: 0.5rem 0;
 }
+
 .bg-blue-500 {
   background-color: #3b82f6;
 }
+
 .text-white {
   color: #fff;
 }
+
 .px-4 {
   padding-left: 1rem;
   padding-right: 1rem;
 }
+
 .py-2 {
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
 }
+
 .rounded-lg {
   border-radius: 0.5rem;
 }
