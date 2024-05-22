@@ -102,6 +102,18 @@
         <p>주소: {{ lease.legalDong }}</p>
         <p>건축년도: {{ lease.constructionYear }}</p>
         <p>층: {{ lease.floor }}</p>
+        <div class="mt-4">
+          <select v-model="lease.selectedYears" class="w-full p-3 border border-gray-400 focus:outline-none focus:border-blue-500 text-lg">
+            <option v-for="year in yearOptions" :key="year" :value="year">{{ year }}년</option>
+          </select>
+          <button @click="showCharts(lease)" class="bg-blue-500 text-white px-6 py-3 rounded-lg text-lg w-full mt-4">
+            차트보기
+          </button>
+        </div>
+        <div v-if="lease.chartsVisible" class="mt-8">
+          <ChartComponent :chart-data="lease.apartmentChartData" :options="{ title: '아파트 전월세 거래 차트' }" />
+          <ChartComponent :chart-data="lease.regionChartData" :options="{ title: '해당 구 전월세 거래 차트' }" />
+        </div>
       </div>
     </div>
     <div v-if="!loading && leaseListings.length && !allDataLoaded" class="text-center mt-8">
@@ -118,9 +130,10 @@
 <script lang="ts" setup>
 import { ref, onMounted } from "vue";
 import axios from "axios";
-import { getLeaseListingsByRegionAndDong } from '@/api/aptLeaseApi';
+import { getLeaseListingsByRegionAndDong, getRentSalesByApartmentAndYears, getRentSalesByRegionCodeAndYears } from '@/api/aptLeaseApi';
 import VueSimpleRangeSlider from "vue-simple-range-slider";
 import "vue-simple-range-slider/css";
+import ChartComponent from '@/components/ChartComponent.vue';
 
 const selectedCity = ref("");
 const selectedGu = ref("");
@@ -132,20 +145,20 @@ const dongs = ref([]);
 const initialListings = ref([]);
 const leaseListings = ref([]);
 
-const depositRange = ref([100, 100000]); // 보증금 범위
-const monthlyRentRange = ref([0, 1000]); // 월세 범위
+const depositRange = ref([100, 100000]);
+const monthlyRentRange = ref([0, 1000]);
 const startDate = ref("");
 const endDate = ref("");
-const rentType = ref("all"); // 임대 유형 필터
+const rentType = ref("all");
 
 const offset = ref(0);
 const limit = ref(9);
 const loading = ref(false);
 const allDataLoaded = ref(false);
 
-// 평수 옵션과 선택된 평수 리스트
 const pyeongOptions = [10, 20, 30, 40, 50, 60, 70];
 const selectedPyeongRanges = ref<number[]>([]);
+const yearOptions = [1, 2, 3, 4, 5];
 
 onMounted(() => {
   fetchCities();
@@ -217,7 +230,6 @@ const loadMoreListings = async () => {
     const dongName = selectedDong.value.split(" ").pop();
     const regionCode = selectedGu.value.substr(0, 5);
 
-    // rentType을 isCharter로 변환
     let isCharter = null;
     if (rentType.value === 'deposit') {
       isCharter = true;
@@ -234,8 +246,8 @@ const loadMoreListings = async () => {
       maxMonthlyRent: monthlyRentRange.value[1],
       startDate: startDate.value,
       endDate: endDate.value,
-      isCharter, // 필터링 조건으로 추가된 값
-      selectedPyeongRanges: selectedPyeongRanges.value, // 선택된 평수 범위 추가
+      isCharter,
+      selectedPyeongRanges: selectedPyeongRanges.value,
       offset: offset.value,
       limit: limit.value
     };
@@ -245,7 +257,13 @@ const loadMoreListings = async () => {
       if (response.data.length < limit.value) {
         allDataLoaded.value = true;
       }
-      leaseListings.value.push(...response.data);
+      leaseListings.value.push(...response.data.map(lease => ({
+        ...lease,
+        selectedYears: 3,
+        chartsVisible: false,
+        apartmentChartData: null,
+        regionChartData: null
+      })));
       offset.value += limit.value;
     } catch (error) {
       console.error("Failed to fetch lease listings:", error);
@@ -261,7 +279,6 @@ const filterListings = async () => {
     allDataLoaded.value = false;
     leaseListings.value = [];
 
-    // rentType을 isCharter로 변환
     let isCharter = null;
     if (rentType.value === 'deposit') {
       isCharter = true;
@@ -278,8 +295,8 @@ const filterListings = async () => {
       maxMonthlyRent: monthlyRentRange.value[1],
       startDate: startDate.value,
       endDate: endDate.value,
-      isCharter, // 필터링 조건으로 추가된 값
-      selectedPyeongRanges: selectedPyeongRanges.value, // 선택된 평수 범위 추가
+      isCharter,
+      selectedPyeongRanges: selectedPyeongRanges.value,
       offset: offset.value,
       limit: limit.value
     };
@@ -289,7 +306,13 @@ const filterListings = async () => {
       if (response.data.length < limit.value) {
         allDataLoaded.value = true;
       }
-      leaseListings.value.push(...response.data);
+      leaseListings.value.push(...response.data.map(lease => ({
+        ...lease,
+        selectedYears: 3,
+        chartsVisible: false,
+        apartmentChartData: null,
+        regionChartData: null
+      })));
       offset.value += limit.value;
     } catch (error) {
       console.error("Failed to fetch lease listings:", error);
@@ -297,6 +320,61 @@ const filterListings = async () => {
       loading.value = false;
     }
   }
+};
+
+const showCharts = async (lease) => {
+  const years = lease.selectedYears;
+
+  if (confirm(`${years}년 차트를 보시겠습니까?`)) {
+    try {
+      const [apartmentResponse, regionResponse] = await Promise.all([
+        getRentSalesByApartmentAndYears(lease.apartmentName, years),
+        getRentSalesByRegionCodeAndYears(selectedGu.value.substr(0, 5), years)
+      ]);
+
+      const apartmentData = apartmentResponse.data;
+      const regionData = regionResponse.data;
+
+      if (!apartmentData.length || !regionData.length) {
+        console.error("No data available for charts");
+        return;
+      }
+
+      lease.apartmentChartData = formatChartData(apartmentData);
+      lease.regionChartData = formatChartData(regionData);
+      lease.chartsVisible = true;
+    } catch (error) {
+      console.error("Failed to fetch chart data:", error);
+    }
+  }
+};
+
+const formatChartData = (data) => {
+  if (!data || !data.length) return { labels: [], datasets: [] };
+
+  const labels = data.map(item => `${item.year}-${item.month}`);
+  const depositData = data.map(item => item.depositAmount || 0);
+  const rentData = data.map(item => item.monthlyRent || 0);
+
+  return {
+    labels,
+    datasets: [
+      {
+        label: '보증금',
+        data: depositData,
+        borderColor: 'rgba(75, 192, 192, 1)',
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        borderWidth: 1,
+      },
+      {
+        label: '월세',
+        data: rentData,
+        borderColor: 'rgba(153, 102, 255, 1)',
+        backgroundColor: 'rgba(153, 102, 255, 0.2)',
+        borderWidth: 1,
+      },
+    ],
+  };
 };
 </script>
 

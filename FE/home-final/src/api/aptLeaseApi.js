@@ -1,4 +1,3 @@
-// src/api/aptLeaseApi.js
 import axios from 'axios';
 
 const aptLeaseApi = axios.create({
@@ -8,4 +7,12 @@ const aptLeaseApi = axios.create({
 
 export function getLeaseListingsByRegionAndDong(searchCondition) {
   return aptLeaseApi.post('/rent-sales', searchCondition);
+}
+
+export function getRentSalesByApartmentAndYears(apartmentName, years) {
+  return aptLeaseApi.get(`/apartment-rent-sales/${apartmentName}/${years}`);
+}
+
+export function getRentSalesByRegionCodeAndYears(regionCode, years) {
+  return aptLeaseApi.get(`/region-rent-sales/${regionCode}/${years}`);
 }
