@@ -90,7 +90,8 @@ public class AptRentSaleRepositoryCustom {
                 .and(loeExclusiveArea(searchCondition.getMaxExclusiveArea()))
                 .and(goeStartDate(searchCondition.getStartDate()))
                 .and(loeEndDate(searchCondition.getEndDate()))
-                .and(eqIsCharter(searchCondition.getIsCharter()));
+                .and(eqIsCharter(searchCondition.getIsCharter()))
+                .and(containsApartmentName(searchCondition.getApartmentName()));
 
         return builder;
     }
@@ -121,6 +122,10 @@ public class AptRentSaleRepositoryCustom {
 //        System.out.println(builder.toString());
 
         return builder;
+    }
+
+    private BooleanExpression containsApartmentName(String apartmentName) {
+        return apartmentName != null ? aptRentSale.apartmentName.contains(apartmentName) : null;
     }
 
     private BooleanExpression eqRegionCode(String regionCode) {
