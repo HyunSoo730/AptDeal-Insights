@@ -6,8 +6,8 @@ import Kakao from "@/components/Kakao.vue";
 import ApartmentListByDong from "@/components/ApartmentListByDong.vue";
 import ApartmentMap from "@/components/ApartmentMap.vue";
 import Wishlist from "@/pages/Wishlist.vue";
-
 import RegisterSale from "@/components/RegisterSale.vue";
+import ApartmentLeaseList from "@/components/ApartmentLeaseList.vue"; // 추가
 
 const routes = [
   {
@@ -22,7 +22,7 @@ const routes = [
   },
   {
     path: "/community",
-    name: "communityPage",
+    name: "CommunityPage",
     component: CommunityPage,
   },
   {
@@ -54,11 +54,16 @@ const routes = [
     component: Wishlist,
   },
   {
-    path: "/asdasd",
-    name : "chart",
-    component: () => import("@/components/AptTransactionChart.vue"),
+    path: "/registerSale",
+    name: "RegisterSale",
+    component: RegisterSale,
+    props: true,
   },
-  { path: "/registerSale", name: "RegisterSale", component: RegisterSale, props: true },
+  {
+    path: "/lease",
+    name: "ApartmentLeaseList",
+    component: ApartmentLeaseList,
+  },
 ];
 
 const router = createRouter({
