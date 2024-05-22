@@ -91,6 +91,16 @@
 import { ref, watch } from 'vue';
 import axios from 'axios';
 
+const emit = defineEmits(['close', 'openLogin']);
+
+let email = ref('');
+let password = ref('');
+let confirmPassword = ref('');
+let name = ref('');
+let nickname = ref('');
+let role = ref('USER');
+let passwordMatch = ref(false);
+
 const handleSignup = async () => {
   try {
     const response = await axios.post('/api/join', {
@@ -101,21 +111,13 @@ const handleSignup = async () => {
       role: role.value,
     });
     console.log('회원가입 완료:', response.data);
+    alert("회원가입이 완료되었습니다!")
     emit('close');
+    emit('openLogin'); // 추가: 회원가입 완료 후 로그인 모달 열기
   } catch (error) {
     console.error('회원가입 실패:', error);
   }
 };
-
-const emit = defineEmits(['close', 'openLogin']);
-
-let email = ref('');
-let password = ref('');
-let confirmPassword = ref('');
-let name = ref('');
-let nickname = ref('');
-let role = ref('USER');
-let passwordMatch = ref(false);
 
 const openLogin = () => {
   emit('close');
@@ -129,6 +131,10 @@ const checkPasswordMatch = () => {
 watch([password, confirmPassword], () => {
   checkPasswordMatch();
 });
+
+const close = () => {
+  emit('close');
+};
 </script>
 
 <style scoped>

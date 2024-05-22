@@ -13,9 +13,10 @@
       </nav>
     </div>
   </header>
-  <div class="modal-backdrop" v-if="showLoginModal || showSignupModal"></div>
-  <LoginModal v-if="showLoginModal" @close="closeLoginModal" @openSignup="openSignupModal" />
+  <div class="modal-backdrop" v-if="showLoginModal || showSignupModal || showForgotPasswordModal"></div>
+  <LoginModal v-if="showLoginModal" @close="closeLoginModal" @openSignup="openSignupModal" @openForgotPassword="openForgotPasswordModal" />
   <SignupModal v-if="showSignupModal" @close="closeSignupModal" @openLogin="openLoginModal" />
+  <ForgotPasswordModal v-if="showForgotPasswordModal" @close="closeForgotPasswordModal" @openLogin="openLoginModal" />
 </template>
 
 <script setup>
@@ -24,6 +25,7 @@ import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import LoginModal from '@/components/LoginModal.vue';
 import SignupModal from '@/components/SignupModal.vue';
+import ForgotPasswordModal from '@/components/ForgotPasswordModal.vue';
 
 const store = useCounterStore();
 const router = useRouter();
@@ -33,6 +35,7 @@ const user = computed(() => store.user);
 
 const showLoginModal = ref(false);
 const showSignupModal = ref(false);
+const showForgotPasswordModal = ref(false);
 
 const openLoginModal = () => {
   showLoginModal.value = true;
@@ -50,6 +53,14 @@ const closeSignupModal = () => {
   showSignupModal.value = false;
 };
 
+const openForgotPasswordModal = () => {
+  showForgotPasswordModal.value = true;
+};
+
+const closeForgotPasswordModal = () => {
+  showForgotPasswordModal.value = false;
+};
+
 const logout = () => {
   store.logout();
   router.push('/');
@@ -65,6 +76,5 @@ const logout = () => {
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 998;
-  /* Ensure backdrop is below the modal */
 }
 </style>

@@ -141,7 +141,7 @@ const searchApartments = () => {
           <span class="text-gray-500 text-sm ml-4">{{ post.author }}</span>
         </li>
       </ul>
-      <router-link to="/community" class="mt-6 text-indigo-600 hover:text-indigo-800 transition duration-300 font-bold">커뮤니티 바로가기</router-link>
+      <router-link to="/chatroomlist" class="mt-6 text-indigo-600 hover:text-indigo-800 transition duration-300 font-bold">커뮤니티 바로가기</router-link>
     </div>
   </div>  
 </div>
