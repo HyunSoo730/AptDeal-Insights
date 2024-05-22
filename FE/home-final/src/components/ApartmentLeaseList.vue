@@ -36,14 +36,25 @@
         <div v-if="initialListings.length" class="mb-8">
           <h2 class="text-xl font-bold mb-4">필터링 옵션</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <input type="number" v-model="minDeposit" placeholder="최소 보증금" 
-              class="w-full p-3 border border-gray-400 focus:outline-none focus:border-blue-500 text-lg" />
-            <input type="number" v-model="maxDeposit" placeholder="최대 보증금" 
-              class="w-full p-3 border border-gray-400 focus:outline-none focus:border-blue-500 text-lg" />
-            <input type="number" v-model="minMonthlyRent" placeholder="최소 월세" 
-              class="w-full p-3 border border-gray-400 focus:outline-none focus:border-blue-500 text-lg" />
-            <input type="number" v-model="maxMonthlyRent" placeholder="최대 월세" 
-              class="w-full p-3 border border-gray-400 focus:outline-none focus:border-blue-500 text-lg" />
+            <label class="w-full p-3 text-lg">보증금 범위</label>
+            <VueSimpleRangeSlider
+              style="width: 100%"
+              :min="0"
+              :max="1000000000"
+              exponential
+              v-model="depositRange"
+            >
+              <template #suffix="{ value }">만원</template>
+            </VueSimpleRangeSlider>
+            <label class="w-full p-3 text-lg">월세 범위</label>
+            <VueSimpleRangeSlider
+              style="width: 100%"
+              :min="0"
+              :max="100000"
+              v-model="monthlyRentRange"
+            >
+              <template #suffix="{ value }">만원</template>
+            </VueSimpleRangeSlider>
             <input type="number" v-model="minExclusiveArea" placeholder="최소 전용 면적" 
               class="w-full p-3 border border-gray-400 focus:outline-none focus:border-blue-500 text-lg" />
             <input type="number" v-model="maxExclusiveArea" placeholder="최대 전용 면적" 
@@ -79,6 +90,8 @@
   import { ref, onMounted } from "vue";
   import axios from "axios";
   import { getLeaseListingsByRegionAndDong } from '@/api/aptLeaseApi';
+  import VueSimpleRangeSlider from "vue-simple-range-slider";
+  import "vue-simple-range-slider/css";
   
   const selectedCity = ref("");
   const selectedGu = ref("");
@@ -90,10 +103,8 @@
   const initialListings = ref([]);
   const leaseListings = ref([]);
   
-  const minDeposit = ref("");
-  const maxDeposit = ref("");
-  const minMonthlyRent = ref("");
-  const maxMonthlyRent = ref("");
+  const depositRange = ref([0, 1000000000]); // 보증금 범위
+  const monthlyRentRange = ref([0, 100000]); // 월세 범위
   const minExclusiveArea = ref("");
   const maxExclusiveArea = ref("");
   const startDate = ref("");
@@ -182,10 +193,10 @@
       const searchCondition = {
         regionCode,
         legalDong: dongName,
-        minDeposit: minDeposit.value,
-        maxDeposit: maxDeposit.value,
-        minMonthlyRent: minMonthlyRent.value,
-        maxMonthlyRent: maxMonthlyRent.value,
+        minDeposit: depositRange.value[0],
+        maxDeposit: depositRange.value[1],
+        minMonthlyRent: monthlyRentRange.value[0],
+        maxMonthlyRent: monthlyRentRange.value[1],
         minExclusiveArea: minExclusiveArea.value,
         maxExclusiveArea: maxExclusiveArea.value,
         startDate: startDate.value,
@@ -203,6 +214,7 @@
   </script>
   
   <style scoped>
+  @import 'vue-simple-range-slider/css';
   .container {
     max-width: 1200px;
   }
