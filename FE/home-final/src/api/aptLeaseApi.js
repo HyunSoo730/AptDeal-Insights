@@ -6,6 +6,7 @@ const aptLeaseApi = axios.create({
 });
 
 export function getLeaseListingsByRegionAndDong(searchCondition) {
+  console.log(searchCondition);
   return aptLeaseApi.post('/rent-sales', searchCondition);
 }
 

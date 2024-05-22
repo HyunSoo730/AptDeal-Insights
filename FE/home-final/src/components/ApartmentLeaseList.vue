@@ -30,9 +30,11 @@
           </option>
         </select>
       </div>
-      <button @click="fetchInitialListings" class="bg-blue-500 text-white px-6 py-3 rounded-lg text-lg w-full mb-6">
-        초기 검색
-      </button>
+      <!-- 아파트명 검색 입력 필드 추가 -->
+      <div class="mb-4">
+        <input v-model="apartmentName" placeholder="아파트명 입력"
+          class="w-full p-3 border border-gray-400 focus:outline-none focus:border-blue-500 text-lg" />
+      </div>
       <div class="mb-8">
         <h2 class="text-xl font-bold mb-4">필터링 옵션</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -87,17 +89,17 @@
             </div>
           </div>
         </div>
-        <button @click="filterListings" class="bg-blue-500 text-white px-6 py-3 rounded-lg text-lg w-full mt-4">
-          필터링
+        <button @click="handleSearch" class="bg-blue-500 text-white px-6 py-3 rounded-lg text-lg w-full mt-4">
+          검색
         </button>
       </div>
     </div>
     <div v-if="leaseListings.length" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       <div v-for="lease in leaseListings" :key="lease.id" class="bg-white shadow-md rounded-lg p-6">
         <h2 class="text-xl font-bold mb-4">{{ lease.apartmentName }}</h2>
-        <p>임대 유형: {{ lease.contractType }}</p>
-        <p>임대 금액: {{ lease.depositAmount }}만원</p>
-        <p>월세: {{ lease.monthlyRent }}만원</p>
+        <p v-if="lease.monthlyRent === 0">전세 보증금: {{ lease.depositAmount }}만원</p>
+        <p v-else>보증금: {{ lease.depositAmount }}만원</p>
+        <p v-if="lease.monthlyRent > 0">월세: {{ lease.monthlyRent }}만원</p>
         <p>전용면적: {{ lease.exclusiveArea }}㎡</p> <!-- 전용면적 표시 -->
         <p>주소: {{ lease.legalDong }}</p>
         <p>건축년도: {{ lease.constructionYear }}</p>
@@ -138,6 +140,7 @@ import ChartComponent from '@/components/ChartComponent.vue';
 const selectedCity = ref("");
 const selectedGu = ref("");
 const selectedDong = ref("");
+const apartmentName = ref(""); // 추가: 아파트명 상태 변수
 
 const cities = ref([]);
 const gus = ref([]);
@@ -215,7 +218,7 @@ const handleGuChange = () => {
   }
 };
 
-const fetchInitialListings = async () => {
+const handleSearch = async () => {
   if (selectedDong.value) {
     offset.value = 0;
     allDataLoaded.value = false;
@@ -249,56 +252,8 @@ const loadMoreListings = async () => {
       isCharter,
       selectedPyeongRanges: selectedPyeongRanges.value,
       offset: offset.value,
-      limit: limit.value
-    };
-
-    try {
-      const response = await getLeaseListingsByRegionAndDong(searchCondition);
-      if (response.data.length < limit.value) {
-        allDataLoaded.value = true;
-      }
-      leaseListings.value.push(...response.data.map(lease => ({
-        ...lease,
-        selectedYears: 3,
-        chartsVisible: false,
-        apartmentChartData: null,
-        regionChartData: null
-      })));
-      offset.value += limit.value;
-    } catch (error) {
-      console.error("Failed to fetch lease listings:", error);
-    } finally {
-      loading.value = false;
-    }
-  }
-};
-
-const filterListings = async () => {
-  if (selectedDong.value) {
-    offset.value = 0;
-    allDataLoaded.value = false;
-    leaseListings.value = [];
-
-    let isCharter = null;
-    if (rentType.value === 'deposit') {
-      isCharter = true;
-    } else if (rentType.value === 'monthly') {
-      isCharter = false;
-    }
-
-    const searchCondition = {
-      regionCode: selectedGu.value.substr(0, 5),
-      legalDong: selectedDong.value.split(" ").pop(),
-      minDeposit: depositRange.value[0],
-      maxDeposit: depositRange.value[1],
-      minMonthlyRent: monthlyRentRange.value[0],
-      maxMonthlyRent: monthlyRentRange.value[1],
-      startDate: startDate.value,
-      endDate: endDate.value,
-      isCharter,
-      selectedPyeongRanges: selectedPyeongRanges.value,
-      offset: offset.value,
-      limit: limit.value
+      limit: limit.value,
+      apartmentName: apartmentName.value // 추가: 아파트명
     };
 
     try {
