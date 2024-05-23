@@ -3,10 +3,12 @@ import TheFooter from "@/components/TheFooter.vue";
 import TheHeader from "@/components/TheHeader.vue";
 import TheNavBar from "@/components/TheNavBar.vue";
 import TheSearch from "@/components/TheSearch.vue";
-import { onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useCounterStore } from '@/stores/counter';
 
 const store = useCounterStore();
+
+
 
 onMounted(() => {
   store.restoreLoginState();
@@ -24,3 +26,5 @@ onMounted(() => {
     <TheFooter />
   </div>
 </template>
+
+<style scoped></style>
