@@ -1,10 +1,10 @@
 <template>
   <header class="bg-white shadow">
     <div class="container mx-auto py-6 flex justify-between items-center">
-      <div class="flex items-center space-x-4 cursor-pointer" @click="navigateToHome">
-        <img src="@/assets/img/house.png" alt="아파트 거래 정보" class="w-12 h-12">
-        <h1 class="text-3xl font-bold text-teal-600">아파트 거래 정보</h1>
-      </div>
+      <div class="flex items-center space-x-4 cursor-pointer p-4 bg-white rounded-lg shadow-lg transform transition-all duration-300 hover:scale-105 hover:bg-gray-50" @click="navigateToHome">
+    <img src="@/assets/img/house.png" alt="아파트 거래 정보" class="w-14 h-14 rounded-full border-2 border-teal-600">
+    <h1 class="text-4xl font-extrabold text-teal-700 tracking-tight">아파트 거래 정보</h1>
+  </div>
       <nav>
         <ul class="flex space-x-4">
           <li v-if="user"><span class="text-lg font-semibold text-gray-700">어서오세요, {{ user.nickname }}님</span></li>
@@ -78,6 +78,11 @@ const logout = () => {
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap');
+
+h1 {
+  font-family: 'Poppins', sans-serif;
+}
 .modal-backdrop {
   position: fixed;
   top: 0;
