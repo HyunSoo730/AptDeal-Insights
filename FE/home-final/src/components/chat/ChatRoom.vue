@@ -137,6 +137,8 @@ export default {
 
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+
 .chat-container {
   display: flex;
   flex-direction: column;
@@ -148,6 +150,7 @@ export default {
   border-radius: 10px;
   overflow: hidden;
   position: relative;
+  font-family: 'Noto Sans KR', sans-serif;
 }
 
 .header {
@@ -157,10 +160,12 @@ export default {
   padding: 20px;
   background-color: #4CAF50;
   color: white;
+  font-family: 'Noto Sans KR', sans-serif;
 }
 
 .room-name {
   margin: 0;
+  font-family: 'Noto Sans KR', sans-serif;
 }
 
 .leave-button {
@@ -170,6 +175,7 @@ export default {
   padding: 10px 20px;
   border-radius: 5px;
   cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif;
 }
 
 .leave-button:hover {
@@ -183,6 +189,7 @@ export default {
   background-color: #f5f5f5;
   display: flex;
   flex-direction: column;
+  font-family: 'Noto Sans KR', sans-serif;
 }
 
 .message {
@@ -192,6 +199,7 @@ export default {
   max-width: 70%;
   display: flex;
   flex-direction: column;
+  font-family: 'Noto Sans KR', sans-serif;
 }
 
 .my-message {
@@ -211,15 +219,18 @@ export default {
   color: #999;
   font-size: 0.9rem;
   margin: 10px 0;
+  font-family: 'Noto Sans KR', sans-serif;
 }
 
 .sender {
   font-weight: bold;
   margin-bottom: 5px;
+  font-family: 'Noto Sans KR', sans-serif;
 }
 
 .content {
   margin: 0;
+  font-family: 'Noto Sans KR', sans-serif;
 }
 
 .input-container {
@@ -227,6 +238,7 @@ export default {
   padding: 10px;
   background-color: #fff;
   border-top: 1px solid #ccc;
+  font-family: 'Noto Sans KR', sans-serif;
 }
 
 input {
@@ -235,6 +247,7 @@ input {
   border: 1px solid #ccc;
   border-radius: 5px;
   margin-right: 10px;
+  font-family: 'Noto Sans KR', sans-serif;
 }
 
 .send-button {
@@ -244,6 +257,7 @@ input {
   padding: 10px 20px;
   border-radius: 5px;
   cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif;
 }
 
 .send-button:hover {
@@ -262,6 +276,7 @@ input {
   border-radius: 20px;
   cursor: pointer;
   font-size: 0.9rem;
+  font-family: 'Noto Sans KR', sans-serif;
 }
 
 .scroll-button:hover {

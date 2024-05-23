@@ -206,7 +206,7 @@
                         </h4>
                       </div>
                       <p class="text-2xl font-semibold text-indigo-600 mt-2">
-                        {{ detail.dealAmount }}원
+                        {{ detail.dealAmount }} 만원
                       </p>
                     </div>
                     <div class="mb-4">

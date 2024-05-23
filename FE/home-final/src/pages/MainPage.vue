@@ -66,39 +66,37 @@
             검색
           </button>
         </div>
-        <div class="bg-white shadow-lg rounded-lg p-8">
-          <h2 class="text-2xl font-bold mb-6 text-indigo-600">VR로 내 집 구경하기</h2>
-          <p class="text-gray-700 mb-6">VR 기기로 내 집을 미리 살펴볼 수 있습니다.</p>
-        </div>
       </div>
       <div>
-        <div class="bg-white shadow-lg rounded-lg p-8">
-          <h2 class="text-2xl font-bold mb-6 text-indigo-600">커뮤니티</h2>
-          <ul>
-            <li v-for="post in communityPosts" :key="post.id" class="border-b-2 border-gray-100 py-4">
-              <a :href="post.url" class="text-indigo-600 hover:text-indigo-800 transition duration-300">{{ post.title
-                }}</a>
-              <span class="text-gray-500 text-sm ml-4">{{ post.author }}</span>
-            </li>
-          </ul>
-          <router-link to="/chatroomlist"
-            class="mt-6 text-indigo-600 hover:text-indigo-800 transition duration-300 font-bold">커뮤니티 바로가기</router-link>
-        </div>
-        <div class="bg-white shadow-lg rounded-lg p-8">
-          <h2 class="text-xl font-bold mb-4">AI한테 다 물어봐!</h2>
-          <div class="chat-history mb-4">
-            <div v-for="(message, index) in chatHistory" :key="index" :class="message.role">
-              <p><strong>{{ message.role === 'user' ? '나' : 'AI 봇🤖' }}:</strong> {{ message.content }}</p>
-            </div>
-          </div>
-          <div class="flex">
-            <input v-model="userMessage" @keyup.enter="sendMessage" type="text"
-              class="flex-grow p-2 border border-gray-300 rounded" placeholder="Type your message..." />
-            <button @click="sendMessage" class="ml-2 p-2 bg-blue-500 text-white rounded">Send</button>
-            <button @click="saveChat" class="ml-2 p-2 bg-green-500 text-white rounded">Save</button>
-          </div>
-        </div>
+  <div class="bg-white shadow-lg rounded-lg p-8 mb-8"> <!-- mb-8 클래스 추가 -->
+    <h2 class="text-2xl font-bold mb-6 text-indigo-600">커뮤니티</h2>
+    <ul>
+      <li v-for="post in communityPosts" :key="post.id" class="border-b-2 border-gray-100 py-4">
+        <a :href="post.url" class="text-indigo-600 hover:text-indigo-800 transition duration-300">{{ post.title }}</a>
+        <span class="text-gray-500 text-sm ml-4">{{ post.author }}</span>
+      </li>
+    </ul>
+    <router-link to="/chatroomlist"
+      class="mt-6 text-indigo-600 hover:text-indigo-800 transition duration-300 font-bold">커뮤니티 바로가기</router-link>
+  </div>
+  <div class="bg-white shadow-lg rounded-lg p-8">
+    <h2 class="text-xl font-bold mb-4">AI한테 다 물어봐!</h2>
+    <div class="chat-history mb-4">
+      <div v-for="(message, index) in chatHistory" :key="index" :class="message.role">
+        <p><strong>{{ message.role === 'user' ? '나' : 'AI 봇🤖' }}:</strong> {{ message.content }}</p>
       </div>
+    </div>
+    <div class="flex flex-col space-y-2"> <!-- flex-col과 space-y-2 클래스 추가 -->
+      <input v-model="userMessage" @keyup.enter="sendMessage" type="text"
+        class="flex-grow p-2 border border-gray-300 rounded" placeholder="Type your message..." />
+      <div class="flex space-x-2"> <!-- 버튼들을 감싸는 div 추가 -->
+        <button @click="sendMessage" class="p-2 bg-blue-500 text-white rounded flex-grow">Send</button> <!-- flex-grow 클래스 추가 -->
+        <button @click="saveChat" class="p-2 bg-green-500 text-white rounded flex-grow">Save</button> <!-- flex-grow 클래스 추가 -->
+      </div>
+    </div>
+  </div>
+</div>
+
     </div>
   </section>
 </template>
@@ -123,11 +121,13 @@ const selectedDong = ref("");
 const cities = ref([]);
 const gus = ref([]);
 const dongs = ref([]);
+const communityPosts = ref([]);
 const userMessage = ref('');
 const chatHistory = ref([]);
 
 onMounted(async () => {
   await fetchCities();
+  await fetchCommunityPosts();
   try {
     const response = await axios.get("/api/user");
     user.value = response.data;
@@ -168,6 +168,15 @@ const fetchDongs = async (guCode) => {
     dongs.value = response.data.regcodes;
   } catch (error) {
     console.error("Failed to fetch dongs:", error);
+  }
+};
+
+const fetchCommunityPosts = async () => {
+  try {
+    const response = await axios.get("/api/community/posts");
+    communityPosts.value = response.data;
+  } catch (error) {
+    console.error("Failed to fetch community posts:", error);
   }
 };
 
@@ -236,6 +245,86 @@ const saveChat = async () => {
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+
+.container {
+  max-width: 1200px;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #4c51bf;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #2d3748;
+}
+
+p {
+  font-size: 1.125rem;
+  color: #4a5568;
+}
+
+label {
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: #2d3748;
+}
+
+input::placeholder,
+select option:first-child {
+  color: #a0aec0;
+}
+
+button {
+  font-size: 1.25rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.text-xl {
+  font-size: 1.25rem;
+}
+
+.text-lg {
+  font-size: 1.125rem;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.range-slider {
+  width: 100%;
+}
+
+.range-slider .range-slider__track {
+  background: #e2e8f0;
+  height: 4px;
+}
+
+.range-slider .range-slider__thumb {
+  background: #4c51bf;
+  border: none;
+  width: 16px;
+  height: 16px;
+}
+
+.range-slider .range-slider__thumb:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(76, 81, 191, 0.3);
+}
+
 .bg-gray-50 {
   background-color: #f9fafb;
 }

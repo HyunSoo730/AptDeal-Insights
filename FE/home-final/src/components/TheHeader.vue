@@ -16,45 +16,32 @@
       </div>
       <nav>
         <ul class="flex space-x-4">
-          <li v-if="user">
-            <span class="text-lg font-semibold text-gray-700"
-              >어서오세요, {{ user.nickname }}님</span
-            >
+          <li v-if="isLoggedIn && user.nickname">
+            <span class="text-lg font-semibold text-gray-700">어서오세요, {{ user.nickname }}님</span>
           </li>
           <li>
-            <router-link to="/" class="text-gray-700 hover:text-teal-600"
-              >Home</router-link
-            >
+            <router-link to="/" class="text-gray-700 hover:text-teal-600">Home</router-link>
           </li>
           <li v-if="isLoggedIn">
-            <router-link to="/mypage" class="text-gray-700 hover:text-teal-600"
-              >마이페이지</router-link
-            >
+            <router-link to="/mypage" class="text-gray-700 hover:text-teal-600">마이페이지</router-link>
           </li>
           <li v-if="!isLoggedIn">
             <a
               href="#"
               @click.prevent="openLoginModal"
-              class="text-gray-700 hover:text-teal-600"
-              >로그인/회원가입</a
-            >
+              class="text-gray-700 hover:text-teal-600">로그인/회원가입</a>
           </li>
           <li v-if="isLoggedIn">
             <a
               href="#"
               @click.prevent="logout"
-              class="text-gray-700 hover:text-teal-600"
-              >로그아웃</a
-            >
+              class="text-gray-700 hover:text-teal-600">로그아웃</a>
           </li>
         </ul>
       </nav>
     </div>
   </header>
-  <div
-    class="modal-backdrop"
-    v-if="showLoginModal || showSignupModal || showForgotPasswordModal"
-  ></div>
+  <div class="modal-backdrop" v-if="showLoginModal || showSignupModal || showForgotPasswordModal"></div>
   <LoginModal
     v-if="showLoginModal"
     @close="closeLoginModal"
@@ -125,9 +112,11 @@ const closeForgotPasswordModal = () => {
 
 const logout = () => {
   store.logout();
+  Object.assign(user, {}); // user 객체를 초기화합니다.
   router.push("/");
 };
 </script>
+
 
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap");
@@ -145,3 +134,4 @@ h1 {
   z-index: 998;
 }
 </style>
+

@@ -65,7 +65,7 @@ const submitForm = async () => {
         const response = await axios.post('/api/api/apt-sales/registerSale', formData.value);
         console.log(response.data);
         alert('매물이 성공적으로 등록되었습니다.');
-        router.push({ name: 'Home' }); // 등록 후 홈으로 이동 또는 다른 페이지로 이동
+        router.push({ name: 'MainPage' }); // 등록 후 홈으로 이동 또는 다른 페이지로 이동
     } catch (error) {
         console.error('매물 등록 중 오류가 발생했습니다:', error);
         alert('매물 등록 중 오류가 발생했습니다.');
