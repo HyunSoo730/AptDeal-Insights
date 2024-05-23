@@ -10,11 +10,9 @@
     </h2>
     <div v-if="user && !isEditing">
       <div class="bg-white shadow-lg rounded-2xl p-8 mb-6">
-        <p class="mb-4 text-xl text-gray-700"><span class="font-semibold text-indigo-600">이메일:</span> {{ user.email }}
-        </p>
+        <p class="mb-4 text-xl text-gray-700"><span class="font-semibold text-indigo-600">이메일:</span> {{ user.email }}</p>
         <p class="mb-4 text-xl text-gray-700"><span class="font-semibold text-indigo-600">이름:</span> {{ user.name }}</p>
-        <p class="mb-4 text-xl text-gray-700"><span class="font-semibold text-indigo-600">닉네임:</span> {{ user.nickname
-          }}</p>
+        <p class="mb-4 text-xl text-gray-700"><span class="font-semibold text-indigo-600">닉네임:</span> {{ user.nickname }}</p>
       </div>
       <div class="flex space-x-4 mx-auto mt-auto">
         <button @click="startEditing"
@@ -51,14 +49,22 @@
     <div v-else-if="isEditing" class="bg-white shadow-lg rounded-2xl p-8">
       <form @submit.prevent="updateUser">
         <div class="mb-6">
-          <label for="name" class="block mb-2 text-xl font-semibold text-gray-700">이름</label>
-          <input v-model="editedUser.name" type="text" id="name"
-            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-lg text-gray-700" />
-        </div>
-        <div class="mb-6">
           <label for="nickname" class="block mb-2 text-xl font-semibold text-gray-700">닉네임</label>
           <input v-model="editedUser.nickname" type="text" id="nickname"
             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-lg text-gray-700" />
+        </div>
+        <div class="mb-6">
+          <label for="password" class="block mb-2 text-xl font-semibold text-gray-700">비밀번호 변경 (선택사항)</label>
+          <input v-model="editedUser.password" type="password" id="password"
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-lg text-gray-700" />
+        </div>
+        <div v-if="editedUser.password" class="mb-6">
+          <label for="confirmPassword" class="block mb-2 text-xl font-semibold text-gray-700">비밀번호 확인</label>
+          <input v-model="confirmPassword" type="password" id="confirmPassword"
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-lg text-gray-700" />
+          <p :class="{'text-green-500': passwordMatch, 'text-red-500': !passwordMatch && confirmPassword !== ''}" class="text-sm mt-1">
+            {{ passwordMatch ? '일치합니다' : confirmPassword !== '' ? '틀렸습니다' : '' }}
+          </p>
         </div>
         <div class="flex space-x-4">
           <button type="submit"
@@ -89,7 +95,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useCounterStore } from '@/stores/counter.js';
 import axios from 'axios';
@@ -99,12 +105,14 @@ const store = useCounterStore();
 const router = useRouter();
 const isLoggedIn = computed(() => store.isLoggedIn);
 const user = ref(null);
-const editedUser = ref(null);
+const editedUser = ref({ password: '', nickname: '' });
 const isEditing = ref(false);
 const chatHistory = ref([]);
 const sessionIds = ref([]);
 const selectedSessionId = ref('');
 const isModalVisible = ref(false);
+const confirmPassword = ref('');
+const passwordMatch = ref(false);
 
 onMounted(async () => {
   if (isLoggedIn.value) {
@@ -114,7 +122,6 @@ onMounted(async () => {
         headers: { Authorization: `${token}` },
       });
       user.value = response.data;
-      console.log('User data loaded:', user.value); // 디버깅용 콘솔 출력
       await loadSessionIds();
     } catch (error) {
       console.error(error);
@@ -128,7 +135,6 @@ const loadSessionIds = async () => {
   if (user.value) {
     try {
       const response = await axios.get(`/api/api/chat/${user.value.id}/sessions`);
-      console.log('Session IDs:', response.data); // 디버깅용 로그
       sessionIds.value = response.data;
     } catch (error) {
       console.error('Failed to load session IDs:', error);
@@ -137,20 +143,27 @@ const loadSessionIds = async () => {
 };
 
 const startEditing = () => {
-  editedUser.value = { ...user.value };
+  editedUser.value = { password: '', nickname: user.value.nickname };
   isEditing.value = true;
 };
 
 const updateUser = async () => {
-  try {
-    const token = localStorage.getItem('token');
-    await axios.put('/api/user', editedUser.value, {
-      headers: { Authorization: `${token}` },
-    });
-    user.value = { ...editedUser.value };
-    isEditing.value = false;
-  } catch (error) {
-    console.error(error);
+  if (!editedUser.value.password || passwordMatch.value) {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.put('/api/user', editedUser.value, {
+        headers: { Authorization: `${token}` },
+      });
+      user.value.nickname = editedUser.value.nickname;
+      isEditing.value = false;
+      editedUser.value = { password: '', nickname: '' };
+      confirmPassword.value = '';
+      alert("수정 되었습니다!")
+    } catch (error) {
+      console.error(error);
+    }
+  } else {
+    alert('비밀번호가 일치하지 않습니다.');
   }
 };
 
@@ -165,7 +178,6 @@ const cancelEditing = () => {
 
 const openModal = (sessionId) => {
   selectedSessionId.value = sessionId;
-  console.log('Opening modal for sessionId:', sessionId); // 디버깅용 콘솔 출력
   isModalVisible.value = true;
 };
 
@@ -185,6 +197,14 @@ const formatSessionTitle = (sessionId) => {
   const date = new Date(Number(sessionId));
   return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일 ${date.getHours()}시 ${date.getMinutes()}분 대화`;
 };
+
+const checkPasswordMatch = () => {
+  passwordMatch.value = confirmPassword.value === editedUser.value.password;
+};
+
+watch([editedUser.value.password, confirmPassword], () => {
+  checkPasswordMatch();
+});
 </script>
 
 <style scoped>

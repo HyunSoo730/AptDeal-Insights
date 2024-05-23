@@ -37,15 +37,16 @@ public class MemberService {
     public Member updateMember(String email, Member updatedMember) {
         Member member = memberRepository.findByEmail(email);
         if (member != null) {
-            // 수정된 정보 업데이트
-            member.setName(updatedMember.getName());
+            if (updatedMember.getPassword() != null && !updatedMember.getPassword().isEmpty()) {
+                member.setPassword(updatedMember.getPassword());
+            }
             member.setNickname(updatedMember.getNickname());
             member.setUpdatedAt(LocalDateTime.now());
-
             return memberRepository.save(member);
         }
         throw new RuntimeException("Member not found");
     }
+
 
 
     public Member findByEmail(String email) {

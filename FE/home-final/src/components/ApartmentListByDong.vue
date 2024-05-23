@@ -31,7 +31,7 @@ export default {
   setup() {
     const router = useRouter();
     const apartments = ref([]);
-    const limit = ref(10);
+    const limit = ref(9);
     const offset = ref(0);
 
     const fetchApartments = async (dongCode) => {
