@@ -122,6 +122,8 @@ export default defineComponent({
     pyeongOptions: Array,
     searchCondition: Object,
     regionCode: String,
+    depositRange: Array, // 추가
+    monthlyRentRange: Array, // 추가
   },
   setup(props, { emit }) {
     const selectedPyeong = ref("");
@@ -144,6 +146,10 @@ export default defineComponent({
         ...props.searchCondition,
         apartmentName: props.apartmentName, // 아파트명 필터 추가
         selectedPyeongRanges: [selectedPyeong.value],
+        minDeposit: props.depositRange[0], // 보증금 범위 추가
+        maxDeposit: props.depositRange[1], // 보증금 범위 추가
+        minMonthlyRent: props.monthlyRentRange[0], // 월세 범위 추가
+        maxMonthlyRent: props.monthlyRentRange[1], // 월세 범위 추가
         offset: 0, // Reset offset for new search
         limit: 20, // Limit results per request
       };
