@@ -20,4 +20,10 @@ public class ChatRoomController {
     public ChatRoom createChatRoom(@RequestBody String name) {
         return chatRoomService.createChatRoom(name);
     }
+
+
+    @DeleteMapping("/{id}")
+    public void deleteChatRoom(@PathVariable Long id) {
+        chatRoomService.deleteChatRoom(id);
+    }
 }

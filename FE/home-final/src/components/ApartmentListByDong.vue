@@ -1,16 +1,20 @@
 <template>
-  <div>
-    <h2>아파트 목록</h2>
-    <div class="card-container">
-      <div v-for="(apartment, index) in apartments" :key="apartment.aptCode" class="card"
-        :class="{ 'new-line': index % 2 === 0 }" @click="goToApartmentMap(apartment)">
-        <div class="card-content">
-          <h3>{{ apartment.aptName }}</h3>
-          <p>건축년도: {{ apartment.constructionYear }}</p>
-          <p>주소: {{ apartment.roadName }}</p>
-          <p>위도: {{ apartment.latitude }}</p>
-          <p>경도: {{ apartment.longitude }}</p>
-          <p>아파트 고유번호: {{ apartment.aptCode }}</p>
+  {{ apartments }}
+  <div class="container mx-auto py-8">
+    <h2 class="text-3xl font-bold mb-8 text-center text-indigo-600">아파트 목록</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div v-for="apartment in apartments" :key="apartment.aptCode"
+        class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition duration-300 cursor-pointer"
+        @click="goToApartmentMap(apartment)">
+        <div class="mb-4">
+          <h3 class="text-xl font-semibold text-gray-800">{{ apartment.aptName }}</h3>
+          <p class="text-gray-600">{{ apartment.roadName }}</p>
+        </div>
+        <div class="text-gray-600 space-y-1">
+          <p><span class="font-medium text-gray-800">건축년도:</span> {{ apartment.constructionYear }}</p>
+          <p><span class="font-medium text-gray-800">위도:</span> {{ apartment.latitude }}</p>
+          <p><span class="font-medium text-gray-800">경도:</span> {{ apartment.longitude }}</p>
+          <p><span class="font-medium text-gray-800">아파트 고유번호:</span> {{ apartment.aptCode }}</p>
         </div>
       </div>
     </div>

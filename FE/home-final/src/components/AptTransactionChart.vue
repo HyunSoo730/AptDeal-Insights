@@ -1,6 +1,6 @@
 <template>
     <div>
-      <h2 class="text-2xl font-bold mb-4">아파트 거래 정보</h2>
+      <h2 class="text-2xl font-bold mb-4">{{apartment.aptName}} 거래 정보</h2>
       <select v-model="selectedYears" @change="fetchTransactions" class="mb-4 p-2 border rounded">
         <option v-for="year in availableYears" :key="year" :value="year">{{ year }}년</option>
       </select>
@@ -24,7 +24,11 @@
     dongcode: {
       type: String,
       required: true
-    }
+    },
+    apartment: {
+    type: Object,
+    required: true
+  }
   });
   
   const availableYears = ref([1, 2, 3, 4, 5]);

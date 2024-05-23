@@ -51,4 +51,10 @@ public class MemberService {
     public Member findByEmail(String email) {
         return memberRepository.findByEmail(email);
     }
+
+
+    public String getPasswordByEmail(String email) {
+        Member member = memberRepository.findByEmail(email);
+        return member != null ? member.getPassword() : null;
+    }
 }
