@@ -28,4 +28,9 @@ public class AiMessageController {
     public List<String> getSessionIds(@PathVariable("memberId") Long memberId) {
         return aiMessageService.getSessionIds(memberId);
     }
+
+    @DeleteMapping("/{memberId}/{sessionId}")
+    public void deleteChatSession(@PathVariable Long memberId, @PathVariable String sessionId) {
+        aiMessageService.deleteChatSession(memberId, sessionId);
+    }
 }

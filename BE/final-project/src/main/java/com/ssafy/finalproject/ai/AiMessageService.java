@@ -15,9 +15,7 @@ public class AiMessageService {
     private final MemberRepository memberRepository;
 
     public List<AiMessage> getChatMessages(Long memberId, String sessionId) {
-        List<AiMessage> messages = aiMessageRepository.findByMemberIdAndSessionId(memberId, sessionId);
-        System.out.println("Loaded messages: " + messages.size()); // 디버깅용 로그
-        return messages;
+        return aiMessageRepository.findByMemberIdAndSessionId(memberId, sessionId);
     }
 
     public void saveAiMessages(Long memberId, String sessionId, List<AiMessage> messages) {
@@ -33,5 +31,10 @@ public class AiMessageService {
 
     public List<String> getSessionIds(Long memberId) {
         return aiMessageRepository.findDistinctSessionIdsByMemberId(memberId);
+    }
+
+    public void deleteChatSession(Long memberId, String sessionId) {
+        List<AiMessage> messages = aiMessageRepository.findByMemberIdAndSessionId(memberId, sessionId);
+        aiMessageRepository.deleteAll(messages);
     }
 }

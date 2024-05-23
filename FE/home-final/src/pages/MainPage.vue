@@ -102,18 +102,19 @@
     </div>
   </section>
 </template>
+
 <script setup>
 import { ref, onMounted } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
 import { callOpenAI } from '@/api';
-import { useCounterStore } from '@/stores/counter'; // Assuming this is where the user data is stored
+import { useCounterStore } from '@/stores/counter';
 
 const router = useRouter();
 const store = useCounterStore();
 const user = ref(null);
 const memberId = ref(null);
-const sessionId = ref(Date.now().toString()); // 세션 ID 생성
+const sessionId = ref(Date.now().toString());
 
 const selectedCity = ref("");
 const selectedGu = ref("");
@@ -130,7 +131,7 @@ onMounted(async () => {
   try {
     const response = await axios.get("/api/user");
     user.value = response.data;
-    memberId.value = user.value.id; // user.id를 memberId에 설정
+    memberId.value = user.value.id;
   } catch (error) {
     console.error("Error fetching user data:", error);
     logout();
@@ -203,8 +204,8 @@ const sendMessage = async () => {
   const userEntry = { role: 'user', content: userMessage.value };
   chatHistory.value.push(userEntry);
 
-  const currentMessage = userMessage.value;  // 현재 메시지를 저장
-  userMessage.value = '';  // 메시지 입력칸 비우기
+  const currentMessage = userMessage.value;
+  userMessage.value = '';
 
   try {
     const response = await callOpenAI(currentMessage);
@@ -218,25 +219,18 @@ const saveChat = async () => {
   console.log(memberId.value);
   try {
     await axios.post('/api/api/chat/save',
-      chatHistory.value,  // 메시지를 바디에 전달
+      chatHistory.value,
       {
         params: {
-          memberId: memberId.value,  // memberId를 쿼리 파라미터로 전달
-          sessionId: sessionId.value  // sessionId를 쿼리 파라미터로 전달
+          memberId: memberId.value,
+          sessionId: sessionId.value
         }
       }
     );
+    alert('저장되었습니다!');
+    router.push('/mypage'); // 마이페이지로 리다이렉트
   } catch (error) {
     console.error('Failed to save chat message:', error);
-  }
-};
-
-const loadChatHistory = async (memberId, sessionId) => {
-  try {
-    const response = await axios.get(`/api/api/chat/${memberId}/${sessionId}`);
-    chatHistory.value = response.data;
-  } catch (error) {
-    console.error('Failed to load chat history:', error);
   }
 };
 </script>
@@ -288,13 +282,11 @@ const loadChatHistory = async (memberId, sessionId) => {
 
 .dropdown-list {
   max-height: 14rem;
-  /* 7 items * 2rem each */
   overflow-y: auto;
 }
 
 .chat-history {
   max-height: 500px;
-  /* Increased height */
   overflow-y: auto;
   border: 1px solid #ccc;
   padding: 10px;
