@@ -3,17 +3,17 @@
     <div class="container mx-auto py-6 flex justify-between items-center">
       <div class="flex items-center space-x-4 cursor-pointer" @click="navigateToHome">
         <img src="@/assets/img/house.png" alt="아파트 거래 정보" class="w-12 h-12">
-        <h1 class="text-3xl font-bold text-gray-800">아파트 거래 정보</h1>
+        <h1 class="text-3xl font-bold text-teal-600">아파트 거래 정보</h1>
       </div>
       <nav>
         <ul class="flex space-x-4">
           <li v-if="user"><span class="text-lg font-semibold text-gray-700">어서오세요, {{ user.nickname }}님</span></li>
-          <li><router-link to="/" class="text-gray-700 hover:text-black">Home</router-link></li>
-          <li v-if="isLoggedIn"><router-link to="/mypage" class="text-gray-700 hover:text-black">마이페이지</router-link>
+          <li><router-link to="/" class="text-gray-700 hover:text-teal-600">Home</router-link></li>
+          <li v-if="isLoggedIn"><router-link to="/mypage" class="text-gray-700 hover:text-teal-600">마이페이지</router-link>
           </li>
           <li v-if="!isLoggedIn"><a href="#" @click.prevent="openLoginModal"
-              class="text-gray-700 hover:text-black">로그인/회원가입</a></li>
-          <li v-if="isLoggedIn"><a href="#" @click.prevent="logout" class="text-gray-700 hover:text-black">로그아웃</a></li>
+              class="text-gray-700 hover:text-teal-600">로그인/회원가입</a></li>
+          <li v-if="isLoggedIn"><a href="#" @click.prevent="logout" class="text-gray-700 hover:text-teal-600">로그아웃</a></li>
         </ul>
       </nav>
     </div>
@@ -86,31 +86,5 @@ const logout = () => {
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 998;
-}
-
-header {
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-header h1 {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: #333;
-}
-
-header nav ul {
-  display: flex;
-  align-items: center;
-}
-
-header nav ul li a {
-  font-size: 1rem;
-  color: #555;
-  transition: color 0.3s;
-}
-
-header nav ul li a:hover {
-  color: #000;
 }
 </style>

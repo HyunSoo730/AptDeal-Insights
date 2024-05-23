@@ -32,7 +32,7 @@
   });
   
   const availableYears = ref([1, 2, 3, 4, 5]);
-  const selectedYears = ref(3);
+  const selectedYears = ref(5);
   
   const chartData = ref({
     labels: [],
