@@ -6,8 +6,8 @@ import Kakao from "@/components/Kakao.vue";
 import ApartmentListByDong from "@/components/ApartmentListByDong.vue";
 import ApartmentMap from "@/components/ApartmentMap.vue";
 import Wishlist from "@/pages/Wishlist.vue";
-
 import RegisterSale from "@/components/RegisterSale.vue";
+import ApartmentLeaseList from "@/components/ApartmentLeaseList.vue"; // 추가
 
 import ChatRoomList from "@/components/chat/ChatRoomList.vue";
 import ChatRoom from "@/components/chat/ChatRoom.vue";
@@ -25,7 +25,7 @@ const routes = [
   },
   {
     path: "/community",
-    name: "communityPage",
+    name: "CommunityPage",
     component: CommunityPage,
   },
   {
@@ -57,11 +57,21 @@ const routes = [
     component: Wishlist,
   },
   {
+    path: "/registerSale",
+    name: "RegisterSale",
+    component: RegisterSale,
+    props: true,
+  },
+  {
+    path: "/lease",
+    name: "ApartmentLeaseList",
+    component: ApartmentLeaseList,
+  },
+  {
     path: "/asdasd",
     name: "chart",
     component: () => import("@/components/AptTransactionChart.vue"),
   },
-  { path: "/registerSale", name: "RegisterSale", component: RegisterSale, props: true },
   {
     path: "/chatroomlist",
     name: "ChatRoomList",
