@@ -36,10 +36,10 @@ public class AptSaleService {
                 .collect(Collectors.toList());
     }
 
-    public List<AptSaleByDongDTO> getApartmentsByDongCode(String dongcode, int limit, int offset) {
+    public List<AptSaleByDongDTO> getApartmentsByDongCode(String dongcode) {
 
-        List<AptSaleByDongDTO> byDongcodeGroupByAptCode = aptSaleRepositoryCustom.getApartmentsByDongCode(dongcode, limit, offset);
-        //        List<AptSaleByDongDTO> byDongcodeGroupByAptCode = aptSaleRepository.findByDongcodeGroupByAptCode(dongcode);
+//        List<AptSaleByDongDTO> byDongcodeGroupByAptCode = aptSaleRepositoryCustom.getApartmentsByDongCode(dongcode, limit, offset);
+        List<AptSaleByDongDTO> byDongcodeGroupByAptCode = aptSaleRepository.findByDongcodeGroupByAptCode(dongcode);
         System.out.println("페이징 처리 후 호출");
         for (AptSaleByDongDTO aptSaleByDongDTO : byDongcodeGroupByAptCode) {
             System.out.println("aptSaleByDongDTO = " + aptSaleByDongDTO);
@@ -71,8 +71,8 @@ public class AptSaleService {
     }
 
 
-    public void registerSale(AptSale aptSale){
-        AptSale realOne=aptSaleRepository.findAptSaleByAptCodeOrderByDealYearDescDealMonthDescDealDayDesc(aptSale.getAptCode()).get(0);
+    public void registerSale(AptSale aptSale) {
+        AptSale realOne = aptSaleRepository.findAptSaleByAptCodeOrderByDealYearDescDealMonthDescDealDayDesc(aptSale.getAptCode()).get(0);
         aptSale.setConstructionYear(realOne.getConstructionYear());
         aptSale.setRoadName(realOne.getRoadName());
         aptSale.setRoadNameBonbun(realOne.getRoadNameBonbun());

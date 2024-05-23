@@ -41,10 +41,8 @@ public class AptSaleController {
     // AptSaleController.java
     @GetMapping("/apartments")
     public List<AptSaleByDongDTO> getApartmentsByDongCode(
-            @RequestParam("dongCode") String dongcode,
-            @RequestParam("limit") int limit,
-            @RequestParam("offset") int offset) {
-        return aptSaleService.getApartmentsByDongCode(dongcode, limit, offset);
+            @RequestParam("dongCode") String dongcode) {
+        return aptSaleService.getApartmentsByDongCode(dongcode);
     }
 
     @GetMapping("/details/{aptCode}")
