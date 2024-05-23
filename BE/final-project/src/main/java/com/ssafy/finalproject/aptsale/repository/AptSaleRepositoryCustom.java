@@ -2,7 +2,9 @@ package com.ssafy.finalproject.aptsale.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ssafy.finalproject.aptsale.dto.request.AptNameAddressDTO;
+import com.ssafy.finalproject.aptsale.dto.request.AptSaleByDongDTO;
 import com.ssafy.finalproject.aptsale.dto.request.QAptNameAddressDTO;
+import com.ssafy.finalproject.aptsale.dto.request.QAptSaleByDongDTO;
 import com.ssafy.finalproject.aptsale.dto.response.AptSaleGraphDTO;
 import com.ssafy.finalproject.aptsale.dto.response.QAptSaleGraphDTO;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,20 @@ import static com.ssafy.finalproject.aptsale.entity.QAptSale.aptSale;
 public class AptSaleRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
+
+    // TODO : 동코드로 group by 해서 페이징 처리 진행.
+    public List<AptSaleByDongDTO> getApartmentsByDongCode(String dongcode, int limit, int offset) {
+        return queryFactory
+                .select(new QAptSaleByDongDTO(
+                        aptSale.aptName, aptSale.dealAmount, aptSale.roadName, aptSale.constructionYear, aptSale.aptCode, aptSale.latitude, aptSale.longitude
+                ))
+                .from(aptSale)
+                .where(aptSale.dongcode.eq(dongcode))
+                .groupBy(aptSale.aptCode)
+                .offset(offset)
+                .limit(limit)
+                .fetch();
+    }
 
     // TODO : 원하는 아파트 입력 시 자동완성 (최대 10개)
     public List<AptNameAddressDTO> findAptNamesByPrefix(String prefix, int offset, int limit) {
