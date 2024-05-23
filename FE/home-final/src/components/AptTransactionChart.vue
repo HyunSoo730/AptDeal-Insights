@@ -4,7 +4,15 @@
     <select v-model="selectedYears" @change="fetchTransactions" class="mb-4 p-2 border rounded">
       <option v-for="year in availableYears" :key="year" :value="year">{{ year }}년</option>
     </select>
+    <button @click="openModal" class="mb-4 p-2 border rounded bg-blue-500 text-white">차트 크게 보기</button>
     <Line :data="chartData" :options="chartOptions" />
+    
+    <div v-if="isModalOpen" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+      <div class="bg-white p-6 rounded-lg shadow-lg w-4/5 h-4/5 overflow-auto">
+        <button @click="closeModal" class="mb-4 p-2 border rounded bg-red-500 text-white">닫기</button>
+        <Line :data="chartData" :options="chartOptions" />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -33,6 +41,7 @@ const props = defineProps({
 
 const availableYears = ref([1, 2, 3, 4, 5]);
 const selectedYears = ref(5);
+const isModalOpen = ref(false);
 
 const chartData = ref({
   labels: [],
@@ -67,7 +76,6 @@ const chartOptions = {
 
 const fetchTransactions = async () => {
   try {
-    console.log('Fetching transactions for dongcode:', props.dongcode, 'and aptCode:', props.aptCode);
     const [aptResponse, dongResponse] = await Promise.all([
       getTransactionsByAptCode(props.aptCode, selectedYears.value),
       getTransactionsByDongcode(props.dongcode, selectedYears.value)
@@ -76,11 +84,6 @@ const fetchTransactions = async () => {
     const aptTransactions = aptResponse.data;
     const dongTransactions = dongResponse.data;
 
-    // 데이터가 올바르게 업데이트되는지 확인하는 로그 추가
-    console.log('Apt Transactions:', aptTransactions);
-    console.log('Dong Transactions:', dongTransactions);
-
-    // 데이터 업데이트
     chartData.value = {
       labels: aptTransactions.map(t => t.transactionDate),
       datasets: [
@@ -98,12 +101,17 @@ const fetchTransactions = async () => {
         }
       ]
     };
-
-    // 업데이트된 chartData 확인 로그
-    console.log('Updated chartData:', JSON.parse(JSON.stringify(chartData.value)));
   } catch (error) {
     console.error('Failed to fetch transactions:', error);
   }
+};
+
+const openModal = () => {
+  isModalOpen.value = true;
+};
+
+const closeModal = () => {
+  isModalOpen.value = false;
 };
 
 onMounted(fetchTransactions);

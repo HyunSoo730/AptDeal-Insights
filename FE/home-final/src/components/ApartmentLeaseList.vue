@@ -1,113 +1,129 @@
 <template>
   <section class="container mx-auto py-12">
-    <h1 class="text-3xl font-bold mb-8 text-center">전월세 검색</h1>
-    <div class="bg-white shadow-md rounded-lg p-8 mb-8 max-w-xl mx-auto">
-      <h2 class="text-2xl font-bold mb-6 text-gray-800 text-center">아파트 검색</h2>
-      <div class="mb-4">
+    <h1 class="text-4xl font-bold mb-8 text-center text-indigo-600">전월세 검색</h1>
+    <div class="bg-white shadow-lg rounded-2xl p-8 mb-8 mx-auto w-full max-w-4xl">
+      <h2 class="text-3xl font-semibold mb-6 text-gray-800 text-center">아파트 검색</h2>
+      <div class="mb-6">
+        <label class="block mb-2 text-lg font-medium text-gray-700">시/도 선택</label>
         <select v-model="selectedCity" @change="handleCityChange"
-          class="w-full p-3 rounded-t border border-gray-400 focus:outline-none focus:border-blue-500 text-lg">
+          class="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-lg text-gray-700">
           <option value="" disabled>시/도 선택</option>
           <option v-for="city in cities" :key="city.code" :value="city.code">
             {{ city.name }}
           </option>
         </select>
       </div>
-      <div class="mb-4">
+      <div class="mb-6">
+        <label class="block mb-2 text-lg font-medium text-gray-700">구/군 선택</label>
         <select v-model="selectedGu" @change="handleGuChange"
-          class="w-full p-3 border border-gray-400 focus:outline-none focus:border-blue-500 text-lg">
+          class="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-lg text-gray-700">
           <option value="" disabled>구/군 선택</option>
           <option v-for="gu in gus" :key="gu.code" :value="gu.code">
             {{ gu.name.split(" ")[1] }}
           </option>
         </select>
       </div>
-      <div class="mb-4">
+      <div class="mb-6">
+        <label class="block mb-2 text-lg font-medium text-gray-700">동 선택</label>
         <select v-model="selectedDong"
-          class="w-full p-3 rounded-b border border-gray-400 focus:outline-none focus:border-blue-500 text-lg">
+          class="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-lg text-gray-700">
           <option value="" disabled>동 선택</option>
           <option v-for="dong in dongs" :key="dong.code" :value="dong.name">
             {{ dong.name.split(" ").pop() }}
           </option>
         </select>
       </div>
-      <div class="mb-4">
+      <div class="mb-8">
+        <label class="block mb-2 text-lg font-medium text-gray-700">아파트명 입력</label>
         <input v-model="apartmentName" placeholder="아파트명 입력"
-          class="w-full p-3 border border-gray-400 focus:outline-none focus:border-blue-500 text-lg" />
+          class="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-lg text-gray-700" />
       </div>
       <div class="mb-8">
-        <h2 class="text-xl font-bold mb-4">필터링 옵션</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <label class="w-full p-3 text-lg">보증금 범위</label>
-          <VueSimpleRangeSlider
-            style="width: 100%"
-            :min="100"
-            :max="100000"
-            exponential
-            v-model="depositRange"
-          >
-            <template #suffix="{ value }">만원</template>
-          </VueSimpleRangeSlider>
-          <label class="w-full p-3 text-lg">월세 범위</label>
-          <VueSimpleRangeSlider
-            style="width: 100%"
-            :min="0"
-            :max="1000"
-            v-model="monthlyRentRange"
-          >
-            <template #suffix="{ value }">만원</template>
-          </VueSimpleRangeSlider>
-          <input type="date" v-model="startDate" placeholder="시작 날짜" 
-            class="w-full p-3 border border-gray-400 focus:outline-none focus:border-blue-500 text-lg" />
-          <input type="date" v-model="endDate" placeholder="종료 날짜" 
-            class="w-full p-3 border border-gray-400 focus:outline-none focus:border-blue-500 text-lg" />
-          <div class="w-full p-3">
-            <label class="text-lg">임대 유형</label>
-            <div class="mt-2">
-              <label class="inline-flex items-center mr-4">
-                <input type="radio" v-model="rentType" value="all" class="form-radio">
-                <span class="ml-2">전체</span>
+        <h2 class="text-2xl font-semibold mb-4 text-gray-800">필터링 옵션</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block mb-2 text-lg font-medium text-gray-700">보증금 범위</label>
+            <VueSimpleRangeSlider
+              class="mt-2"
+              :min="100"
+              :max="100000"
+              exponential
+              v-model="depositRange"
+            >
+              <template #suffix="{ value }">만원</template>
+            </VueSimpleRangeSlider>
+          </div>
+          <div>
+            <label class="block mb-2 text-lg font-medium text-gray-700">월세 범위</label>
+            <VueSimpleRangeSlider
+              class="mt-2"
+              :min="0"
+              :max="1000"
+              v-model="monthlyRentRange"
+            >
+              <template #suffix="{ value }">만원</template>
+            </VueSimpleRangeSlider>
+          </div>
+          <div>
+            <label class="block mb-2 text-lg font-medium text-gray-700">시작 날짜</label>
+            <input type="date" v-model="startDate" 
+              class="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-lg text-gray-700" />
+          </div>
+          <div>
+            <label class="block mb-2 text-lg font-medium text-gray-700">종료 날짜</label>
+            <input type="date" v-model="endDate"
+              class="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-lg text-gray-700" />
+          </div>
+          <div>
+            <label class="block mb-2 text-lg font-medium text-gray-700">임대 유형</label>
+            <div class="mt-2 space-y-2">
+              <label class="flex items-center">
+                <input type="radio" v-model="rentType" value="all" class="form-radio text-indigo-600">
+                <span class="ml-2 text-gray-700">전체</span>
               </label>
-              <label class="inline-flex items-center mr-4">
-                <input type="radio" v-model="rentType" value="deposit" class="form-radio">
-                <span class="ml-2">전세</span>
+              <label class="flex items-center">
+                <input type="radio" v-model="rentType" value="deposit" class="form-radio text-indigo-600">
+                <span class="ml-2 text-gray-700">전세</span>
               </label>
-              <label class="inline-flex items-center">
-                <input type="radio" v-model="rentType" value="monthly" class="form-radio">
-                <span class="ml-2">반전세(월세)</span>
+              <label class="flex items-center">
+                <input type="radio" v-model="rentType" value="monthly" class="form-radio text-indigo-600">
+                <span class="ml-2 text-gray-700">반전세(월세)</span>
               </label>
             </div>
           </div>
-          <div class="w-full p-3">
-            <label class="text-lg">평수 선택</label>
-            <div class="mt-2">
-              <label class="inline-flex items-center mr-4" v-for="pyeong in pyeongOptions" :key="pyeong">
-                <input type="checkbox" v-model="selectedPyeongRanges" :value="pyeong" class="form-checkbox">
-                <span class="ml-2">{{ pyeong }}평대</span>
-              </label>
+          <div>
+            <label class="block mb-2 text-lg font-medium text-gray-700">평수 선택</label>
+            <div class="mt-2 space-y-2">
+              <div v-for="pyeong in pyeongOptions" :key="pyeong" class="flex items-center space-x-4">
+                <label class="inline-flex items-center">
+                  <input type="checkbox" v-model="selectedPyeongRanges" :value="pyeong" class="form-checkbox text-indigo-600">
+                  <span class="ml-2 text-gray-700">{{ pyeong }}평대</span>
+                </label>
+              </div>
             </div>
           </div>
         </div>
-        <button @click="handleSearch" class="bg-blue-500 text-white px-6 py-3 rounded-lg text-lg w-full mt-4">
+        <button @click="handleSearch" class="mt-8 w-full py-3 px-6 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-lg font-semibold text-white transition duration-300">
           검색
         </button>
       </div>
     </div>
-    <div v-if="leaseListings.length" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      <div v-for="lease in groupedListings" :key="lease.apartmentName" class="bg-white shadow-md rounded-lg p-6">
-        <h2 class="text-xl font-bold mb-4">{{ lease.apartmentName }}</h2>
-        <p>총 {{ lease.count }}건의 거래</p>
-        <button @click="openModal(lease)" class="bg-blue-500 text-white px-6 py-3 rounded-lg text-lg w-full mt-4">
+    <div v-if="leaseListings.length" class="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div v-for="lease in groupedListings" :key="lease.apartmentName" class="bg-white shadow-lg rounded-2xl p-6">
+        <h2 class="text-2xl font-semibold mb-4 text-gray-800">{{ lease.apartmentName }}</h2>
+        <p class="text-lg text-gray-600">총 {{ lease.count }}건의 거래</p>
+        <button @click="openModal(lease)" class="mt-6 w-full py-3 px-6 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-lg font-semibold text-white transition duration-300">
           상세보기
         </button>
       </div>
     </div>
-    <div v-if="!loading && leaseListings.length && !allDataLoaded" class="text-center mt-8">
-      <button @click="loadMoreListings" class="bg-blue-500 text-white px-6 py-3 rounded-lg text-lg">
+    <div v-if="!loading && leaseListings.length && !allDataLoaded" class="mt-12 text-center">
+      <button @click="loadMoreListings" class="py-3 px-8 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-lg font-semibold text-white transition duration-300">
         더보기
       </button>
     </div>
-    <div v-else-if="loading" class="text-center mt-8">
-      <p>데이터를 불러오는 중입니다...</p>
+    <div v-else-if="loading" class="mt-12 text-center">
+      <p class="text-xl text-gray-600">데이터를 불러오는 중입니다...</p>
     </div>
     <ModalComponent v-if="isModalVisible" :isVisible="isModalVisible" :apartmentName="selectedApartment.apartmentName"
                     :transactions="selectedApartment.transactions" :pyeongOptions="pyeongOptions" @close="isModalVisible = false" />
@@ -402,5 +418,24 @@ button {
   font-weight: 700;
 }
 
-/* ... (기존 스타일 유지) ... */
+.range-slider {
+  width: 100%;
+}
+
+.range-slider .range-slider__track {
+  background: #e2e8f0;
+  height: 4px;
+}
+
+.range-slider .range-slider__thumb {
+  background: #4c51bf;
+  border: none;
+  width: 16px;
+  height: 16px;
+}
+
+.range-slider .range-slider__thumb:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(76, 81, 191, 0.3);
+}
 </style>
