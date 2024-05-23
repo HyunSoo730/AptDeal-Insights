@@ -12,9 +12,6 @@
         </div>
         <div class="text-gray-600 space-y-1">
           <p><span class="font-medium text-gray-800">건축년도:</span> {{ apartment.constructionYear }}</p>
-          <p><span class="font-medium text-gray-800">위도:</span> {{ apartment.latitude }}</p>
-          <p><span class="font-medium text-gray-800">경도:</span> {{ apartment.longitude }}</p>
-          <p><span class="font-medium text-gray-800">아파트 고유번호:</span> {{ apartment.aptCode }}</p>
         </div>
       </div>
     </div>
