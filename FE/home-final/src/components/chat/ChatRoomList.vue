@@ -1,45 +1,74 @@
 <template>
   <div class="container mx-auto py-8 px-4 lg:px-8">
-    <div class="mb-6 flex flex-col items-center">
-      <input v-model="newRoomName" placeholder="새 방 이름"
-        class="w-full max-w-md p-3 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
-      <button @click="createRoom"
-        class="w-full max-w-md bg-blue-500 text-white px-6 py-3 rounded-md hover:bg-blue-600 transition-colors duration-200">
-        채팅방 생성
+    <!-- Tailwind CSS를 사용하여 스타일링된 컴포넌트 -->
+    <div class="mb-6 flex flex-col items-center space-y-4">
+      <div class="relative w-full max-w-md">
+        <input
+          v-model="newRoomName"
+          placeholder="새 방 이름"
+          class="w-full p-3 pl-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <span
+          class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400"
+        >
+          <i class="fas fa-door-open"></i>
+        </span>
+      </div>
+      <button
+        @click="createRoom"
+        class="w-full max-w-md bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-3 rounded-md shadow-lg transform hover:scale-105 transition-transform duration-300"
+      >
+        <i class="fas fa-plus-circle mr-2"></i> 채팅방 생성
       </button>
     </div>
-    <div class="room-list grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-      <div
-        class="room-card p-8 border border-gray-300 rounded-md shadow-md hover:bg-gray-100 cursor-pointer transition-colors duration-200"
-        v-for="room in chatRooms" :key="room.id">
-        <div class="flex justify-between items-center mb-4">
-          <h3 class="text-xl font-semibold text-gray-800">{{ room.name }}</h3>
-          <div class="flex space-x-2">
-            <button @click="enterRoom(room.name)"
-              class="flex items-center justify-center bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors duration-200">
-              입장
-            </button>
-            <button @click="deleteRoom(room.id)"
-              class="flex items-center justify-center bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors duration-200">
-              삭제
-            </button>
-          </div>
-        </div>
+
+    <!-- Font Awesome 아이콘 사용 -->
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+/>
+
+<!-- 방 리스트를 스타일링하는 컴포넌트 -->
+<div class="room-list grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4">
+  <div
+    class="room-card p-6 w-full border border-gray-200 rounded-xl shadow-lg bg-white hover:bg-blue-50 cursor-pointer transition-all duration-300 transform hover:scale-105"
+    v-for="room in chatRooms"
+    :key="room.id"
+  >
+    <div class="flex flex-col justify-between h-full">
+      <div class="flex items-center mb-4">
+        <i class="fas fa-comments text-blue-500 text-3xl mr-4"></i>
+        <h3 class="text-xl font-bold text-gray-800">{{ room.name }}</h3>
+      </div>
+      <div class="flex space-x-4 mt-auto">
+        <button
+          @click="enterRoom(room.name)"
+          class="flex items-center justify-center bg-gradient-to-r from-green-400 to-green-500 text-white px-8 py-3 rounded-full shadow-md hover:from-green-500 hover:to-green-600 transition-all transform hover:scale-105"
+        >
+          <i class="fas fa-door-open mr-2"></i> 입장
+        </button>
+        <button
+          @click="deleteRoom(room.id)"
+          class="flex items-center justify-center bg-gradient-to-r from-red-400 to-red-500 text-white px-8 py-3 rounded-full shadow-md hover:from-red-500 hover:to-red-600 transition-all transform hover:scale-105"
+        >
+          <i class="fas fa-trash-alt mr-2"></i> 삭제
+        </button>
       </div>
     </div>
   </div>
+</div>
+
+  </div>
 </template>
 
-
-
 <script>
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import axios from 'axios';
-import { useCounterStore } from '@/stores/counter';
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import axios from "axios";
+import { useCounterStore } from "@/stores/counter";
 
 export default {
-  name: 'ChatRoomList',
+  name: "ChatRoomList",
   setup() {
     const router = useRouter();
     const counterStore = useCounterStore();
@@ -48,41 +77,45 @@ export default {
 
     const loadChatRooms = async () => {
       try {
-        const response = await axios.get('/api/api/chatrooms');
+        const response = await axios.get("/api/api/chatrooms");
         chatRooms.value = response.data;
       } catch (error) {
-        console.error('Failed to load chat rooms', error);
+        console.error("Failed to load chat rooms", error);
       }
     };
 
     const createRoom = async () => {
-      if (newRoomName.value !== '') {
+      if (newRoomName.value !== "") {
         try {
-          const response = await axios.post('/api/api/chatrooms', newRoomName.value, {
-            headers: {
-              'Content-Type': 'text/plain'
+          const response = await axios.post(
+            "/api/api/chatrooms",
+            newRoomName.value,
+            {
+              headers: {
+                "Content-Type": "text/plain",
+              },
             }
-          });
+          );
           chatRooms.value.push(response.data);
-          newRoomName.value = '';
+          newRoomName.value = "";
         } catch (error) {
-          console.error('Failed to create chat room', error);
+          console.error("Failed to create chat room", error);
         }
       }
     };
 
     const deleteRoom = async (roomId) => {
-      console.log(roomId)
+      console.log(roomId);
       try {
         await axios.delete(`/api/api/chatrooms/${roomId}`);
-        chatRooms.value = chatRooms.value.filter(room => room.id !== roomId);
+        chatRooms.value = chatRooms.value.filter((room) => room.id !== roomId);
       } catch (error) {
-        console.error('Failed to delete chat room', error);
+        console.error("Failed to delete chat room", error);
       }
     };
 
     const enterRoom = (roomName) => {
-      router.push({ name: 'ChatRoom', params: { name: roomName } });
+      router.push({ name: "ChatRoom", params: { name: roomName } });
     };
 
     onMounted(loadChatRooms);
@@ -93,14 +126,11 @@ export default {
       createRoom,
       deleteRoom,
       enterRoom,
-      user: counterStore.user
+      user: counterStore.user,
     };
-  }
-}
+  },
+};
 </script>
-
-
-
 
 <style scoped>
 .room-list {
