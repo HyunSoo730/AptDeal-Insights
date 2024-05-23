@@ -2,7 +2,7 @@
   <div class="container mx-auto py-8">
     <h2 class="text-3xl font-bold mb-8 text-center text-indigo-600">아파트 목록</h2>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      <div v-for="apartment in apartments" :key="apartment.aptCode"
+      <div v-for="apartment in paginatedApartments" :key="apartment.aptCode"
         class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition duration-300 cursor-pointer"
         @click="goToApartmentMap(apartment)">
         <img src="@/assets/img/apt.png" alt="아파트 이미지" class="w-full h-40 object-cover rounded-t-lg mb-4">
@@ -17,7 +17,7 @@
     </div>
     <div class="mt-8 flex justify-center">
       <button @click="previousPage" :disabled="offset === 0" class="bg-indigo-600 text-white px-4 py-2 rounded-l-lg">Previous</button>
-      <button @click="nextPage" class="bg-indigo-600 text-white px-4 py-2 rounded-r-lg">Next</button>
+      <button @click="nextPage" :disabled="offset + limit >= apartments.length" class="bg-indigo-600 text-white px-4 py-2 rounded-r-lg">Next</button>
     </div>
   </div>
 </template>
@@ -31,17 +31,25 @@ export default {
   setup() {
     const router = useRouter();
     const apartments = ref([]);
-    const limit = ref(10);
+    const paginatedApartments = ref([]);
+    const limit = ref(9);
     const offset = ref(0);
 
     const fetchApartments = async (dongCode) => {
       try {
-        const response = await sample(dongCode, limit.value, offset.value);
-        apartments.value = response.data;
+        const response = await sample(dongCode);
+        apartments.value = response.data || []; // 데이터가 없을 경우 빈 배열 할당
         localStorage.setItem('apartments', JSON.stringify(apartments.value));
+        updatePaginatedApartments();
       } catch (error) {
         console.error("Failed to fetch apartments:", error);
       }
+    };
+
+    const updatePaginatedApartments = () => {
+      const start = offset.value;
+      const end = offset.value + limit.value;
+      paginatedApartments.value = apartments.value.slice(start, end);
     };
 
     const goToApartmentMap = (apartment) => {
@@ -57,13 +65,15 @@ export default {
     const previousPage = () => {
       if (offset.value > 0) {
         offset.value -= limit.value;
-        fetchApartments(router.currentRoute.value.params.dongCode);
+        updatePaginatedApartments();
       }
     };
 
     const nextPage = () => {
-      offset.value += limit.value;
-      fetchApartments(router.currentRoute.value.params.dongCode);
+      if (offset.value + limit.value < apartments.value.length) {
+        offset.value += limit.value;
+        updatePaginatedApartments();
+      }
     };
 
     onMounted(() => {
@@ -72,12 +82,13 @@ export default {
     });
 
     return {
-      apartments,
+      paginatedApartments,
       goToApartmentMap,
       previousPage,
       nextPage,
       limit,
       offset,
+      apartments, // apartments 추가
     };
   },
 };

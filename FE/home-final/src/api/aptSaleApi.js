@@ -15,10 +15,9 @@ export function getAptSaleDetails(aptCode) {
   return aptSaleApi.get(`/apt-sales/details/${aptCode}`);
 }
 
-export function sample(dongCode, limit, offset) {
-  console.log("여기 호출");
+export function sample(dongCode) {
   console.log(dongCode);
   return aptSaleApi.get(`/apt-sales/apartments`, {
-    params: { dongCode, limit, offset },
+    params: { dongCode },
   });
 }
