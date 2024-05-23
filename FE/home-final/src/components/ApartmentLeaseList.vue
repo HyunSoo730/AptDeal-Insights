@@ -30,9 +30,10 @@
           </option>
         </select>
       </div>
-      <button @click="fetchInitialListings" class="bg-blue-500 text-white px-6 py-3 rounded-lg text-lg w-full mb-6">
-        초기 검색
-      </button>
+      <div class="mb-4">
+        <input v-model="apartmentName" placeholder="아파트명 입력"
+          class="w-full p-3 border border-gray-400 focus:outline-none focus:border-blue-500 text-lg" />
+      </div>
       <div class="mb-8">
         <h2 class="text-xl font-bold mb-4">필터링 옵션</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -76,7 +77,6 @@
               </label>
             </div>
           </div>
-          <!-- 평수 선택 옵션 추가 -->
           <div class="w-full p-3">
             <label class="text-lg">평수 선택</label>
             <div class="mt-2">
@@ -87,33 +87,18 @@
             </div>
           </div>
         </div>
-        <button @click="filterListings" class="bg-blue-500 text-white px-6 py-3 rounded-lg text-lg w-full mt-4">
-          필터링
+        <button @click="handleSearch" class="bg-blue-500 text-white px-6 py-3 rounded-lg text-lg w-full mt-4">
+          검색
         </button>
       </div>
     </div>
     <div v-if="leaseListings.length" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      <div v-for="lease in leaseListings" :key="lease.id" class="bg-white shadow-md rounded-lg p-6">
+      <div v-for="lease in groupedListings" :key="lease.apartmentName" class="bg-white shadow-md rounded-lg p-6">
         <h2 class="text-xl font-bold mb-4">{{ lease.apartmentName }}</h2>
-        <p>임대 유형: {{ lease.contractType }}</p>
-        <p>임대 금액: {{ lease.depositAmount }}만원</p>
-        <p>월세: {{ lease.monthlyRent }}만원</p>
-        <p>전용면적: {{ lease.exclusiveArea }}㎡</p> <!-- 전용면적 표시 -->
-        <p>주소: {{ lease.legalDong }}</p>
-        <p>건축년도: {{ lease.constructionYear }}</p>
-        <p>층: {{ lease.floor }}</p>
-        <div class="mt-4">
-          <select v-model="lease.selectedYears" class="w-full p-3 border border-gray-400 focus:outline-none focus:border-blue-500 text-lg">
-            <option v-for="year in yearOptions" :key="year" :value="year">{{ year }}년</option>
-          </select>
-          <button @click="showCharts(lease)" class="bg-blue-500 text-white px-6 py-3 rounded-lg text-lg w-full mt-4">
-            차트보기
-          </button>
-        </div>
-        <div v-if="lease.chartsVisible" class="mt-8">
-          <ChartComponent :chart-data="lease.apartmentChartData" :options="{ title: '아파트 전월세 거래 차트' }" />
-          <ChartComponent :chart-data="lease.regionChartData" :options="{ title: '해당 구 전월세 거래 차트' }" />
-        </div>
+        <p>총 {{ lease.count }}건의 거래</p>
+        <button @click="openModal(lease)" class="bg-blue-500 text-white px-6 py-3 rounded-lg text-lg w-full mt-4">
+          상세보기
+        </button>
       </div>
     </div>
     <div v-if="!loading && leaseListings.length && !allDataLoaded" class="text-center mt-8">
@@ -124,20 +109,23 @@
     <div v-else-if="loading" class="text-center mt-8">
       <p>데이터를 불러오는 중입니다...</p>
     </div>
+    <ModalComponent v-if="isModalVisible" :isVisible="isModalVisible" :apartmentName="selectedApartment.apartmentName"
+                    :transactions="selectedApartment.transactions" :pyeongOptions="pyeongOptions" @close="isModalVisible = false" />
   </section>
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import axios from "axios";
 import { getLeaseListingsByRegionAndDong, getRentSalesByApartmentAndYears, getRentSalesByRegionCodeAndYears } from '@/api/aptLeaseApi';
 import VueSimpleRangeSlider from "vue-simple-range-slider";
 import "vue-simple-range-slider/css";
-import ChartComponent from '@/components/ChartComponent.vue';
+import ModalComponent from '@/components/ModalComponent.vue';
 
 const selectedCity = ref("");
 const selectedGu = ref("");
 const selectedDong = ref("");
+const apartmentName = ref("");
 
 const cities = ref([]);
 const gus = ref([]);
@@ -159,6 +147,9 @@ const allDataLoaded = ref(false);
 const pyeongOptions = [10, 20, 30, 40, 50, 60, 70];
 const selectedPyeongRanges = ref<number[]>([]);
 const yearOptions = [1, 2, 3, 4, 5];
+
+const isModalVisible = ref(false);
+const selectedApartment = ref({});
 
 onMounted(() => {
   fetchCities();
@@ -215,7 +206,7 @@ const handleGuChange = () => {
   }
 };
 
-const fetchInitialListings = async () => {
+const handleSearch = async () => {
   if (selectedDong.value) {
     offset.value = 0;
     allDataLoaded.value = false;
@@ -249,7 +240,8 @@ const loadMoreListings = async () => {
       isCharter,
       selectedPyeongRanges: selectedPyeongRanges.value,
       offset: offset.value,
-      limit: limit.value
+      limit: limit.value,
+      apartmentName: apartmentName.value
     };
 
     try {
@@ -273,53 +265,26 @@ const loadMoreListings = async () => {
   }
 };
 
-const filterListings = async () => {
-  if (selectedDong.value) {
-    offset.value = 0;
-    allDataLoaded.value = false;
-    leaseListings.value = [];
-
-    let isCharter = null;
-    if (rentType.value === 'deposit') {
-      isCharter = true;
-    } else if (rentType.value === 'monthly') {
-      isCharter = false;
+const groupedListings = computed(() => {
+  const groups = leaseListings.value.reduce((acc, lease) => {
+    const { apartmentName } = lease;
+    if (!acc[apartmentName]) {
+      acc[apartmentName] = {
+        apartmentName,
+        count: 0,
+        transactions: [],
+      };
     }
+    acc[apartmentName].count += 1;
+    acc[apartmentName].transactions.push(lease);
+    return acc;
+  }, {});
+  return Object.values(groups);
+});
 
-    const searchCondition = {
-      regionCode: selectedGu.value.substr(0, 5),
-      legalDong: selectedDong.value.split(" ").pop(),
-      minDeposit: depositRange.value[0],
-      maxDeposit: depositRange.value[1],
-      minMonthlyRent: monthlyRentRange.value[0],
-      maxMonthlyRent: monthlyRentRange.value[1],
-      startDate: startDate.value,
-      endDate: endDate.value,
-      isCharter,
-      selectedPyeongRanges: selectedPyeongRanges.value,
-      offset: offset.value,
-      limit: limit.value
-    };
-
-    try {
-      const response = await getLeaseListingsByRegionAndDong(searchCondition);
-      if (response.data.length < limit.value) {
-        allDataLoaded.value = true;
-      }
-      leaseListings.value.push(...response.data.map(lease => ({
-        ...lease,
-        selectedYears: 3,
-        chartsVisible: false,
-        apartmentChartData: null,
-        regionChartData: null
-      })));
-      offset.value += limit.value;
-    } catch (error) {
-      console.error("Failed to fetch lease listings:", error);
-    } finally {
-      loading.value = false;
-    }
-  }
+const openModal = (lease) => {
+  selectedApartment.value = lease;
+  isModalVisible.value = true;
 };
 
 const showCharts = async (lease) => {
@@ -377,55 +342,3 @@ const formatChartData = (data) => {
   };
 };
 </script>
-
-<style scoped>
-@import 'vue-simple-range-slider/css';
-.container {
-  max-width: 1200px;
-}
-.text-center {
-  text-align: center;
-}
-.bg-white {
-  background-color: #fff;
-}
-.p-8 {
-  padding: 2rem;
-}
-.shadow-md {
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-.rounded-lg {
-  border-radius: 0.5rem;
-}
-.text-3xl {
-  font-size: 1.875rem;
-}
-.font-bold {
-  font-weight: 700;
-}
-.mb-8 {
-  margin-bottom: 2rem;
-}
-.mb-4 {
-  margin-bottom: 1rem;
-}
-.text-xl {
-  font-size: 1.25rem;
-}
-.grid {
-  display: grid;
-}
-.grid-cols-1 {
-  grid-template-columns: repeat(1, 1fr);
-}
-.md\:grid-cols-2 {
-  grid-template-columns: repeat(2, 1fr);
-}
-.lg\:grid-cols-3 {
-  grid-template-columns: repeat(3, 1fr);
-}
-.gap-8 {
-  gap: 2rem;
-}
-</style>
