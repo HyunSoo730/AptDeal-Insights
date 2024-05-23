@@ -35,6 +35,7 @@ const loadSessionIds = async () => {
   if (user.value) {
     try {
       const response = await axios.get(`/api/api/chat/${user.value.id}/sessions`);
+      console.log('Session IDs:', response.data); // 디버깅용 로그
       sessionIds.value = response.data;
     } catch (error) {
       console.error('Failed to load session IDs:', error);
@@ -70,10 +71,11 @@ const cancelEditing = () => {
 };
 
 const loadChatHistory = async (sessionId) => {
-  console.log(sessionId)
+  console.log('Loading chat history for session:', sessionId); // 디버깅용 로그
+  console.log(user.value.id)
   try {
     const response = await axios.get(`/api/api/chat/${user.value.id}/${sessionId}`);
-    console.log(response)
+    console.log('Chat history:', response.data); // 디버깅용 로그
     chatHistory.value = response.data;
     selectedSessionId.value = sessionId;
   } catch (error) {

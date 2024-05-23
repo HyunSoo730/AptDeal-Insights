@@ -14,7 +14,9 @@ public class AiMessageController {
 
     @GetMapping("/{memberId}/{sessionId}")
     public List<AiMessage> getChatMessages(@PathVariable("memberId") Long memberId, @PathVariable("sessionId") String sessionId) {
-        return aiMessageService.getChatMessages(memberId, sessionId);
+        List<AiMessage> chatMessages = aiMessageService.getChatMessages(memberId, sessionId);
+        chatMessages.forEach(message -> message.getContent()); // Lazy loading 강제 초기화
+        return chatMessages;
     }
 
     @PostMapping("/save")

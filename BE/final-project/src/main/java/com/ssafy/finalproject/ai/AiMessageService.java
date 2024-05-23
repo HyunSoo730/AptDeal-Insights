@@ -15,7 +15,9 @@ public class AiMessageService {
     private final MemberRepository memberRepository;
 
     public List<AiMessage> getChatMessages(Long memberId, String sessionId) {
-        return aiMessageRepository.findByMemberIdAndSessionId(memberId, sessionId);
+        List<AiMessage> messages = aiMessageRepository.findByMemberIdAndSessionId(memberId, sessionId);
+        System.out.println("Loaded messages: " + messages.size()); // 디버깅용 로그
+        return messages;
     }
 
     public void saveAiMessages(Long memberId, String sessionId, List<AiMessage> messages) {

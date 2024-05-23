@@ -1,5 +1,6 @@
 package com.ssafy.finalproject.ai;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.ssafy.finalproject.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -18,6 +19,7 @@ public class AiMessage {
     private String content;
     private String sessionId; // 세션 ID 필드 추가
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;

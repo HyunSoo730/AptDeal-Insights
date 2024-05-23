@@ -1,5 +1,6 @@
 package com.ssafy.finalproject.member.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.ssafy.finalproject.ai.AiMessage;
 import com.ssafy.finalproject.model.Role;
 import jakarta.persistence.*;
@@ -31,7 +32,7 @@ public class Member {
     private String name;
     private String nickname;
 
-
+    @JsonManagedReference
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<AiMessage> aiMessages;
 
