@@ -10,6 +10,11 @@ export function getLeaseListingsByRegionAndDong(searchCondition) {
   return aptLeaseApi.post('/rent-sales', searchCondition);
 }
 
+export function getLeaseListingsByRegionAndDong2(searchCondition) {
+  console.log(searchCondition);
+  return aptLeaseApi.post('/rent-sales2', searchCondition);
+}
+
 export function getRentSalesByApartmentAndYears(apartmentName, years) {
   return aptLeaseApi.get(`/apartment-rent-sales/${apartmentName}/${years}`);
 }

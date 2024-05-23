@@ -107,7 +107,7 @@
 import { defineComponent, ref, watch } from "vue";
 import ChartComponent from "@/components/ChartComponent.vue";
 import {
-  getLeaseListingsByRegionAndDong,
+  getLeaseListingsByRegionAndDong2,
   getRentSalesByApartmentAndYears,
   getRentSalesByRegionCodeAndYears,
 } from "@/api/aptLeaseApi";
@@ -148,7 +148,7 @@ export default defineComponent({
         limit: 20, // Limit results per request
       };
       try {
-        const response = await getLeaseListingsByRegionAndDong(
+        const response = await getLeaseListingsByRegionAndDong2(
           updatedSearchCondition
         );
         filteredTransactions.value = response.data;
