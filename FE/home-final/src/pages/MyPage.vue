@@ -158,7 +158,8 @@ const updateUser = async () => {
       isEditing.value = false;
       editedUser.value = { password: '', nickname: '' };
       confirmPassword.value = '';
-      alert("수정 되었습니다!")
+      alert("수정 되었습니다!");
+      window.location.reload(); // 수정 완료 후 새로고침
     } catch (error) {
       console.error(error);
     }
@@ -166,6 +167,7 @@ const updateUser = async () => {
     alert('비밀번호가 일치하지 않습니다.');
   }
 };
+
 
 const navigateToWishlist = () => {
   router.push('/wishlist');

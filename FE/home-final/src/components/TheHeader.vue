@@ -75,7 +75,7 @@
 
 <script setup>
 import { useCounterStore } from "@/stores/counter";
-import { ref, computed } from "vue";
+import { ref, computed, reactive, watch } from "vue";
 import { useRouter } from "vue-router";
 import LoginModal from "@/components/LoginModal.vue";
 import SignupModal from "@/components/SignupModal.vue";
@@ -85,7 +85,11 @@ const store = useCounterStore();
 const router = useRouter();
 
 const isLoggedIn = computed(() => store.isLoggedIn);
-const user = computed(() => store.user);
+const user = reactive({ ...store.user });
+
+watch(() => store.user, (newUser) => {
+  Object.assign(user, newUser);
+}, { deep: true });
 
 const showLoginModal = ref(false);
 const showSignupModal = ref(false);

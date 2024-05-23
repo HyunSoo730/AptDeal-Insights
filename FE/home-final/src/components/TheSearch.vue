@@ -93,6 +93,7 @@ const selectApartmentAndSearch = (apartment) => {
 const searchApartment = () => {
   if (selectedApartment.value) {
     localStorage.setItem('selectedApartment', JSON.stringify(selectedApartment.value));
+    localStorage.setItem('apartments', JSON.stringify([selectedApartment.value]));
     router.push({
       name: 'ApartmentMap',
       params: {
