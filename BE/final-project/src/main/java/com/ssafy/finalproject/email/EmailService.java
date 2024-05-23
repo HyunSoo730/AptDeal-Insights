@@ -14,7 +14,7 @@ public class EmailService {
 
     public String sendEmail(String to) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("ssafy2422@gmail.com");
+        message.setFrom("ssafy2411@gmail.com");
         System.out.println(to);
         message.setTo(to);
         message.setSubject("관통 프로젝트에서 보내는 비밀번호 인증 메일입니다.");

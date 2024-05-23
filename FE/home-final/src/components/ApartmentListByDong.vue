@@ -1,8 +1,9 @@
 <template>
+  {{ apartments }}
   <div class="container mx-auto py-8">
     <h2 class="text-3xl font-bold mb-8 text-center text-indigo-600">아파트 목록</h2>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      <div v-for="apartment in apartments" :key="apartment.aptCode" 
+      <div v-for="apartment in apartments" :key="apartment.aptCode"
         class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition duration-300 cursor-pointer"
         @click="goToApartmentMap(apartment)">
         <div class="mb-4">

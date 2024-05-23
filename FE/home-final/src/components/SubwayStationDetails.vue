@@ -3,20 +3,23 @@
     <h2 class="text-lg font-semibold mb-4">가장 가까운 지하철역🚇</h2>
     <ul class="list-disc pl-5 space-y-2">
       <li v-for="(station, index) in stations" :key="index" class="text-sm">
-        {{ station.stationName }} - {{ station.lineNum }} (거리: {{ station.distance.toFixed(2) }} km, 걷기 시간: {{ station.walkingTime }})
+        {{ station.stationName }} - {{ station.lineNum }} (거리: {{ station.distance.toFixed(2) }} km, 걷기 시간: {{
+          station.walkingTime }})
       </li>
     </ul>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, watch, onMounted, defineProps, defineEmits } from 'vue';
 import { getClosestSubwayStations } from '@/api/subwayStationApi';
 
 const props = defineProps({
   lat: Number,
   lng: Number
 });
+
+const emit = defineEmits(['update:stations']);
 
 const stations = ref([]);
 
@@ -25,6 +28,7 @@ const fetchClosestSubwayStations = async () => {
     const response = await getClosestSubwayStations(props.lat, props.lng);
     console.log('Closest subway stations:', response.data); // 로그 추가
     stations.value = response.data;
+    emit('update:stations', stations.value); // 부모 컴포넌트로 stations 데이터 전달
   } catch (error) {
     console.error('Failed to fetch closest subway stations:', error);
   }

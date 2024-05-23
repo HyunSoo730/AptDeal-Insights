@@ -1,18 +1,21 @@
 <template>
   <div class="chat-container">
-    <button class="leave-button" @click="leaveRoom">채팅방 나가기</button>
-    <h2>채팅방: {{ roomName }}</h2>
+    <div class="header">
+      <h2 class="room-name">채팅방: {{ roomName }}</h2>
+      <button class="leave-button" @click="leaveRoom">채팅방 나가기</button>
+    </div>
     <div class="messages" ref="messageContainer">
-      <div v-for="(item, idx) in recvList" :key="idx" 
-           :class="[item.type === 'CHAT' ? 'message' : 'system-message', 
-                    { 'my-message': item.sender === userNickname && item.type === 'CHAT', 
-                      'other-message': item.sender !== userNickname && item.type === 'CHAT' }]">
+      <div v-for="(item, idx) in recvList" :key="idx" :class="[item.type === 'CHAT' ? 'message' : 'system-message',
+      {
+        'my-message': item.sender === userNickname && item.type === 'CHAT',
+        'other-message': item.sender !== userNickname && item.type === 'CHAT'
+      }]">
         <template v-if="item.type === 'CHAT'">
-          <h3>{{ item.sender }}</h3>
-          <p>{{ item.content }}</p>
+          <h3 class="sender">{{ item.sender }}</h3>
+          <p class="content">{{ item.content }}</p>
         </template>
         <template v-else>
-          <p>{{ item.content }}</p>
+          <p class="content">{{ item.content }}</p>
         </template>
       </div>
     </div>
@@ -25,6 +28,7 @@
 </template>
 
 
+
 <script>
 import Stomp from 'webstomp-client';
 import SockJS from 'sockjs-client';
@@ -33,103 +37,104 @@ import { ref, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
 export default {
-    name: 'ChatRoom',
-    props: ['roomName'],
-    setup(props) {
-        const counterStore = useCounterStore();
-        const message = ref("");
-        const recvList = ref([]);
-        const stompClient = ref(null);
-        const connected = ref(false);
-        const showScrollButton = ref(false);
-        const messageContainer = ref(null);
-        const router = useRouter();
+  name: 'ChatRoom',
+  props: ['roomName'],
+  setup(props) {
+    const counterStore = useCounterStore();
+    const message = ref("");
+    const recvList = ref([]);
+    const stompClient = ref(null);
+    const connected = ref(false);
+    const showScrollButton = ref(false);
+    const messageContainer = ref(null);
+    const router = useRouter();
 
-        const userNickname = counterStore.user.nickname;
+    const userNickname = counterStore.user.nickname;
 
-        const sendMessage = () => {
-            if (userNickname !== '' && message.value !== '' && props.roomName !== '') {
-                send('CHAT', message.value);
-                message.value = '';
-            }
+    const sendMessage = () => {
+      if (userNickname !== '' && message.value !== '' && props.roomName !== '') {
+        send('CHAT', message.value);
+        message.value = '';
+      }
+    };
+
+    const send = (type, content) => {
+      console.log("Send message:" + content);
+      if (stompClient.value && stompClient.value.connected) {
+        const msg = {
+          sender: userNickname,
+          content: content,
+          type: type
         };
+        stompClient.value.send(`/app/chat.sendMessage/${props.roomName}`, JSON.stringify(msg), {});
+      }
+    };
 
-        const send = (type, content) => {
-            console.log("Send message:" + content);
-            if (stompClient.value && stompClient.value.connected) {
-                const msg = {
-                    sender: userNickname,
-                    content: content,
-                    type: type
-                };
-                stompClient.value.send(`/app/chat.sendMessage/${props.roomName}`, JSON.stringify(msg), {});
-            }
-        };
+    const connect = () => {
+      const serverURL = "/ws";
+      let socket = new SockJS(serverURL);
+      stompClient.value = Stomp.over(socket);
+      console.log(`소켓 연결을 시도합니다. 서버 주소: ${serverURL}`);
+      stompClient.value.connect(
+        {},
+        frame => {
+          connected.value = true;
+          console.log('소켓 연결 성공', frame);
+          subscribeToRoom(props.roomName);
+          send('JOIN', `${userNickname} 님이 입장하셨습니다.`);
+        },
+        error => {
+          console.log('소켓 연결 실패', error);
+          connected.value = false;
+        }
+      );
+    };
 
-        const connect = () => {
-            const serverURL = "/ws";
-            let socket = new SockJS(serverURL);
-            stompClient.value = Stomp.over(socket);
-            console.log(`소켓 연결을 시도합니다. 서버 주소: ${serverURL}`);
-            stompClient.value.connect(
-                {},
-                frame => {
-                    connected.value = true;
-                    console.log('소켓 연결 성공', frame);
-                    subscribeToRoom(props.roomName);
-                    send('JOIN', `${userNickname} 님이 입장하셨습니다.`);
-                },
-                error => {
-                    console.log('소켓 연결 실패', error);
-                    connected.value = false;
-                }
-            );
-        };
+    const subscribeToRoom = (roomName) => {
+      stompClient.value.subscribe(`/topic/${roomName}`, res => {
+        console.log('구독으로 받은 메시지 입니다.', res.body);
+        recvList.value.push(JSON.parse(res.body));
+        if (isAtBottom()) {
+          scrollToBottom();
+        } else {
+          showScrollButton.value = true;
+        }
+      });
+    };
 
-        const subscribeToRoom = (roomName) => {
-            stompClient.value.subscribe(`/topic/${roomName}`, res => {
-                console.log('구독으로 받은 메시지 입니다.', res.body);
-                recvList.value.push(JSON.parse(res.body));
-                if (isAtBottom()) {
-                    scrollToBottom();
-                } else {
-                    showScrollButton.value = true;
-                }
-            });
-        };
+    const leaveRoom = () => {
+      if (stompClient.value && props.roomName) {
+        send('LEAVE', `${userNickname} 님이 퇴장하셨습니다.`);
+        stompClient.value.unsubscribe(`/topic/${props.roomName}`);
+      }
+      router.push({ name: 'ChatRoomList' });
+    };
 
-        const leaveRoom = () => {
-            if (stompClient.value && props.roomName) {
-                send('LEAVE', `${userNickname} 님이 퇴장하셨습니다.`);
-                stompClient.value.unsubscribe(`/topic/${props.roomName}`);
-            }
-            router.push({ name: 'ChatRoomList' });
-        };
+    const scrollToBottom = () => {
+      messageContainer.value.scrollTop = messageContainer.value.scrollHeight;
+      showScrollButton.value = false;
+    };
 
-        const scrollToBottom = () => {
-            messageContainer.value.scrollTop = messageContainer.value.scrollHeight;
-            showScrollButton.value = false;
-        };
+    const isAtBottom = () => {
+      return messageContainer.value.scrollHeight - messageContainer.value.scrollTop === messageContainer.value.clientHeight;
+    };
 
-        const isAtBottom = () => {
-            return messageContainer.value.scrollHeight - messageContainer.value.scrollTop === messageContainer.value.clientHeight;
-        };
+    onMounted(connect);
 
-        onMounted(connect);
-
-        return {
-            message,
-            recvList,
-            sendMessage,
-            leaveRoom,
-            userNickname,
-            showScrollButton,
-            scrollToBottom,
-            messageContainer
-        };
-    }
+    return {
+      message,
+      recvList,
+      sendMessage,
+      leaveRoom,
+      userNickname,
+      showScrollButton,
+      scrollToBottom,
+      messageContainer
+    };
+  }
 }
 </script>
+
 
 <style scoped>
 .chat-container {
@@ -137,7 +142,7 @@ export default {
   flex-direction: column;
   height: 100vh;
   width: 80%;
-  max-width: 1200px;
+  max-width: 900px;
   margin: 0 auto;
   border: 1px solid #ccc;
   border-radius: 10px;
@@ -145,10 +150,20 @@ export default {
   position: relative;
 }
 
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background-color: #4CAF50;
+  color: white;
+}
+
+.room-name {
+  margin: 0;
+}
+
 .leave-button {
-  position: absolute;
-  top: 10px;
-  right: 10px;
   background-color: #ff4d4d;
   color: white;
   border: none;
@@ -198,6 +213,15 @@ export default {
   margin: 10px 0;
 }
 
+.sender {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.content {
+  margin: 0;
+}
+
 .input-container {
   display: flex;
   padding: 10px;
@@ -228,17 +252,19 @@ input {
 
 .scroll-button {
   position: absolute;
-  bottom: 60px;
-  right: 20px;
-  background-color: #4CAF50;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #ccc;
   color: white;
   border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
+  padding: 8px 16px;
+  border-radius: 20px;
   cursor: pointer;
+  font-size: 0.9rem;
 }
 
 .scroll-button:hover {
-  background-color: #45a049;
+  background-color: #999;
 }
 </style>
