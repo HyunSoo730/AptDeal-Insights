@@ -39,6 +39,25 @@ public class AptRentSaleRepositoryCustom {
                 .fetch();
     }
 
+    // TODO : 구(지역) 및 동(법정동) 전월세 정보 조회 ( 아파트 이름 동일)
+    public List<AptRentSaleDTO> findRentSalesByConditions2(SearchConditionDTO searchCondition) {
+//        System.out.println("searchCondition: " + searchCondition);
+        return queryFactory
+                .select(new QAptRentSaleDTO(
+                        aptRentSale.constructionYear, aptRentSale.contractType, aptRentSale.contractPeriod,
+                        aptRentSale.year, aptRentSale.legalDong, aptRentSale.depositAmount, aptRentSale.apartmentName,
+                        aptRentSale.month, aptRentSale.monthlyRent, aptRentSale.day, aptRentSale.exclusiveArea,
+                        aptRentSale.previousContractDeposit, aptRentSale.previousContractRent, aptRentSale.regionCode,
+                        aptRentSale.floor
+                ))
+                .from(aptRentSale)
+                .where(buildBooleanExpression(searchCondition), inExclusiveAreaRanges(searchCondition.getSelectedPyeongRanges())
+                , aptRentSale.apartmentName.eq(searchCondition.getApartmentName()))
+                .offset(searchCondition.getOffset())
+                .limit(searchCondition.getLimit())
+                .fetch();
+    }
+
     // TODO : 특정 아파트의 최근 N년간의 전월세 거래 데이터 조회
     public List<AptRentSaleDTO> findRentSalesByApartmentAndYears(String apartmentName, int years) {
         LocalDate now = LocalDate.now();

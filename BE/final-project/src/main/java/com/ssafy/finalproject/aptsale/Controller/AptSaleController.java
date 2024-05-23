@@ -96,6 +96,14 @@ public class AptSaleController {
         return new ResponseEntity<>(rentSalesByConditions, HttpStatus.OK);
     }
 
+    // TODO : 검색 조건 완벽 반영
+    @PostMapping("rent-sales2")
+    public ResponseEntity<?> getRentSales2(@RequestBody SearchConditionDTO searchCondition) {
+        log.info("여기 호출합니다", searchCondition.toString());
+        List<AptRentSaleDTO> rentSalesByConditions = aptRentSaleService.getRentSalesByConditions2(searchCondition);
+        return new ResponseEntity<>(rentSalesByConditions, HttpStatus.OK);
+    }
+
     // TODO : 특정 아파트의 최근 N년간의 전월세 거래 데이터 조회
     @GetMapping("/apartment-rent-sales/{apartmentName}/{years}")
     public ResponseEntity<?> getRentSalesByApartmentAndYears(@PathVariable("apartmentName") String apartmentName, @PathVariable("years") int years) {

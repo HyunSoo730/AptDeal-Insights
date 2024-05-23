@@ -19,6 +19,10 @@ public class AptRentSaleService {
         return aptRentSaleRepositoryCustom.findRentSalesByConditions(searchCondition);
     }
 
+    public List<AptRentSaleDTO> getRentSalesByConditions2(SearchConditionDTO searchCondition) {
+        return aptRentSaleRepositoryCustom.findRentSalesByConditions2(searchCondition);
+    }
+
     // ! 특정 아파트 최근 N년 거래 데이터
     public List<AptRentSaleDTO> getRentSalesByApartmentAndYears(String apartmentName, int years) {
         return aptRentSaleRepositoryCustom.findRentSalesByApartmentAndYears(apartmentName, years);
