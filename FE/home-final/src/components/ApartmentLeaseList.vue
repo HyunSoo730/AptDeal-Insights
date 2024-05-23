@@ -342,3 +342,65 @@ const formatChartData = (data) => {
   };
 };
 </script>
+<style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+
+.container {
+  max-width: 1200px;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #4c51bf;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #2d3748;
+}
+
+p {
+  font-size: 1.125rem;
+  color: #4a5568;
+}
+
+label {
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: #2d3748;
+}
+
+input::placeholder,
+select option:first-child {
+  color: #a0aec0;
+}
+
+button {
+  font-size: 1.25rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.text-xl {
+  font-size: 1.25rem;
+}
+
+.text-lg {
+  font-size: 1.125rem;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+/* ... (기존 스타일 유지) ... */
+</style>
