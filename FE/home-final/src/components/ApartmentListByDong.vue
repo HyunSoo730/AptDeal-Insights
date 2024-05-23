@@ -15,24 +15,28 @@
         </div>
       </div>
     </div>
+    <div class="mt-8 flex justify-center">
+      <button @click="previousPage" :disabled="offset === 0" class="bg-indigo-600 text-white px-4 py-2 rounded-l-lg">Previous</button>
+      <button @click="nextPage" class="bg-indigo-600 text-white px-4 py-2 rounded-r-lg">Next</button>
+    </div>
   </div>
 </template>
 
-
 <script>
-import axios from "axios";
-import { useRouter } from "vue-router";
 import { ref, onMounted } from "vue";
-import { sample } from "@/api/aptSaleApi.js"
+import { useRouter } from "vue-router";
+import { sample } from "@/api/aptSaleApi.js";
 
 export default {
   setup() {
     const router = useRouter();
     const apartments = ref([]);
+    const limit = ref(10);
+    const offset = ref(0);
 
     const fetchApartments = async (dongCode) => {
       try {
-        const response = await sample(dongCode);
+        const response = await sample(dongCode, limit.value, offset.value);
         apartments.value = response.data;
         localStorage.setItem('apartments', JSON.stringify(apartments.value));
       } catch (error) {
@@ -50,6 +54,18 @@ export default {
       });
     };
 
+    const previousPage = () => {
+      if (offset.value > 0) {
+        offset.value -= limit.value;
+        fetchApartments(router.currentRoute.value.params.dongCode);
+      }
+    };
+
+    const nextPage = () => {
+      offset.value += limit.value;
+      fetchApartments(router.currentRoute.value.params.dongCode);
+    };
+
     onMounted(() => {
       const dongCode = router.currentRoute.value.params.dongCode;
       fetchApartments(dongCode);
@@ -58,11 +74,14 @@ export default {
     return {
       apartments,
       goToApartmentMap,
+      previousPage,
+      nextPage,
+      limit,
+      offset,
     };
   },
 };
 </script>
-
 
 <style scoped>
 .container {
