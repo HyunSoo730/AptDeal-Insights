@@ -2,6 +2,7 @@ import { createApp } from "vue";
 import { createPinia } from "pinia";
 import { useKakao } from "vue3-kakao-maps/@utils";
 import "./index.css";
+import '@/assets/css/tailwind.css';
 
 import {
   Chart as ChartJS,

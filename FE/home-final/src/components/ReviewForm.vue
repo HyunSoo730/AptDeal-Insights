@@ -1,13 +1,32 @@
 <template>
-  <div class="review-form">
-    <h3>리뷰 작성</h3>
-    {{ user }}
-    <textarea v-model="content" placeholder="리뷰 내용을 입력하세요"></textarea>
-    <select v-model.number="rating">
-      <option value="">평점 선택</option>
-      <option v-for="star in 5" :key="star" :value="star">{{ star }}점</option>
-    </select>
-    <button @click="submitReview">작성완료</button>
+  <div class="review-form bg-white shadow-md rounded-lg p-6">
+    <h3 class="text-xl font-semibold mb-4">리뷰 작성</h3>
+    <div class="mb-4">
+      <label class="block text-gray-700 mb-2">작성자</label>
+      <p class="text-gray-800">{{ user.nickname }}</p>
+    </div>
+    <div class="mb-4">
+      <textarea
+        v-model="content"
+        placeholder="리뷰 내용을 입력하세요"
+        class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+      ></textarea>
+    </div>
+    <div class="mb-4">
+      <select
+        v-model.number="rating"
+        class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+      >
+        <option value="">평점 선택</option>
+        <option v-for="star in 5" :key="star" :value="star">{{ star }}점</option>
+      </select>
+    </div>
+    <button
+      @click="submitReview"
+      class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors duration-200 w-full"
+    >
+      작성완료
+    </button>
   </div>
 </template>
 
@@ -47,7 +66,6 @@ export default {
         if (!counterStore.user) {
           try {
             const token = localStorage.getItem('token');
-            console.log(token);
             const response = await axios.get('/api/user', {
               headers: { Authorization: `${token}` },
             });
@@ -74,9 +92,8 @@ export default {
           apartmentCode: this.apartment.aptCode,
           content: this.content,
           rating: this.rating,
-          member: { nickname: this.counterStore.user.nickname }, // 작성자 정보 추가
+          member: { nickname: this.counterStore.user.nickname },
         };
-        console.log(reviewData);
 
         await axios.post('/api/api/apt-review/post', reviewData);
         alert('리뷰가 성공적으로 작성되었습니다.');
@@ -96,8 +113,6 @@ export default {
 }
 
 textarea {
-  width: 100%;
-  height: 100px;
-  margin-bottom: 10px;
+  resize: vertical;
 }
 </style>
