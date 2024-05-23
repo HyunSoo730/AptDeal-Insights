@@ -40,13 +40,16 @@ public class AptSaleController {
 
     // AptSaleController.java
     @GetMapping("/apartments")
-    public List<AptSaleByDongDTO> getApartmentsByDongCode(@RequestParam("dongCode") String dongCode) {
-        log.info("동코드: {}", dongCode);
-        return aptSaleService.getApartmentsByDongCode(dongCode);
+    public List<AptSaleByDongDTO> getApartmentsByDongCode(
+            @RequestParam("dongCode") String dongcode,
+            @RequestParam("limit") int limit,
+            @RequestParam("offset") int offset) {
+        return aptSaleService.getApartmentsByDongCode(dongcode, limit, offset);
     }
 
     @GetMapping("/details/{aptCode}")
     public ResponseEntity<?> getAptSaleDetails(@PathVariable("aptCode") String aptCode) {
+//        log.info("지금 여기 호출");
         List<AptSaleDetails> aptSaleDetailsList = aptSaleService.findAptSaleDetails(aptCode);
         return new ResponseEntity<>(aptSaleDetailsList, HttpStatus.OK);
     }

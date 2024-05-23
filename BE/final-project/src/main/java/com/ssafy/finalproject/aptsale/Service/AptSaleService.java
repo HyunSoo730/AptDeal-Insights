@@ -36,9 +36,11 @@ public class AptSaleService {
                 .collect(Collectors.toList());
     }
 
-    public List<AptSaleByDongDTO> getApartmentsByDongCode(String dongcode) {
+    public List<AptSaleByDongDTO> getApartmentsByDongCode(String dongcode, int limit, int offset) {
 
-        List<AptSaleByDongDTO> byDongcodeGroupByAptCode = aptSaleRepository.findByDongcodeGroupByAptCode(dongcode);
+        List<AptSaleByDongDTO> byDongcodeGroupByAptCode = aptSaleRepositoryCustom.getApartmentsByDongCode(dongcode, limit, offset);
+        //        List<AptSaleByDongDTO> byDongcodeGroupByAptCode = aptSaleRepository.findByDongcodeGroupByAptCode(dongcode);
+        System.out.println("페이징 처리 후 호출");
         for (AptSaleByDongDTO aptSaleByDongDTO : byDongcodeGroupByAptCode) {
             System.out.println("aptSaleByDongDTO = " + aptSaleByDongDTO);
         }
