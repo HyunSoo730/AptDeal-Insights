@@ -1,5 +1,4 @@
 <template>
-
   <div class="container mx-auto px-4 py-8">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
       <div class="lg:col-span-2">
@@ -28,14 +27,14 @@
           <div class="flex justify-between mb-6">
             <button class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
               @click="likeApartment(selectedApartment)">
-              찜하기
+              찜하기 ✅
             </button>
           </div>
           <div class="mb-6">
             <h3 class="text-xl font-semibold mb-4">리뷰 작성</h3>
             <button v-if="!reviewFormOpen" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
               @click="openReviewForm">
-              리뷰 쓰기
+              리뷰 쓰기 ✏
             </button>
             <ReviewForm v-else :apartment="selectedApartment" :user="user" @review-submitted="handleReviewSubmitted"
               @cancel="closeReviewForm" />
@@ -59,26 +58,35 @@
       </div>
       <div v-if="selectedApartment" class="lg:col-span-1">
         <div class="detail-container bg-white shadow-lg rounded-lg p-6">
-          <h2 class="text-2xl font-bold mb-4">아파트 상세 정보</h2>
           <AptTransactionChart v-if="selectedApartment" :apartment="selectedApartment"
             :aptCode="selectedApartment?.aptCode" :dongcode="dongcode" class="mb-6" />
           <div class="apartment-details space-y-4">
             <h3 class="text-xl font-semibold">
-              아파트 이름: {{ selectedApartment.aptName }}
             </h3>
             <div v-if="apartmentDetails" class="info-cards grid grid-cols-1 gap-4">
               <div v-for="(detail, index) in visibleDetails" :key="detail.aptCode"
-                class="info-card bg-gray-100 p-4 rounded-lg">
-                <h4 class="text-lg font-semibold mb-2">거래 금액</h4>
-                <p>{{ detail.dealAmount }}원</p>
-                <h4 class="text-lg font-semibold mb-2 mt-4">거래 날짜</h4>
-                <p>{{ detail.dealYear }}년 {{ detail.dealMonth }}월 {{ detail.dealDay }}일</p>
-                <h4 class="text-lg font-semibold mb-2 mt-4">전용 면적</h4>
-                <p>{{ detail.exclusiveArea }}m²</p>
-                <h4 class="text-lg font-semibold mb-2 mt-4">층</h4>
-                <p>{{ detail.floor }}층</p>
+                :class="['info-card p-4 rounded-lg', { 'bg-gray-100': index % 2 === 0, 'bg-blue-100': index % 2 !== 0 }]">
+                <div class="flex flex-wrap">
+                  <div class="w-full mb-2">
+                    <h4 class="text-lg font-semibold inline">거래 금액: </h4>
+                    <p class="inline">{{ detail.dealAmount }}원</p>
+                  </div>
+                  <div class="w-full mb-2">
+                    <h4 class="text-lg font-semibold inline">거래 날짜: </h4>
+                    <p class="inline">{{ detail.dealYear }}년 {{ detail.dealMonth }}월 {{ detail.dealDay }}일</p>
+                  </div>
+                  <div class="w-full mb-2">
+                    <h4 class="text-lg font-semibold inline">전용 면적: </h4>
+                    <p class="inline">{{ detail.exclusiveArea }}m²</p>
+                  </div>
+                  <div class="w-full mb-2">
+                    <h4 class="text-lg font-semibold inline">층: </h4>
+                    <p class="inline">{{ detail.floor }}층</p>
+                  </div>
+                </div>
               </div>
             </div>
+
             <button
               v-if="apartmentDetails && apartmentDetails.length > 3 && visibleDetails.length < apartmentDetails.length"
               @click="showMoreDetails" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded">
@@ -91,7 +99,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref, computed, onMounted, watch } from 'vue';
 import { KakaoMap, KakaoMapMarker } from 'vue3-kakao-maps';
 import { useRoute, useRouter } from 'vue-router';
@@ -106,6 +114,9 @@ import AptTransactionChart from '@/components/AptTransactionChart.vue';
 
 const route = useRoute();
 const router = useRouter();
+
+
+
 
 const apartments = ref([]);
 const selectedApartment = ref(null);
@@ -235,5 +246,4 @@ const stations = ref([]); // 부모 컴포넌트에서 stations 데이터를 관
 const updateStations = (newStations) => {
   stations.value = newStations;
 };
-
 </script>

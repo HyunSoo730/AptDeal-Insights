@@ -1,11 +1,11 @@
 <template>
-  {{ apartments }}
   <div class="container mx-auto py-8">
     <h2 class="text-3xl font-bold mb-8 text-center text-indigo-600">아파트 목록</h2>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       <div v-for="apartment in apartments" :key="apartment.aptCode"
         class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition duration-300 cursor-pointer"
         @click="goToApartmentMap(apartment)">
+        <img src="@/assets/img/apt.png" alt="아파트 이미지" class="w-full h-40 object-cover rounded-t-lg mb-4">
         <div class="mb-4">
           <h3 class="text-xl font-semibold text-gray-800">{{ apartment.aptName }}</h3>
           <p class="text-gray-600">{{ apartment.roadName }}</p>
@@ -17,6 +17,7 @@
     </div>
   </div>
 </template>
+
 
 <script>
 import axios from "axios";
@@ -62,7 +63,13 @@ export default {
 };
 </script>
 
+
 <style scoped>
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
 .card-container {
   display: flex;
   flex-wrap: wrap;
