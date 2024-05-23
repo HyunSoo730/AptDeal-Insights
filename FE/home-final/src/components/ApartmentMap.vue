@@ -452,3 +452,7 @@ const updateStations = (newStations) => {
   stations.value = newStations;
 };
 </script>
+
+<style scoped>
+/* 스타일을 여기 추가할 수 있습니다 */
+</style>
