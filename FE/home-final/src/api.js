@@ -1,7 +1,7 @@
 // src/api.js
 import axios from "axios";
 
-const apiKey = "sk-proj-HOYptj7bxt5cssYJJWGPT3BlbkFJEFgM9MDAEccr6T5ujRI9";
+const apiKey = "asdasdasd";
 const apiEndpoint = "https://api.openai.com/v1/chat/completions";
 
 export async function callOpenAI(message) {
