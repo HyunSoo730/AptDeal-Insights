@@ -289,9 +289,10 @@ root
 
 ## 🖥️ 프로젝트 시연 영상
 
-<a href="https://drive.google.com/file/d/1d6x19sChlf0rLAQullodcuSrQbx7-d36/view?usp=sharing">
+<a href="https://drive.google.com/file/d/1d6x19sChlf0rLAQullodcuSrQbx7-d36/view?usp=sharing" target="_blank">
     <img src="https://i.postimg.cc/C50zbKxF/image.png" alt="프로젝트 시연 영상" width="400"/>
 </a>
+
 
 
 
