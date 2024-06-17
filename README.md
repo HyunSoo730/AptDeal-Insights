@@ -158,6 +158,100 @@ ERD에서 볼 수 있듯이, 아파트 매물 정보를 중심으로 사용자 �
 | <img width="400" alt="마이 페이지" src="https://i.postimg.cc/zG2b450j/image.png"/> |
 | 마이 페이지에서는 사용자의 개인 정보 관리, 관심 매물 목록, 문의 내역 등을 확인할 수 있습니다. 사용자는 프로필 정보를 수정하고, 관심 매물을 추가/삭제할 수 있으며, 자신이 작성한 문의 내역을 관리할 수 있습니다. |
 
+## 🏛️ 아키텍처
+### 디렉토리 구조
+
+```plaintext
+root
+├── backend
+│   ├── Dockerfile
+│   ├── dao.iml
+│   ├── mvnw
+│   ├── mvnw.cmd
+│   ├── pom.xml
+│   └── src
+│       ├── main
+│       │   ├── java
+│       │   │   └── com
+│       │   │       └── likelion
+│       │   │           └── dao
+│       │   │               ├── DaoApplication.java
+│       │   │               ├── config
+│       │   │               │   ├── BatchConfig.java
+│       │   │               │   ├── OpenApiConfig.java
+│       │   │               │   └── WebMvcConfig.java
+│       │   │               ├── controller
+│       │   │               │   ├── JobController.java
+│       │   │               │   ├── RegionController.java
+│       │   │               │   └── UserController.java
+│       │   │               ├── dto
+│       │   │               │   ├── JobDto.java
+│       │   │               │   ├── RegionDto.java
+│       │   │               │   └── UserDto.java
+│       │   │               ├── entity
+│       │   │               │   ├── Job.java
+│       │   │               │   ├── Region.java
+│       │   │               │   └── User.java
+│       │   │               ├── repository
+│       │   │               │   ├── JobRepository.java
+│       │   │               │   ├── RegionRepository.java
+│       │   │               │   └── UserRepository.java
+│       │   │               └── service
+│       │   │                   ├── JobService.java
+│       │   │                   ├── KakaoAlarmService.java
+│       │   │                   ├── RegionService.java
+│       │   │                   └── UserService.java
+│       │   └── resources
+│       │       ├── application.properties
+│       │       └── application-prod.properties
+│       └── test
+│           └── java
+│               └── com
+│                   └── likelion
+│                       └── dao
+│                           └── DaoApplicationTests.java
+├── frontend
+│   ├── README.md
+│   ├── node_modules
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── public
+│   │   ├── favicon.ico
+│   │   ├── index.html
+│   │   ├── logo192.png
+│   │   ├── logo512.png
+│   │   ├── manifest.json
+│   │   └── robots.txt
+│   └── src
+│       ├── App.css
+│       ├── App.js
+│       ├── App.test.js
+│       ├── components
+│       │   ├── Footer.js
+│       │   ├── Header.js
+│       │   ├── JobDetail.js
+│       │   ├── JobList.js
+│       │   ├── KakaoAlarmModal.js
+│       │   ├── MyPage.js
+│       │   └── RegionSelect.js
+│       ├── index.css
+│       ├── index.js
+│       ├── logo.svg
+│       ├── pages
+│       │   ├── AlarmPage.js
+│       │   ├── JobDetailPage.js
+│       │   ├── JobListPage.js
+│       │   ├── MainPage.js
+│       │   └── MyPage.js
+│       ├── reportWebVitals.js
+│       ├── services
+│       │   ├── JobService.js
+│       │   ├── KakaoAlarmService.js
+│       │   ├── RegionService.js
+│       │   └── UserService.js
+│       └── setupTests.js
+└── README.md
+```
 
 ## 🎉 프로젝트 결과 및 성과
 - 🏘️ 서울시의 방대한 부동산 매물 정보를 한 곳에서 제공하여 사용자들의 매물 검색 경험을 개선하였습니다.
