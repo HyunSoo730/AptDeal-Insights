@@ -1,12 +1,12 @@
-# 🏠 HappyHouse 🏠
+# HappyHouse 🏠
 
 <div align="center">
 <img width="400" alt="집구하기 프로젝트 이미지" src="https://i.postimg.cc/KctgsPn0/image.webp">
 </div>
 
-# 🏠HappyHouse - 서울시 부동산 매물 정보 제공 서비스
+# HappyHouse 🏠 - 서울시 부동산 매물 정보 제공 서비스
 > **서울시의 부동산 매물 정보를 제공하고 다양한 서비스를 제공하여 사용자들이 효과적으로 매물을 검색하고 비교할 수 있도록 도와주는 서비스입니다.**<br>
-> **개발기간: 2024.05.13 ~ 2024.05.24**
+
 
 ## 👍 프로젝트 소개
 
