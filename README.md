@@ -76,7 +76,7 @@ HappyHouse는 사용자 친화적인 인터페이스와 직관적인 기능을 �
 ### 팀 구성
 |    조현수      |          고한강         |
 | :------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------: |
-|   <img width="160px" src="https://i.postimg.cc/FzHqR8gZ/image.png" />    |                      <img width="160px" src="https://user-images.githubusercontent.com/50205887/207570536-f5a82e48-99a1-4399-91d3-75fc5f8f3349.png" />    |
+|   <img width="160px" src="https://i.postimg.cc/d0G72ZM3/image.jpg" />    |                      <img width="160px" src="https://user-images.githubusercontent.com/50205887/207570536-f5a82e48-99a1-4399-91d3-75fc5f8f3349.png" />    |
 |   [@hyunsoo](https://github.com/HyunSoo730)   |    [@hangang](https://github.com/hangang)  |
 | 백엔드 개발 리드 & 프론트엔드 개발 | 프론트엔드 개발 리드 & 백엔드 개발 |
 
